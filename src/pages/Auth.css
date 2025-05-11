@@ -1,0 +1,116 @@
+/* Center the auth container */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #0d0d0d; /* Dark background */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Auth box styling with purple border */
+.auth-box {
+  background-color: #1a1a1a; /* Darker box */
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(128, 0, 128, 0.8); /* Purple glow */
+  border: 2px solid #800080; /* Updated Purple border */
+  width: 400px;
+  max-width: 100%; /* Mobile responsive */
+  box-sizing: border-box;
+}
+
+/* Form headings */
+.auth-box h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+  font-size: 24px;
+}
+
+/* Input fields (Black) */
+.auth-box input {
+  width: 100%;
+  padding: 14px;
+  margin: 12px 0;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #000; /* Black input fields */
+  color: #fff;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* White placeholder */
+.auth-box input::placeholder {
+  color: #aaa;
+}
+
+/* Label styling */
+.auth-box label {
+  color: #ddd;
+  font-size: 14px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Button styling (Exact Purple) */
+.auth-box button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: #800080; /* Updated Purple */
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Button hover effect (slightly darker purple) */
+.auth-box button:hover {
+  background-color: #6e006e; /* Updated darker shade of purple */
+  transform: scale(1.02); /* Subtle zoom on hover */
+}
+
+/* Error text */
+.error-text {
+  color: #ff4d4f;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+/* Toggle link */
+.auth-box p {
+  text-align: center;
+  margin-top: 15px;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.auth-box p:hover {
+  text-decoration: underline;
+}
+
+  
+  /* Mobile responsiveness */
+  @media (max-width: 480px) {
+    .auth-box {
+      padding: 20px;
+    }
+  
+    .auth-box h2 {
+      font-size: 20px;
+    }
+  
+    .auth-box input,
+    .auth-box button {
+      padding: 12px;
+      font-size: 14px;
+    }
+  }
+  

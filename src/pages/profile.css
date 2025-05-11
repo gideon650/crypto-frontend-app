@@ -1,0 +1,390 @@
+.profile-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #121212;
+    color: white;
+    border-radius: 10px;
+  }
+
+  .profile-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #121212;
+    color: white;
+    border-radius: 10px;
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+  }
+  
+  .profile-icon {
+    background: #800080;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 20px;
+  }
+  
+  .profile-info {
+    margin-bottom: 30px;
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .info-group {
+    margin-bottom: 15px;
+  }
+  
+  .info-group label {
+    display: block;
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+  }
+  
+  .info-group p {
+    font-size: 16px;
+    background: #222;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 0;
+  }
+  
+  .copyable-field {
+    display: flex;
+    align-items: center;
+  }
+  
+  .copyable-field p {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  
+  .copy-button {
+    background: #800080;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+  }
+  
+  .copy-button:hover {
+    background: #6a0dad;
+  }
+  
+  .profile-forms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  .profile-form {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .profile-form h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+  }
+  
+  .submit-button {
+    width: 100%;
+    padding: 12px;
+    background: #800080;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  
+  .submit-button:hover {
+    background: #6a0dad;
+  }
+  
+  .message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  .message.success {
+    background: #004d00;
+    color: #b3ffb3;
+  }
+  
+  .message.error {
+    background: #4d0000;
+    color: #ffb3b3;
+  }
+  
+  /* Improved mobile responsiveness */
+  @media (max-width: 768px) {
+    .profile-container {
+      max-width: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 20px;
+      border-radius: 0;
+    }
+    
+    .profile-forms {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 400px) {
+    .profile-container {
+      padding: 15px;
+    }
+  
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .profile-icon {
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+  
+    .profile-info,
+    .profile-form {
+      padding: 12px;
+    }
+  
+    .info-group p,
+    .form-group input {
+      padding: 8px;
+      font-size: 14px;
+    }
+  
+    .copy-button {
+      padding: 8px;
+      font-size: 12px;
+    }
+  
+    .submit-button {
+      padding: 10px;
+      font-size: 14px;
+    }
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+  }
+  
+  .profile-icon {
+    background: #800080;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 20px;
+  }
+  
+  .profile-info {
+    margin-bottom: 30px;
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .info-group {
+    margin-bottom: 15px;
+  }
+  
+  .info-group label {
+    display: block;
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+  }
+  
+  .info-group p {
+    font-size: 16px;
+    background: #222;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 0;
+  }
+  
+  .copyable-field {
+    display: flex;
+    align-items: center;
+  }
+  
+  .copyable-field p {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+  
+  .copy-button {
+    background: #800080;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+  }
+  
+  .copy-button:hover {
+    background: #6a0dad;
+  }
+  
+  .profile-forms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .profile-forms {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .profile-form {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .profile-form h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+  }
+  
+  .submit-button {
+    width: 100%;
+    padding: 12px;
+    background: #800080;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  
+  .submit-button:hover {
+    background: #6a0dad;
+  }
+  
+  .message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  .message.success {
+    background: #004d00;
+    color: #b3ffb3;
+  }
+  
+  .message.error {
+    background: #4d0000;
+    color: #ffb3b3;
+  }
+
+  /* Add this at the end of the file */
+@media (max-width: 400px) {
+  .profile-container {
+    padding: 20px 10px;
+    margin: 20px auto;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-icon {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .profile-info,
+  .profile-form {
+    padding: 12px;
+  }
+
+  .info-group p,
+  .form-group input {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .copy-button {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .submit-button {
+    padding: 10px;
+    font-size: 14px;
+  }
+}

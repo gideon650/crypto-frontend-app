@@ -1,0 +1,105 @@
+/* Ensure full-page height and black background */
+html, body, #root, .app-container {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: black; /* Make the entire page black */
+  color: white; /* Ensure text is visible */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Make main content take available space & stay black */
+.main-content {
+  flex: 1; /* Pushes navbar down */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black; /* Ensure background is black */
+  width: 100%;
+}
+
+/* Fix Navbar at the Bottom */
+.navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: black;
+  padding: 20px 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 2px solid purple;
+  z-index: 9999;
+  height: 60px; /* Increased navbar height */
+}
+
+/* Navbar Links */
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.navbar a:hover {
+  color: purple;
+}
+
+/* Wallet Container - Responsive Design */
+.wallet-container {
+  background-color: #1a1a1a; /* Dark container background */
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* Button Styling */
+.btn-primary {
+  background-color: #4b0082 !important; /* Dark Purple */
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn-primary:hover {
+  background-color: #350062 !important; /* Slightly darker purple on hover */
+}
+
+/* Responsive Design - Navbar & Layout Adjustments */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    padding: 10px 0;
+  }
+
+  .navbar a {
+    font-size: 14px;
+    padding: 5px;
+  }
+
+  .main-content {
+    flex-direction: column;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .wallet-container {
+    width: 90%; /* Reduce width */
+    padding: 15px; /* Add spacing */
+  }
+
+  .wallet-container input {
+    font-size: 14px;
+  }
+
+  .wallet-container button {
+    width: 100%; /* Make button full width */
+  }
+}
