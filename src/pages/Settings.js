@@ -70,7 +70,7 @@ const Settings = () => {
         </a>
 
         {/* About Button */}
-        <button className="settings-item" onClick={handleAboutClick}>
+        <Link to="/about" className="settings-item">
           <FaBook />
           <div className="settings-item-text">
             <span className="settings-item-title">About</span>
@@ -78,7 +78,7 @@ const Settings = () => {
               {getDescription("Learn more about this app", "About app")}
             </span>
           </div>
-        </button>
+        </Link>
 
         {/* FAQs Button */}
         <button className="settings-item" onClick={handleFAQsClick}>
