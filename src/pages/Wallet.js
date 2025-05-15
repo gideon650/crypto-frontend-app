@@ -559,7 +559,7 @@ useEffect(() => {
               onClick={() => handleDepositMethodChange("naira")} 
               className={depositMethod === "naira" ? "active-button" : ""}
             >
-              Deposit Fiat
+              Deposit p2p
             </button>
             <button 
               onClick={() => handleDepositMethodChange("crypto")} 
@@ -611,10 +611,10 @@ useEffect(() => {
               )}
             </div>
             <div className="form-group">
-              <label>Narration</label>
+              <label>Transaction ID</label>
               <input 
                 type="text" 
-                placeholder="Enter narration" 
+                placeholder="Enter transaction ID" 
                 value={transactionId} 
                 onChange={(e) => setTransactionId(e.target.value)} 
               />
@@ -774,10 +774,10 @@ useEffect(() => {
             </div>
             {/* Transaction ID field under the info box */}
             <div className="form-group">
-              <label>Narration</label>
+              <label>Transaction ID</label>
               <input 
                 type="text" 
-                placeholder="Enter narration" 
+                placeholder="Enter transaction ID" 
                 value={transactionId} 
                 onChange={(e) => setTransactionId(e.target.value)} 
               />
@@ -814,7 +814,7 @@ useEffect(() => {
           <button 
             onClick={() => handleWithdrawMethodChange("BANK")}
             className={withdrawMethod === "BANK" || withdrawMethod === "naira" ? "active-button" : ""}>
-            Bank Transfer
+            p2p
           </button>
         </div>
   
