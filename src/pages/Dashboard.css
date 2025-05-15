@@ -601,3 +601,31 @@
     font-size: 1.1rem;
   }
 }
+
+.user-token-card {
+  position: relative; /* Add this if not already present */
+}
+
+.user-token-change {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.token-price-green {
+  color: #00c853;
+}
+
+.token-price-red {
+  color: #ff3d00;
+}
+
+.price-arrow {
+  font-size: 9px;
+}
