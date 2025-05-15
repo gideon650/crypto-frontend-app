@@ -9,6 +9,7 @@ import Auth from "../pages/Auth";
 import Settings from "../pages/Settings";
 import PrivateRoute from "./PrivateRoute";
 import Profile from "../pages/profile";
+import About from "../pages/about";
 
 const MainLayout = () => {
   const location = useLocation();
@@ -30,6 +31,7 @@ const MainLayout = () => {
         <Route path="/swap" element={<PrivateRoute><Swap /></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
       </Routes>
     </div>
   );
