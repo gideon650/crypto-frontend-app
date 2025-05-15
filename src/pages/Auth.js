@@ -8,8 +8,12 @@ const Auth = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [referralCode, setReferralCode] = useState(""); // Optional
+  const [confirmPassword, setConfirmPassword] = useState(""); // New state
+  const [referralCode, setReferralCode] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // For password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // For confirm password visibility
+  const [showLoginPassword, setShowLoginPassword] = useState(false); // For login password visibility
   const navigate = useNavigate();
 
   const toggleForm = () => {
@@ -17,13 +21,18 @@ const Auth = () => {
     setError("");
   };
 
-  // ✅ MAIN HANDLER FOR FORM SUBMISSION
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous error
+    setError("");
+
+    // Add password confirmation check for signup
+    if (!isLogin && password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
 
     if (isLogin) {
-      // LOGIN FLOW
+      // LOGIN FLOW (unchanged)
       try {
         const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/login/`, {
           method: "POST",
@@ -44,9 +53,8 @@ const Auth = () => {
         console.error("Error during login:", err);
         setError("Something went wrong. Please try again.");
       }
-
     } else {
-      // SIGNUP FLOW
+      // SIGNUP FLOW (unchanged)
       try {
         const registerResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/register/`, {
           method: "POST",
@@ -64,7 +72,6 @@ const Auth = () => {
         if (registerResponse.ok) {
           alert("Signup successful! Logging you in...");
 
-          // ✅ Auto-login after signup
           const loginResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/login/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -80,7 +87,6 @@ const Auth = () => {
           } else {
             setError(loginData.error || "Auto-login failed after registration.");
           }
-
         } else {
           setError(
             registerData.message ||
@@ -135,13 +141,46 @@ const Auth = () => {
               onChange={(e) => setIdentifier(e.target.value)}
             />
           )}
-          <input
-            type="password"
-            placeholder="Password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          
+          {/* Password field with visibility toggle */}
+          <div className="password-input-container">
+            <input
+              type={isLogin ? (showLoginPassword ? "text" : "password") : (showPassword ? "text" : "password")}
+              placeholder="Password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <span 
+              className="password-toggle"
+              onClick={() => isLogin ? setShowLoginPassword(!showLoginPassword) : setShowPassword(!showPassword)}
+            >
+              {isLogin 
+                ? (showLoginPassword ? "👁️" : "👁️‍🗨️") 
+                : (showPassword ? "👁️" : "👁️‍🗨️")
+              }
+            </span>
+          </div>
+          
+          {/* Confirm Password field (only for signup) */}
+          {!isLogin && (
+            <div className="password-input-container">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm Password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <span 
+                className="password-toggle"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
+              </span>
+            </div>
+          )}
+          
           <button type="submit">{isLogin ? "Login" : "Sign Up"}</button>
         </form>
         <p onClick={toggleForm} style={{ cursor: "pointer", marginTop: "10px" }}>
