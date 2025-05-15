@@ -657,7 +657,7 @@ useEffect(() => {
                   <div className="method-buttons">
                     <button onClick={() => handleNetworkSelect("TRC20")}>TRC20</button>
                     <button onClick={() => handleNetworkSelect("ERC20")}>ERC20</button>
-                    <button onClick={() => handleNetworkSelect("BSC")}>BEP20</button>
+                    <button onClick={() => handleNetworkSelect("BEP20")}>BEP20</button>
                     <button onClick={() => handleNetworkSelect("SOL")}>SOL</button>
                   </div>
                 </div>
