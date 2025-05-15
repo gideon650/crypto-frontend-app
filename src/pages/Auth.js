@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaTelegram } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 
@@ -188,6 +189,15 @@ const Auth = () => {
             ? "Don't have an account? Sign Up"
             : "Already have an account? Login"}
         </p>
+        <a 
+          href="https://t.me/Swapview" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="telegram-link"
+        >
+          <FaTelegram className="telegram-icon" />
+          Join us on Telegram
+        </a>
       </div>
     </div>
   );
