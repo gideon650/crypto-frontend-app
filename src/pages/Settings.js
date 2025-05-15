@@ -20,17 +20,7 @@ const Settings = () => {
     return windowWidth <= 360 ? shortDesc : longDesc;
   };
 
-  // Handlers for About and FAQs
-  const handleAboutClick = (e) => {
-    e.preventDefault();
-    alert("About: This app is powered by Amalu. Swap, manage, and grow your crypto portfolio easily.");
-  };
-
-  const handleFAQsClick = (e) => {
-    e.preventDefault();
-    alert("FAQs: Frequently Asked Questions will be available soon.");
-  };
-
+  
   return (
     <div className="settings-container">
       <div className="settings-header">
@@ -49,15 +39,7 @@ const Settings = () => {
           </div>
         </Link>
 
-        <a href="mailto:support@yourapp.com" className="settings-item">
-          <FaQuestionCircle />
-          <div className="settings-item-text">
-            <span className="settings-item-title">Contact Support</span>
-            <span className="settings-item-description">
-              {getDescription("Get help with any issues", "Get help")}
-            </span>
-          </div>
-        </a>
+        
 
         <a href="https://t.me/Swapview" target="_blank" rel="noopener noreferrer" className="settings-item">
           <FaRocketchat />
@@ -81,7 +63,7 @@ const Settings = () => {
         </Link>
 
         {/* FAQs Button */}
-        <button className="settings-item" onClick={handleFAQsClick}>
+        <Link to="/FAQ" className="settings-item">
           <FaRegLightbulb />
           <div className="settings-item-text">
             <span className="settings-item-title">FAQs</span>
@@ -89,7 +71,7 @@ const Settings = () => {
               {getDescription("Frequently Asked Questions", "FAQs")}
             </span>
           </div>
-        </button>
+        </Link>
       </div>
       </div>
   );
