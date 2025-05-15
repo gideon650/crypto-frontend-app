@@ -113,4 +113,40 @@
       font-size: 14px;
     }
   }
+
+/* Add these new styles to your Auth.css file */
+
+/* Password input container */
+.password-input-container {
+  position: relative;
+  width: 100%;
+  margin: 12px 0;
+}
+
+/* Password toggle eye icon */
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  user-select: none;
+  color: #aaa;
+  font-size: 18px;
+}
+
+/* Adjust the password input padding to make space for the eye icon */
+.password-input-container input {
+  padding-right: 40px !important; /* Make space for the eye icon */
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #000;
+  color: #fff;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* Rest of your existing CSS remains the same */
   
