@@ -1,1 +1,122 @@
+.faq-container {
+  max-width: 600px;
+  width: 90%;
+  margin: 30px auto;
+  padding: 30px 20px;
+  background: linear-gradient(145deg, #1a1a1a, #121212);
+  color: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
 
+.faq-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.faq-header h2 {
+  font-size: clamp(22px, 5vw, 26px);
+  font-weight: 600;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #800080, #a04db3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.faq-header p {
+  color: #b3b3b3;
+  font-size: clamp(12px, 3vw, 14px);
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.faq-item {
+  background: rgba(128, 0, 128, 0.15);
+  border-left: 4px solid #800080;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+  background: rgba(128, 0, 128, 0.3);
+}
+
+.faq-question {
+  font-weight: 500;
+  font-size: clamp(14px, 4vw, 16px);
+  margin-bottom: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.faq-question span {
+  color: #800080;
+}
+
+.faq-answer {
+  font-size: clamp(12px, 3vw, 14px);
+  color: #b3b3b3;
+  line-height: 1.5;
+}
+
+.faq-back-button {
+  display: block;
+  margin-top: 30px;
+  padding: 12px 20px;
+  background: rgba(128, 0, 128, 0.3);
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: clamp(14px, 4vw, 16px);
+  transition: all 0.3s ease;
+  border: 1px solid #800080;
+}
+
+.faq-back-button:hover {
+  background: rgba(128, 0, 128, 0.5);
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 480px) {
+  .faq-container {
+    width: 95%;
+    padding: 20px 15px;
+    margin: 20px auto;
+  }
+  
+  .faq-header {
+    margin-bottom: 20px;
+  }
+  
+  .faq-item {
+    padding: 14px 12px;
+  }
+}
+
+@media (max-width: 320px) {
+  .faq-container {
+    padding: 15px 10px;
+  }
+  
+  .faq-item {
+    padding: 12px 10px;
+  }
+}
+
+.email-link {
+  color: #a04db3;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.email-link:hover {
+  color: #800080;
+  text-decoration: underline;
+}
