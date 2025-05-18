@@ -10,7 +10,10 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const trendingRef = useRef(null);
   const navigate = useNavigate();
-  
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -76,11 +79,41 @@ const Dashboard = () => {
     navigate(`/trade?token=${symbol}`);
   };
 
+  // Touch event handlers for horizontal scrolling
+  const handleTouchStart = (e) => {
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - trendingRef.current.offsetLeft);
+    setScrollLeft(trendingRef.current.scrollLeft);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.touches[0].pageX - trendingRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Adjust scroll speed
+    trendingRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   const filteredTrendingTokens = prices.filter(
     (token) =>
       token.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       token.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Sort user tokens by balance (highest to lowest)
+  const sortedUserTokens = portfolio?.tokens
+    ? [...portfolio.tokens].sort((a, b) => {
+        const priceA = prices.find((p) => p.symbol === a.symbol)?.price_usd || 0;
+        const priceB = prices.find((p) => p.symbol === b.symbol)?.price_usd || 0;
+        const valueA = parseFloat(a.balance) * priceA;
+        const valueB = parseFloat(b.balance) * priceB;
+        return valueB - valueA;
+      })
+    : [];
 
   if (loading) {
     return (
@@ -161,7 +194,13 @@ const Dashboard = () => {
             >
               &lt;
             </button>
-            <div className="trending-grid" ref={trendingRef}>
+            <div 
+              className="trending-grid" 
+              ref={trendingRef}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               {filteredTrendingTokens.map((token, index) => (
                 <div
                   key={index}
@@ -185,7 +224,7 @@ const Dashboard = () => {
 
                   <div className={`token-price ${getPriceChangeColor(token)}`}>
                     <span className="price-value">
-                      ${token.price_usd.toFixed(2)}
+                      ${token.price_usd.toFixed(5)}
                     </span>
                     {getPriceChangeArrow(token)}
                     <span
@@ -209,76 +248,74 @@ const Dashboard = () => {
 
         {/* User Tokens Section */}
         <section className="user-tokens-section">
-        <div className="section-header">
-          <h2>TOKENS</h2>
-        </div>
-
-        {portfolio && Array.isArray(portfolio.tokens) && portfolio.tokens.length > 0 ? (
-          <div className="user-tokens-list">
-            {portfolio.tokens.map((token) => {
-              const priceData = prices.find((p) => p.symbol === token.symbol);
-              const tokenValue = priceData
-                ? parseFloat(token.balance) * priceData.price_usd
-                : 0;
-              
-              // Calculate percentage change (assuming token has change and percent_change properties)
-              const percentChange = priceData?.percent_change || 0;
-              const changeType = priceData?.change || "neutral";
-              
-              const getPercentChangeColor = (percent) => {
-                if (percent > 0) return "token-price-green";
-                if (percent < 0) return "token-price-red";
-                return "";
-              };
-
-              const getPriceChangeArrow = (change) => {
-                if (change === "up") return <span className="price-arrow">▲</span>;
-                if (change === "down") return <span className="price-arrow">▼</span>;
-                return null;
-              };
-
-              return (
-                <div
-                  key={token.symbol}
-                  className="user-token-card"
-                  onClick={() => navigate(`/trade?token=${token.symbol}`)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <div className="token-image-wrapper">
-                    <img
-                      src={token.image_url || "/default-token.png"}
-                      alt={token.symbol}
-                      className="token-image"
-                    />
-                  </div>
-                  <div className="user-token-info">
-                    <div className="user-token-name">
-                      {token.name} <span className="token-symbol">{token.symbol}</span>
-                    </div>
-                    <div className="user-token-value">
-                      $
-                      {tokenValue.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </div>
-                  </div>
-                  {/* Add percentage change display on the right */}
-                  <div className={`user-token-change ${getPercentChangeColor(percentChange)}`}>
-                    {getPriceChangeArrow(changeType)}
-                    {percentChange > 0 ? "+" : ""}
-                    {percentChange}%
-                  </div>
-                </div>
-              );
-            })}
+          <div className="section-header">
+            <h2>TOKENS</h2>
           </div>
-        ) : (
-          <div className="empty-tokens">
-            <p>No tokens in your portfolio</p>
-          </div>
-        )}
-      </section>
+
+          {sortedUserTokens.length > 0 ? (
+            <div className="user-tokens-list">
+              {sortedUserTokens.map((token) => {
+                const priceData = prices.find((p) => p.symbol === token.symbol);
+                const tokenValue = priceData
+                  ? parseFloat(token.balance) * priceData.price_usd
+                  : 0;
+                
+                const percentChange = priceData?.percent_change || 0;
+                const changeType = priceData?.change || "neutral";
+                
+                const getPercentChangeColor = (percent) => {
+                  if (percent > 0) return "token-price-green";
+                  if (percent < 0) return "token-price-red";
+                  return "";
+                };
+
+                const getPriceChangeArrow = (change) => {
+                  if (change === "up") return <span className="price-arrow">▲</span>;
+                  if (change === "down") return <span className="price-arrow">▼</span>;
+                  return null;
+                };
+
+                return (
+                  <div
+                    key={token.symbol}
+                    className="user-token-card"
+                    onClick={() => navigate(`/trade?token=${token.symbol}`)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div className="token-image-wrapper">
+                      <img
+                        src={token.image_url || "/default-token.png"}
+                        alt={token.symbol}
+                        className="token-image"
+                      />
+                    </div>
+                    <div className="user-token-info">
+                      <div className="user-token-name">
+                        {token.name} <span className="token-symbol">{token.symbol}</span>
+                      </div>
+                      <div className="user-token-value">
+                        $
+                        {tokenValue.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 5,
+                        })}
+                      </div>
+                    </div>
+                    <div className={`user-token-change ${getPercentChangeColor(percentChange)}`}>
+                      {getPriceChangeArrow(changeType)}
+                      {percentChange > 0 ? "+" : ""}
+                      {percentChange}%
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="empty-tokens">
+              <p>No tokens in your portfolio</p>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );
