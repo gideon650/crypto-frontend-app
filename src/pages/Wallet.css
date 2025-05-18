@@ -5,56 +5,56 @@
   margin: 0 auto;
   color: #fff;
   font-family: 'Inter', sans-serif;
-  }
-  
-  .wallet-container h1 {
+}
+
+.wallet-container h1 {
   font-size: 1.75rem;
   margin-bottom: 1rem;
   text-align: center;
-  }
-  
-  /* Balance section */
-  .wallet-balance-top {
+}
+
+/* Balance section */
+.wallet-balance-top {
   margin-bottom: 20px;
   padding: 15px;
   border-radius: 12px;
   background: rgba(128, 0, 128, 0.1);
   border: 1px solid rgba(128, 0, 128, 0.2);
-  }
-  
-  .balance-info {
+}
+
+.balance-info {
   font-weight: bold;
   text-align: center;
   margin-bottom: 10px;
-  }
-  
-  .wallet-balance-top .balance-info {
+}
+
+.wallet-balance-top .balance-info {
   font-size: 1.75rem;
-  }
-  
-  /* Star rating */
-  .wallet-star-rating {
+}
+
+/* Star rating */
+.wallet-star-rating {
   margin: 8px 0;
   font-size: 18px;
   font-weight: bold;
   text-align: center;
-  }
-  
-  /* Tabs */
-  .wallet-tabs {
+}
+
+/* Tabs */
+.wallet-tabs {
   display: flex;
   gap: 4px;
   margin-bottom: 20px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  }
-  
-  .wallet-tabs::-webkit-scrollbar {
+}
+
+.wallet-tabs::-webkit-scrollbar {
   display: none;
-  }
-  
-  .wallet-tabs button {
+}
+
+.wallet-tabs button {
   flex: 1;
   min-width: fit-content;
   padding: 10px;
@@ -65,31 +65,31 @@
   border-radius: 8px;
   font-size: 0.9rem;
   white-space: nowrap;
-  }
-  
-  .wallet-tabs .active-tab {
+}
+
+.wallet-tabs .active-tab {
   background: #800080;
   color: #fff;
-  }
-  
-  /* Form elements */
-  .selection-container h2,
-  .withdraw-section h2 {
+}
+
+/* Form elements */
+.selection-container h2,
+.withdraw-section h2 {
   font-size: 1.2rem;
   margin: 15px 0 10px;
   text-align: center;
-  }
-  
-  .method-buttons {
+}
+
+.method-buttons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   flex-wrap: wrap;
   gap: 8px;
   width: 100%;
   margin-bottom: 15px;
-  }
-  
-  .method-buttons button {
+}
+
+.method-buttons button {
   width: 100%;
   flex: 1;
   min-width: 120px;
@@ -100,25 +100,25 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.85rem;
-  }
-  
-  .active-button {
+}
+
+.active-button {
   background: #800080 !important;
   border-color: #800080 !important;
-  }
-  
-  .form-group {
+}
+
+.form-group {
   margin-bottom: 15px;
-  }
-  
-  .form-group label {
+}
+
+.form-group label {
   display: block;
   margin-bottom: 6px;
   font-size: 0.9rem;
-  }
-  
-  .form-group input,
-  .form-group select {
+}
+
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 10px;
   background: #181818;
@@ -126,9 +126,9 @@
   color: #fff;
   border-radius: 8px;
   font-size: 0.9rem;
-  }
-  
-  .submit-button {
+}
+
+.submit-button {
   width: 100%;
   padding: 12px;
   background: #800080;
@@ -138,15 +138,15 @@
   cursor: pointer;
   font-size: 1rem;
   margin-top: 10px;
-  }
-  
-  .submit-button:disabled {
+}
+
+.submit-button:disabled {
   background: #555;
   cursor: not-allowed;
-  }
-  
-  /* Copy box styling */
-  .copy-box {
+}
+
+/* Copy box styling */
+.copy-box {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -155,9 +155,9 @@
   border: 1px solid #333;
   border-radius: 8px;
   margin-bottom: 10px;
-  }
-  
-  .copy-box button {
+}
+
+.copy-box button {
   background: #800080;
   border: none;
   color: #fff;
@@ -165,10 +165,10 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.8rem;
-  }
-  
-  /* Wallet address container */
-  .copy-address-box {
+}
+
+/* Wallet address container */
+.copy-address-box {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -178,17 +178,17 @@
   border-radius: 8px;
   margin-bottom: 15px;
   overflow: hidden;
-  }
-  
-  .address-text {
+}
+
+.address-text {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.85rem;
-  }
-  
-  .copy-address-button {
+}
+
+.copy-address-button {
   background: #800080;
   border: none;
   color: #fff;
@@ -197,15 +197,15 @@
   cursor: pointer;
   font-size: 0.8rem;
   white-space: nowrap;
-  }
-  
-  /* Transaction history styling */
-  .transaction-history h3 {
+}
+
+/* Transaction history styling */
+.transaction-history h3 {
   margin: 15px 0 10px;
   font-size: 1.1rem;
-  }
-  
-  .trade-group-toggle {
+}
+
+.trade-group-toggle {
   width: 100%;
   text-align: left;
   padding: 10px;
@@ -216,101 +216,103 @@
   cursor: pointer;
   margin-bottom: 10px;
   font-size: 0.9rem;
-  }
-  
-  .transaction-table-container {
+}
+
+.transaction-table-container {
   overflow-x: auto;
   margin-bottom: 15px;
   -webkit-overflow-scrolling: touch;
-  }
-  
-  .transaction-table {
   width: 100%;
+}
+
+.transaction-table {
+  width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
   border-spacing: 0;
   font-size: 0.85rem;
-  }
-  
-  .transaction-table th,
-  .transaction-table td {
+}
+
+.transaction-table th,
+.transaction-table td {
   padding: 8px;
   text-align: left;
   border-bottom: 1px solid #333;
-  }
-  
-  .transaction-table th {
+}
+
+.transaction-table th {
   font-weight: bold;
   background-color: #181818;
-  }
-  
-  /* Status badges */
-  .status-badge {
+}
+
+/* Status badges */
+.status-badge {
   display: inline-block;
   padding: 3px 8px;
   border-radius: 4px;
   font-size: 0.8rem;
   font-weight: 500;
-  }
-  
-  .status-badge.completed,
-  .status-badge.approved {
+}
+
+.status-badge.completed,
+.status-badge.approved {
   background-color: rgba(0, 128, 0, 0.2);
   color: #00ff00;
-  }
-  
-  .status-badge.pending {
+}
+
+.status-badge.pending {
   background-color: rgba(255, 165, 0, 0.2);
   color: #ffa500;
-  }
-  
-  .status-badge.rejected,
-  .status-badge.failed {
+}
+
+.status-badge.rejected,
+.status-badge.failed {
   background-color: rgba(255, 0, 0, 0.2);
   color: #ff6666;
-  }
-  
-  /* Referral section */
-  .referral-section {
+}
+
+/* Referral section */
+.referral-section {
   padding: 10px;
-  }
-  
-  .referral-info {
+}
+
+.referral-info {
   margin-top: 10px;
-  }
-  
-  .referral-code-box {
+}
+
+.referral-code-box {
   margin: 15px 0;
-  }
-  
-  .referral-stats {
+}
+
+.referral-stats {
   margin-top: 20px;
-  }
-  
-  .referral-stats h3 {
+}
+
+.referral-stats h3 {
   font-size: 1.1rem;
   margin-bottom: 10px;
-  }
-  
-  .bonus-message {
+}
+
+.bonus-message {
   color: #00ff00;
   font-weight: bold;
-  }
-  
-  /* QR code section */
-  .qrcode-container {
+}
+
+/* QR code section */
+.qrcode-container {
   display: flex;
   justify-content: center;
   margin: 15px 0;
-  }
-  
-  .qrcode-header {
+}
+
+.qrcode-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 15px;
-  }
-  
-  .back-button {
+}
+
+.back-button {
   padding: 6px 12px;
   background: #181818;
   border: 1px solid #333;
@@ -318,19 +320,19 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.8rem;
-  }
-  
-  .network-info {
+}
+
+.network-info {
   font-size: 0.9rem;
-  }
-  
-  .network-name {
+}
+
+.network-name {
   font-weight: bold;
   color: #800080;
-  }
-  
-  /* Popup styling */
-  .wallet-popup-overlay {
+}
+
+/* Popup styling */
+.wallet-popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -341,42 +343,42 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  }
-  
-  .wallet-popup {
+}
+
+.wallet-popup {
   background: #181818;
   border-radius: 12px;
   padding: 20px;
   width: 90%;
   max-width: 400px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  }
-  
-  .wallet-popup h3 {
+}
+
+.wallet-popup h3 {
   margin-top: 0;
   font-size: 1.2rem;
-  }
-  
-  /* Message styles */
-  .wallet-message {
+}
+
+/* Message styles */
+.wallet-message {
   padding: 10px;
   margin: 15px 0;
   border-radius: 8px;
   text-align: center;
   font-size: 0.9rem;
-  }
-  
-  .wallet-message.success {
+}
+
+.wallet-message.success {
   background: rgba(0, 128, 0, 0.2);
   color: #00ff00;
-  }
-  
-  .wallet-message.error {
+}
+
+.wallet-message.error {
   background: rgba(255, 0, 0, 0.2);
   color: #ff6666;
-  }
+}
 
-  /* Style for the Select Network button */
+/* Style for the Select Network button */
 .full-width-button {
   background: #181818 !important;
   border: 1px solid #333 !important;
@@ -398,31 +400,31 @@
   background: #800080 !important;
   border-color: #800080 !important;
 }
-  
-  /* Bank deposit panel /
-  .wallet-container [style="background: rgba(128,0,128,0.10)"] {
+
+/* Bank deposit panel */
+.wallet-container [style="background: rgba(128,0,128,0.10)"] {
   padding: 1.2rem 1rem !important;
   margin: 1rem 0 !important;
   font-size: 0.9rem !important;
-  }
-  
-  .wallet-container [style*="background: rgba(128,0,128,0.10)"] [style*="marginBottom: 1.1rem"] {
+}
+
+.wallet-container [style*="background: rgba(128,0,128,0.10)"] [style*="marginBottom: 1.1rem"] {
   font-size: 0.85rem !important;
   line-height: 1.5 !important;
   margin-bottom: 0.8rem !important;
-  }
-  
-  .wallet-container [style*="background: rgba(128,0,128,0.10)"] [style*="fontSize: 1.7rem"] {
+}
+
+.wallet-container [style*="background: rgba(128,0,128,0.10)"] [style*="fontSize: 1.7rem"] {
   font-size: 1.4rem !important;
-  }
-  
-  .wallet-container [style*="background: rgba(128,0,128,0.10)"] [style*="fontSize: 2rem"] {
+}
+
+.wallet-container [style*="background: rgba(128,0,128,0.10)"] [style*="fontSize: 2rem"] {
   font-size: 1.5rem !important;
   padding: 6px 16px !important;
-  }
-  
-  /* Warnings and info text */
-  .deposit-warning {
+}
+
+/* Warnings and info text */
+.deposit-warning {
   padding: 15px;
   background: rgba(255, 165, 0, 0.1);
   border-radius: 8px;
@@ -430,80 +432,107 @@
   font-size: 0.8rem;
   line-height: 1.4;
   border: 1px solid rgba(255, 165, 0, 0.3);
-  }
-  
-  .deposit-info-text {
+}
+
+.deposit-info-text {
   margin: 15px 0;
   font-size: 0.85rem;
   line-height: 1.5;
-  }
-  
-  .deposit-info-text span {
+}
+
+.deposit-info-text span {
   color: #800080;
   font-weight: bold;
-  }
-  
-  /* Media queries for responsive design */
-  @media (max-width: 767px) {
+}
+
+/* Media queries for responsive design */
+@media (max-width: 767px) {
   .wallet-container {
-  padding: 0.75rem;
+    padding: 0.75rem;
   }
-  
+
   .wallet-container h1 {
-  font-size: 1.5rem;
-  margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
   }
-  
+
   .wallet-balance-top .balance-info {
-  font-size: 1.5rem;
+    font-size: 1.5rem;
   }
-  
+
   .wallet-star-rating {
-  font-size: 16px;
+    font-size: 16px;
   }
-  
+
   .method-buttons button {
     min-width: calc(50% - 10px); /* Half width minus gap */
   }
-}
-  
+
   .wallet-tabs button {
-  font-size: 0.8rem;
-  padding: 8px;
+    font-size: 0.8rem;
+    padding: 8px;
   }
-  
+
   .selection-container h2,
   .withdraw-section h2 {
-  font-size: 1.1rem;
+    font-size: 1.1rem;
+  }
+
+  .copy-box button,
+  .copy-address-button {
+    padding: 6px 8px; /* Reduced padding */
+    min-width: 60px; /* Fixed minimum width */
+    font-size: 0.7rem; /* Slightly smaller font */
   }
   
+  /* For the wallet address copy button specifically */
+  .wallet-address-container .copy-address-button {
+    min-width: 70px; /* Slightly wider for address copy */
+  }
+
+  /* Transaction table adjustments for mobile */
+  .transaction-table {
+    font-size: 0.8rem;
+  }
   
-  /* Extra small devices */
-  @media (max-width: 374px) {
+  .transaction-table th, 
+  .transaction-table td {
+    padding: 6px 4px !important;
+  }
+  
+  .status-badge {
+    padding: 3px 6px !important;
+    font-size: 0.7rem !important;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 374px) {
   .wallet-container h1 {
-  font-size: 1.3rem;
+    font-size: 1.3rem;
+  }
+
+  .wallet-balance-top .balance-info {
+    font-size: 1.3rem;
+  }
+
+  /* Transaction table adjustments for very small screens */
+  .transaction-table {
+    font-size: 0.75rem;
   }
   
-  .wallet-balance-top .balance-info {
-  font-size: 1.3rem;
+  .transaction-table th,
+  .transaction-table td {
+    padding: 4px 2px !important;
   }
+  
+  .status-badge {
+    padding: 2px 4px !important;
+    font-size: 0.65rem !important;
   }
+}
 
-  @media (max-width: 767px) {
-    .copy-box button,
-    .copy-address-button {
-      padding: 6px 8px; /* Reduced padding */
-      min-width: 60px; /* Fixed minimum width */
-      font-size: 0.7rem; /* Slightly smaller font */
-    }
-    
-    /* For the wallet address copy button specifically */
-    .wallet-address-container .copy-address-button {
-      min-width: 70px; /* Slightly wider for address copy */
-    }
-  }
-
-  /* Mobile-specific copy button styles */
+/* Mobile-specific copy button styles */
 @media (max-width: 767px) {
   /* For the small copy buttons (like on referral code) */
   .copy-box button {
@@ -531,7 +560,6 @@
   }
 }
 
-
 @media (max-width: 767px) {
   .wallet-address-container {
     padding: 0.5rem;
@@ -543,182 +571,6 @@
   
   .copy-address-box {
     padding: 8px;
-  }
-}
-
-/* Add this to your Wallet.css file */
-@media (max-width: 767px) {
-  /* Make the Bybit copy section more compact */
-  .deposit-form .copy-box {
-    padding: 8px 10px;
-  }
-  
-  .deposit-form .copy-box button {
-    min-width: 50px;  /* Reduced from default */
-    padding: 4px 6px;
-    font-size: 0.7rem;
-    margin-left: 6px;
-  }
-  
-  /* Adjust the Bybit email display */
-  .deposit-form .copy-box > span {
-    font-size: 0.8rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  /* Make the form inputs more compact */
-  .deposit-form .form-group {
-    margin-bottom: 12px;
-  }
-  
-  .deposit-form .form-group label {
-    font-size: 0.85rem;
-    margin-bottom: 4px;
-  }
-  
-  .deposit-form input[type="number"],
-  .deposit-form input[type="text"] {
-    padding: 8px 10px;
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 400px) {
-  .deposit-form .copy-box button {
-    min-width: 40px;
-    padding: 3px 5px;
-  }
-  
-  .deposit-form .copy-box > span {
-    font-size: 0.75rem;
-  }
-}
-
-/* Add this to your existing Wallet.css */
-@media (max-width: 767px) {
-  /* Specific styles for the Bybit copy section */
-  .deposit-form .copy-box {
-    padding: 8px;
-    display: flex;
-    align-items: center;
-  }
-  
-  .deposit-form .copy-box > span {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 0.8rem;
-  }
-  
-  .deposit-form .copy-box button {
-    min-width: 50px !important;
-    width: auto !important;
-    padding: 4px 8px !important;
-    font-size: 0.7rem !important;
-    margin-left: 8px;
-    flex-shrink: 0;
-  }
-}
-
-/* For very small screens */
-@media (max-width: 400px) {
-  .deposit-form .copy-box button {
-    min-width: 40px !important;
-    padding: 3px 6px !important;
-  }
-  
-  .deposit-form .copy-box > span {
-    font-size: 0.75rem;
-  }
-}
-
-/* Add this to your Wallet.css */
-@media (max-width: 767px) {
-  /* Wallet address container adjustments */
-  .wallet-address-container {
-    padding: 0.5rem;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  /* Copy address box layout fix */
-  .copy-address-box {
-    display: flex;
-    flex-direction: column; /* Stack vertically on mobile */
-    gap: 8px;
-    padding: 8px;
-    background: #181818;
-    border-radius: 8px;
-    margin-bottom: 15px;
-  }
-
-  /* Address text styling */
-  .address-text {
-    font-size: 0.75rem;
-    word-break: break-all; /* Break long addresses */
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-  }
-
-  /* Copy button styling */
-  .copy-address-button {
-    width: 100%; /* Full width button */
-    padding: 8px;
-    font-size: 0.8rem;
-    background: #800080;
-    border: none;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-}
-
-/* Desktop styles - ensure they don't affect mobile */
-@media (min-width: 768px) {
-  .copy-address-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .copy-address-button {
-    flex-shrink: 0;
-  }
-}
-
-/* Add this to your Wallet.css */
-@media (max-width: 767px) {
-  /* Make the copy button more compact */
-  .copy-address-button {
-    min-width: 70px !important;  /* Reduced from default */
-    width: auto !important;
-    padding: 6px 8px !important;
-    font-size: 0.75rem !important;
-    margin-left: 8px;
-  }
-
-  /* Adjust the address container to accommodate smaller button */
-  .copy-address-box {
-    padding: 8px 10px;
-  }
-
-  /* Make address text take more space */
-  .address-text {
-    flex: 1;
-    min-width: 0; /* Allows text truncation */
-    font-size: 0.7rem;
-  }
-}
-
-/* For very small screens */
-@media (max-width: 400px) {
-  .copy-address-button {
-    min-width: 60px !important;
-    padding: 5px 6px !important;
-    font-size: 0.7rem !important;
   }
 }
 
@@ -965,6 +817,7 @@
 
 .transaction-table {
   width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
   font-size: 0.85rem;
 }
@@ -1016,107 +869,7 @@
   background: rgba(128, 0, 128, 0.2);
 }
 
-/* Responsive adjustments */
-@media (max-width: 767px) {
-  .transaction-table th, 
-  .transaction-table td {
-    padding: 8px 6px;
-    font-size: 0.8rem;
-  }
-  
-  .transaction-history h3 {
-    font-size: 1rem;
-    margin: 15px 0 8px;
-  }
-}
-
-/* Add these styles to your existing Wallet.css */
-/* Very small screen optimizations (under 400px) */
-@media (max-width: 400px) {
-  .transaction-table {
-    font-size: 0.75rem;
-  }
-  
-  .transaction-table th,
-  .transaction-table td {
-    padding: 6px 4px;
-  }
-  
-  .transaction-table th {
-    font-size: 0.7rem;
-    padding: 8px 4px;
-  }
-  
-  .status-badge {
-    padding: 2px 6px;
-    font-size: 0.65rem;
-  }
-  
-  .trade-group-toggle {
-    padding: 10px;
-    font-size: 0.8rem;
-  }
-  
-  .transaction-history h3 {
-    font-size: 0.9rem;
-    margin: 12px 0 6px;
-  }
-  
-  /* Compact table layout */
-  .transaction-table td:nth-child(1), /* Date */
-  .transaction-table th:nth-child(1) {
-    min-width: 70px;
-  }
-  
-  .transaction-table td:nth-child(2), /* Amount */
-  .transaction-table th:nth-child(2) {
-    min-width: 60px;
-  }
-  
-  .transaction-table td:nth-child(3), /* Method */
-  .transaction-table th:nth-child(3) {
-    min-width: 50px;
-  }
-  
-  .transaction-table td:nth-child(4), /* Status */
-  .transaction-table th:nth-child(4) {
-    min-width: 60px;
-  }
-  
-  /* Hide table headers and show labels instead */
-  .transaction-table thead {
-    display: none;
-  }
-  
-  .transaction-table tbody tr {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-    border: 1px solid rgba(128, 0, 128, 0.2);
-    border-radius: 6px;
-    padding: 8px;
-  }
-  
-  .transaction-table tbody tr td {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    border-bottom: none;
-  }
-  
-  .transaction-table tbody tr td::before {
-    content: attr(data-label);
-    font-weight: 500;
-    color: #800080;
-    margin-right: 10px;
-    font-size: 0.7rem;
-  }
-}
-
-/* Add these styles to your Wallet.css file */
-
 /* Enhanced mobile responsive popup styles */
-
 .wallet-popup-overlay {
   position: fixed;
   top: 0;
@@ -1220,8 +973,7 @@
   }
 }
 
-
-/* Add this to your Wallet.css file */
+/* Crypto deposit options */
 .crypto-deposit-options {
   margin-bottom: 20px;
 }
@@ -1258,4 +1010,174 @@
     padding: 12px 8px;
     font-size: 0.9rem;
   }
+}
+
+/* Ensure table headers remain visible on all screens */
+.transaction-table thead {
+  display: table-header-group !important;
+}
+
+/* Ensure table rows remain as rows on all screens */
+.transaction-table tbody tr {
+  display: table-row !important;
+}
+
+/* Ensure cells remain as cells on all screens */
+.transaction-table td {
+  display: table-cell !important;
+  padding: 8px !important;
+  border-bottom: 1px solid #333 !important;
+}
+
+/* Remove the ::before pseudo-elements */
+.transaction-table td::before {
+  content: none !important;
+}
+
+.qrcode-image img {
+  width: 200px;
+  height: 200px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+  border: 2px solid #800080;
+  box-shadow: 0 4px 8px rgba(128, 0, 128, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.qrcode-image img:hover {
+  transform: scale(1.05);
+}
+
+.qrcode-container {
+  background: rgba(128, 0, 128, 0.05);
+  padding: 20px;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 767px) {
+  .copy-address-box {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .address-text {
+    width: 100%;
+    text-align: center;
+    padding: 8px;
+    background: rgba(128, 0, 128, 0.1);
+    border-radius: 4px;
+    font-size: 0.75rem; /* Slightly smaller font size */
+  }
+
+  .copy-address-button {
+    width: auto; /* Changed from 100% to auto */
+    margin: 0 auto; /* Center the button */
+    padding: 6px 16px; /* Reduced padding */
+    font-size: 0.7rem; /* Smaller font size */
+    height: 28px; /* Fixed height */
+    min-width: 100px; /* Minimum width */
+    max-width: 150px; /* Maximum width */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wallet-address-container h3 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 374px) {
+  .copy-address-button {
+    height: 24px; /* Even smaller height */
+    padding: 4px 12px; /* Smaller padding */
+    font-size: 0.65rem; /* Smaller font */
+    min-width: 80px; /* Smaller minimum width */
+  }
+}
+
+/* Add these styles to your Wallet.css file */
+
+/* Transaction table mobile adjustments */
+@media (max-width: 767px) {
+  .transaction-table {
+    min-width: 100% !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .transaction-table th,
+  .transaction-table td {
+    padding: 6px 4px !important;
+    white-space: nowrap;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .transaction-table th {
+    font-size: 0.75rem !important;
+  }
+  
+  .status-badge {
+    padding: 3px 6px !important;
+    font-size: 0.7rem !important;
+  }
+  
+  .transaction-table-container {
+    width: calc(100vw - 30px);
+    margin-left: -15px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 374px) {
+  .transaction-table {
+    font-size: 0.75rem !important;
+  }
+  
+  .transaction-table th,
+  .transaction-table td {
+    padding: 4px 2px !important;
+    max-width: 100px;
+  }
+  
+  .status-badge {
+    padding: 2px 4px !important;
+    font-size: 0.65rem !important;
+  }
+}
+
+/* Add horizontal scroll indicator for mobile */
+.transaction-table-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.transaction-table-container::-webkit-scrollbar-thumb {
+  background-color: rgba(128, 0, 128, 0.3);
+  border-radius: 2px;
+}
+
+/* Make the toggle buttons full width on mobile */
+@media (max-width: 767px) {
+  .trade-group-toggle {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+.amount-error-message {
+  color: #ff0000;
+  font-weight: bold;
+  margin-top: 5px;
+  font-size: 0.9rem;
 }
