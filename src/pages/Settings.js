@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaQuestionCircle, FaRocketchat, FaUserCircle, FaInfoCircle, FaBook, FaRegLightbulb } from "react-icons/fa";
+import { FaQuestionCircle, FaRocketchat, FaUserCircle, FaInfoCircle, FaBook, FaRegLightbulb, FaEnvelope } from "react-icons/fa";
 import "./Settings.css";
 
 const Settings = () => {
@@ -20,7 +20,6 @@ const Settings = () => {
     return windowWidth <= 360 ? shortDesc : longDesc;
   };
 
-  
   return (
     <div className="settings-container">
       <div className="settings-header">
@@ -38,8 +37,6 @@ const Settings = () => {
             </span>
           </div>
         </Link>
-
-        
 
         <a href="https://t.me/Swapview" target="_blank" rel="noopener noreferrer" className="settings-item">
           <FaRocketchat />
@@ -72,8 +69,19 @@ const Settings = () => {
             </span>
           </div>
         </Link>
+
+        {/* New Contact Us Button */}
+        <a href="mailto:support@swapviewapp.site" className="settings-item">
+          <FaEnvelope />
+          <div className="settings-item-text">
+            <span className="settings-item-title">Contact Us</span>
+            <span className="settings-item-description">
+              {getDescription("Reach out to our support team", "Email support")}
+            </span>
+          </div>
+        </a>
       </div>
-      </div>
+    </div>
   );
 };
 
