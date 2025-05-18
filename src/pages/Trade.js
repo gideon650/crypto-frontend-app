@@ -35,20 +35,17 @@ const Trade = () => {
     );
   });
 
-  // Handle token from URL parameter
-// Handle token from URL parameter - only run on mount or when URL token changes
-useEffect(() => {
-  const tokenFromUrl = searchParams.get('token');
-  if (tokenFromUrl && assets.length > 0) {
-    const assetExists = assets.some(asset => asset.symbol === tokenFromUrl);
-    if (assetExists) {
-      setSelectedAsset(tokenFromUrl);
-      fetchCandlestickData(tokenFromUrl, interval);
+  useEffect(() => {
+    const tokenFromUrl = searchParams.get('token');
+    if (tokenFromUrl && assets.length > 0) {
+      const assetExists = assets.some(asset => asset.symbol === tokenFromUrl);
+      if (assetExists) {
+        setSelectedAsset(tokenFromUrl);
+        fetchCandlestickData(tokenFromUrl, interval);
+      }
     }
-  }
-}, [assets, searchParams]); // Removed interval from dependencies
+  }, [assets, searchParams, interval]);
 
-  // Fetch Assets
   const fetchAssets = async () => {
     try {
       setLoading(true);
@@ -62,7 +59,6 @@ useEffect(() => {
         setSelectedAsset(assetList[0].symbol);
         fetchCandlestickData(assetList[0].symbol, interval);
       }
-
       setLoading(false);
     } catch (error) {
       console.error("Error fetching assets:", error);
@@ -71,7 +67,6 @@ useEffect(() => {
     }
   };
 
-  // Fetch Candlestick Data
   const fetchCandlestickData = async (symbol, intervalParam = interval) => {
     if (!symbol) return;
     try {
@@ -94,29 +89,25 @@ useEffect(() => {
     }
   };
 
-  // Handle Asset Change
-  // Handle Asset Change
-const handleAssetChange = async (symbol) => {
-  setSelectedAsset(symbol);
-  setIsDropdownOpen(false);
-  setSearchTerm("");
-  if (symbol) {
-    await fetchCandlestickData(symbol, interval);
-  } else {
-    setCandlestickData([]);
-  }
-};
+  const handleAssetChange = async (symbol) => {
+    setSelectedAsset(symbol);
+    setIsDropdownOpen(false);
+    setSearchTerm("");
+    if (symbol) {
+      await fetchCandlestickData(symbol, interval);
+    } else {
+      setCandlestickData([]);
+    }
+  };
 
-  // Handle Interval Change
-  // Handle Interval Change
-const handleIntervalChange = async (e) => {
-  const newInterval = e.target.value;
-  setIntervalState(newInterval);
-  if (selectedAsset) {
-    await fetchCandlestickData(selectedAsset, newInterval);
-  }
-};
-  // Handle Buy/Sell
+  const handleIntervalChange = async (e) => {
+    const newInterval = e.target.value;
+    setIntervalState(newInterval);
+    if (selectedAsset) {
+      await fetchCandlestickData(selectedAsset, newInterval);
+    }
+  };
+
   const handleTrade = async (type) => {
     if (!selectedAsset || !amount) {
       alert("Please select an asset and enter an amount.");
@@ -155,7 +146,6 @@ const handleIntervalChange = async (e) => {
     }
   };
 
-  // Clear and destroy chart when component unmounts or before re-creating
   const cleanupChart = () => {
     if (chartInstanceRef.current) {
       chartInstanceRef.current.remove();
@@ -164,7 +154,6 @@ const handleIntervalChange = async (e) => {
     candleSeriesRef.current = null;
   };
 
-  // Handle resize
   const handleChartResize = () => {
     if (chartInstanceRef.current && chartContainerRef.current) {
       const { clientWidth, clientHeight } = chartContainerRef.current;
@@ -176,7 +165,26 @@ const handleIntervalChange = async (e) => {
     }
   };
 
-  // Render Chart
+  const getTickSize = (price) => {
+    if (price < 0.0001) return 0.00001;
+    if (price < 0.001) return 0.0001;
+    if (price < 0.01) return 0.001;
+    if (price < 0.1) return 0.01;
+    if (price < 1) return 0.1;
+    if (price < 10) return 0.5;
+    return 1;
+  };
+
+  const getPrecision = (price) => {
+    if (price < 0.0001) return 8;
+    if (price < 0.001) return 6;
+    if (price < 0.01) return 5;
+    if (price < 0.1) return 4;
+    if (price < 1) return 3;
+    if (price < 10) return 2;
+    return 1;
+  };
+
   useEffect(() => {
     cleanupChart();
 
@@ -189,42 +197,96 @@ const handleIntervalChange = async (e) => {
     const height = container.clientHeight || 
       (window.innerWidth <= 480 ? 250 : window.innerWidth <= 640 ? 300 : 400);
 
+    const prices = candlestickData.flatMap(item => [
+      parseFloat(item.open), 
+      parseFloat(item.high), 
+      parseFloat(item.low), 
+      parseFloat(item.close)
+    ]);
+
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    const padding = (maxPrice - minPrice) * 0.1;
+
+    const priceFormatter = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: getPrecision(maxPrice),
+      maximumFractionDigits: getPrecision(maxPrice),
+    });
+
     const chart = createChart(container, {
       width: width,
       height: height,
-      layout: { 
-        background: { color: "#12151C" }, 
+      layout: {
+        background: { color: "#12151C" },
         textColor: "#D9D9D9",
         fontSize: 12
       },
-      grid: { 
-        vertLines: { color: "rgba(42, 46, 57, 0.8)" },
-        horzLines: { color: "rgba(42, 46, 57, 0.8)" }
+      grid: {
+        vertLines: { 
+          color: 'rgba(42, 46, 57, 0.2)',
+          style: 1
+        },
+        horzLines: { 
+          color: 'rgba(42, 46, 57, 0.2)',
+          style: 1 
+        }
       },
-      crosshair: { 
+      crosshair: {
         mode: 1,
-        vertLine: { color: "#758696", width: 1, style: 1, labelBackgroundColor: "#1E2530" },
-        horzLine: { color: "#758696", width: 1, style: 1, labelBackgroundColor: "#1E2530" }
+        vertLine: {
+          color: "#758696",
+          width: 1,
+          style: 1,
+          labelBackgroundColor: "#1E2530"
+        },
+        horzLine: {
+          color: "#758696",
+          width: 1,
+          style: 1,
+          labelBackgroundColor: "#1E2530"
+        }
       },
-      timeScale: { 
-        borderColor: "rgba(42, 46, 57, 0.8)",
+      timeScale: {
         timeVisible: true,
         secondsVisible: false,
-        barSpacing: 10
+        borderColor: "rgba(42, 46, 57, 0.8)",
+        barSpacing: 12,
+        minBarSpacing: 8,
+        rightOffset: 12,
+        fixLeftEdge: true,
+        fixRightEdge: true,
+        lockVisibleTimeRangeOnResize: true,
+        tickMarkFormatter: (time) => {
+          const date = new Date(time * 1000);
+          return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
       },
-      rightPriceScale: { 
+      rightPriceScale: {
         borderColor: "rgba(42, 46, 57, 0.8)",
         scaleMargins: {
           top: 0.1,
-          bottom: 0.1,
+          bottom: 0.1
         },
-        visible: true,
-        priceFormatter: (price) => {
-          return Math.round(price).toString();
-        },
+        autoScale: true,
         mode: 1,
+        alignLabels: true,
+        borderVisible: true,
+        ticksVisible: true,
+        entireTextOnly: true
       },
+      handleScroll: {
+        mouseWheel: true,
+        pressedMouseMove: true,
+        horzTouchDrag: true,
+        vertTouchDrag: true
+      },
+      handleScale: {
+        axisPressedMouseMove: true,
+        mouseWheel: true,
+        pinch: true
+      }
     });
+
     chartInstanceRef.current = chart;
 
     const candleSeries = chart.addCandlestickSeries({
@@ -234,6 +296,16 @@ const handleIntervalChange = async (e) => {
       borderDownColor: '#FF5252',
       wickUpColor: '#4CAF50',
       wickDownColor: '#FF5252',
+      priceFormat: {
+        type: 'custom',
+        formatter: price => priceFormatter.format(price),
+        minMove: getTickSize(maxPrice)
+      },
+      lastValueVisible: true,
+      priceLineVisible: true,
+      priceLineWidth: 1,
+      priceLineColor: '#4CAF50',
+      priceLineStyle: 2
     });
 
     candleSeriesRef.current = candleSeries;
@@ -253,8 +325,25 @@ const handleIntervalChange = async (e) => {
       !isNaN(item.low) && 
       !isNaN(item.close)
     );
+
     candleSeries.setData(validData);
-    chart.timeScale().fitContent();
+
+    if (validData.length > 0) {
+      const timeRange = {
+        from: validData[0].time,
+        to: validData[validData.length - 1].time
+      };
+      chart.timeScale().setVisibleRange(timeRange);
+    }
+
+    candleSeries.applyOptions({
+      autoscaleInfoProvider: () => ({
+        priceRange: {
+          minValue: minPrice - padding,
+          maxValue: maxPrice + padding
+        }
+      })
+    });
 
     window.addEventListener('resize', handleChartResize);
 
@@ -264,14 +353,26 @@ const handleIntervalChange = async (e) => {
     };
   }, [candlestickData]);
 
-  // Set up polling for new data
- // Set up polling for new data
-useEffect(() => {
-  if (!selectedAsset) return;
+  useEffect(() => {
+    if (!selectedAsset) return;
 
-  let isMounted = true;
-  const intervalId = setInterval(async () => {
-    if (candleSeriesRef.current && isMounted) {
+    let isMounted = true;
+    
+    const getPollingInterval = () => {
+      switch(interval) {
+        case '1min': return 10000;
+        case '5min': return 30000;
+        case '15min': return 60000;
+        case '1hr': return 300000;
+        default: return 60000;
+      }
+    };
+    
+    const pollingInterval = getPollingInterval();
+    
+    const fetchLatestData = async () => {
+      if (!candleSeriesRef.current || !isMounted) return;
+      
       try {
         const token = localStorage.getItem("token");
         const config = { headers: { Authorization: `Token ${token}` } };
@@ -281,37 +382,44 @@ useEffect(() => {
         );
 
         if (response.data.status === "success" && Array.isArray(response.data.chart) && isMounted) {
-          // Only update the series data, don't update the full state
-          const newData = response.data.chart.map(item => ({
-            time: item.time,
-            open: item.open,
-            high: item.high,
-            low: item.low,
-            close: item.close
-          }));
-          candleSeriesRef.current.update(newData[newData.length - 1]); // Only update the latest candle
+          const newData = response.data.chart[response.data.chart.length - 1];
+          
+          const formattedPoint = {
+            time: typeof newData.time === 'number' ? newData.time : parseInt(newData.time),
+            open: parseFloat(newData.open),
+            high: parseFloat(newData.high),
+            low: parseFloat(newData.low),
+            close: parseFloat(newData.close)
+          };
+          
+          if (!isNaN(formattedPoint.time) && 
+              !isNaN(formattedPoint.open) && 
+              !isNaN(formattedPoint.high) && 
+              !isNaN(formattedPoint.low) && 
+              !isNaN(formattedPoint.close)) {
+            candleSeriesRef.current.update(formattedPoint);
+          }
         }
       } catch (error) {
         console.error("Error fetching updated candlestick data:", error);
       }
-    }
-  }, 5000);
+    };
 
-  return () => {
-    isMounted = false;
-    clearInterval(intervalId);
-  };
-}, [selectedAsset, interval]);
+    fetchLatestData();
+    const intervalId = setInterval(fetchLatestData, pollingInterval);
 
-  // Fetch assets once on load
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
+  }, [selectedAsset, interval]);
+
   useEffect(() => {
     fetchAssets();
-    // eslint-disable-next-line
   }, []);
 
-  // Find the selected asset object
   const selectedAssetObj = assets.find(asset => asset.symbol === selectedAsset);
-  
+
   return (
     <div className="trade-container">
       <div className="trade-header">
@@ -328,9 +436,7 @@ useEffect(() => {
 
       <div className="content-wrapper">
         <div className="main-content">
-          {/* Chart Section */}
           <div className="chart-section">
-            {/* Asset & Interval Selection */}
             <div className="asset-selector-container">
               <div className="asset-select">
                 <label htmlFor="asset-select">Select Token:</label>
@@ -393,7 +499,7 @@ useEffect(() => {
                   )}
                 </div>
               </div>
-              {/* Interval Selector */}
+              
               <div className="interval-select">
                 <label htmlFor="interval-select">Interval:</label>
                 <select
@@ -407,15 +513,20 @@ useEffect(() => {
                   ))}
                 </select>
               </div>
+
               {selectedAssetObj && (
                 <div className="current-price">
                   <span className="price-label">Current Price:</span>
-                  <span className="price-value">${parseFloat(selectedAssetObj.price_usd).toLocaleString()}</span>
+                  <span className="price-value">
+                    ${parseFloat(selectedAssetObj.price_usd).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 5
+                    })}
+                  </span>
                 </div>
               )}
             </div>
 
-            {/* Candlestick Chart */}
             <div className="chart-container">
               <div ref={chartContainerRef} className="candlestick-chart">
                 {loading && (
@@ -434,13 +545,11 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Trade Section (bottom half) */}
           <div className="trading-container">
             <div className="trading-column">
-              {/* Asset Details */}
               {selectedAssetObj && (
                 <div className="asset-details">
-                  <div className="token-image-circle" style={{margin: "0 auto 10px auto"}}>
+                  <div className="token-image-circle">
                     <img
                       src={selectedAssetObj.image_url || "/default-token.png"}
                       alt={selectedAssetObj.symbol}
@@ -467,11 +576,13 @@ useEffect(() => {
                     </div>
                     <div className="detail-item">
                       <span className="detail-label">Honey Pot</span>
-                      <span className="detail-value" style={{ color: "red", fontWeight: "bold" }}>X</span>
+                      <span className="detail-value" style={{color: selectedAssetObj.honey_pot ? "red" : "green"}}>
+                        {selectedAssetObj.honey_pot ? "Yes" : "No"}
+                      </span>
                     </div>
                     <div className="detail-item">
-                      <span className="detail-label">Highest Holder</span>
-                      <span className="detail-value">{selectedAssetObj.highest_holder}</span>
+                      <span className="detail-label">Highest Holder %</span>
+                      <span className="detail-value">{selectedAssetObj.highest_holder}%</span>
                     </div>
                   </div>
                 </div>
@@ -479,16 +590,15 @@ useEffect(() => {
             </div>
 
             <div className="trading-column">
-              {/* Trade Form */}
               <div className="trade-form">
-                <h3>TRADE TOKEN</h3>
+                <h3>Trade {selectedAssetObj ? selectedAssetObj.symbol : ''}</h3>
                 <div className="trade-actions">
                   <div className="input-group">
-                    <label htmlFor="trade-amount">Quantity</label>
+                    <label htmlFor="trade-amount">Amount</label>
                     <input
                       id="trade-amount"
                       type="number"
-                      placeholder="Enter Quantity"
+                      placeholder="Enter amount..."
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       disabled={loading || !selectedAsset}
@@ -499,7 +609,6 @@ useEffect(() => {
                       className="buy-btn" 
                       onClick={() => handleTrade("buy")}
                       disabled={loading || !selectedAsset || !amount}
-                      aria-label="Buy token"
                     >
                       {loading ? (
                         <>
@@ -517,7 +626,6 @@ useEffect(() => {
                       className="sell-btn" 
                       onClick={() => handleTrade("sell")}
                       disabled={loading || !selectedAsset || !amount}
-                      aria-label="Sell token"
                     >
                       {loading ? (
                         <>
