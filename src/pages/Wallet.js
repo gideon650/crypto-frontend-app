@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import BEP20QR from '../assets/images/BEP20.png';  // Adjust path as needed
+import TRC20QR from '../assets/images/TRC20.png';
+import SOLQR from '../assets/images/SOL.png';
+import ERC20QR from '../assets/images/ERC20.png';
 import "./Wallet.css";
 
 const Wallet = () => {
@@ -33,7 +37,11 @@ const Wallet = () => {
   const [loading, setLoading] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
   const [showBankNotAvailable, setShowBankNotAvailable] = useState(false);
+  const [showDeposits, setShowDeposits] = useState(true);
+  const [showWithdrawals, setShowWithdrawals] = useState(true);
+  const [amountError, setAmountError] = useState(false);
   
+  const MINIMUM_AMOUNT = 3; // Minimum allowed amount in dollars
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -54,6 +62,13 @@ const Wallet = () => {
     ERC20: "0xBE64FcDFb202BddFFcfB0d3eFFAbD2E87C6680B9"
   };
 
+  const networkQRCodes = {
+    BEP20: BEP20QR,
+    TRC20: TRC20QR,
+    SOL: SOLQR,
+    ERC20: ERC20QR
+  };
+
   const bybitWalletEmail = "395552798"; 
 
   // Fetch user balance, transactions, and referral info on component mount
@@ -66,56 +81,103 @@ const Wallet = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       const config = { headers: { Authorization: `Token ${token}` } };
-  
-      // Fetch user balance and referral code
-      const portfolioResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/portfolio/`, config);
-      setUserBalance(portfolioResponse.data.balance_usd);
-      setReferralCode(portfolioResponse.data.referral_code);
-  
-      // Fetch referral stats if needed
-      const referralResponse = await axios.get(`${API_BASE_URL}/referral-code/`, config);
-      if (referralResponse.data.referral && referralResponse.data.referral.stats) {
-        setReferralStats(referralResponse.data.referral.stats);
-      }
 
+      // Fetch user balance and referral code
+      const portfolioResponse = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/portfolio/`, 
+          config
+      );
+      setUserBalance(portfolioResponse.data.balance_usd);
       
-  
-      // Fetch transactions from the new endpoint
-      const transactionsResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/transactions/`, config);
-  
-      // Normalize and combine all transactions
-      const trades = (transactionsResponse.data.trades || []).map(tx => ({
-        id: tx.id,
-        trade_type: tx.trade_type,
-        quantity: tx.quantity,
-        asset__symbol: tx.asset__symbol,
-        status: "COMPLETED",
-        timestamp: tx.timestamp,
-      }));
-  
-      const deposits = (transactionsResponse.data.deposits || []).map(tx => ({
-        id: tx.id,
-        type: "Deposit",
-        amount: tx.amount,
-        method: tx.method,
-        status: tx.status,
-        created_at: tx.created_at || tx.timestamp,
-      }));
-  
-      const withdrawals = (transactionsResponse.data.withdrawals || []).map(tx => ({
-        id: tx.id,
-        type: "Withdrawal",
-        amount: tx.amount,
-        method: tx.method,
-        status: tx.status,
-        created_at: tx.created_at || tx.timestamp,
-      }));
-  
-      // Combine and sort by date (descending)
-      const allTransactions = [...trades, ...deposits, ...withdrawals].sort(
-        (a, b) => new Date(b.created_at || b.timestamp) - new Date(a.created_at || a.timestamp)
+      // Add specific referral code API call
+      const referralResponse = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/referral-code/`, 
+          config
       );
       
+      // Update both referral code and stats
+      if (referralResponse.data) {
+          setReferralCode(referralResponse.data.referral_code);
+          setReferralStats(referralResponse.data.stats);
+      }
+    
+      // Fetch transactions from the new endpoint
+      const transactionsResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/transactions/`, config);
+
+      // Normalize trades data
+      const trades = (transactionsResponse.data.trades || []).map(tx => ({
+          id: tx.id,
+          trade_type: tx.trade_type,
+          quantity: tx.quantity,
+          asset__symbol: tx.asset__symbol,
+          status: "COMPLETED",
+          timestamp: tx.timestamp,
+      }));
+
+      // Normalize deposits data
+      const deposits = (transactionsResponse.data.deposits || []).map(tx => ({
+          id: tx.id,
+          type: "Deposit",
+          amount: tx.amount,
+          method: tx.method,
+          status: tx.status,
+          created_at: tx.created_at || tx.timestamp,
+      }));
+
+      // Normalize and format withdrawals data with proper method display
+      const withdrawals = (transactionsResponse.data.withdrawals || []).map(tx => {
+          let displayMethod = tx.display_method || tx.method;
+          let recipientDetails = tx.recipient_details || tx.to_address;
+
+          // Ensure we have properly formatted information for withdrawals if the backend didn't provide it
+          if (!tx.display_method) {
+              // Format display based on method
+              switch(tx.method) {
+                  case 'INTERNAL':
+                      displayMethod = 'Internal Transfer';
+                      recipientDetails = `Account: ${tx.to_address}`;
+                      break;
+                  case 'BANK':
+                      displayMethod = 'Bank Transfer';
+                      if (tx.to_address) {
+                          try {
+                              const bankDetails = JSON.parse(tx.to_address);
+                              recipientDetails = `${bankDetails.bank_name} - ${bankDetails.account_number}`;
+                          } catch {
+                              recipientDetails = tx.to_address;
+                          }
+                      }
+                      break;
+                  case 'BYBIT':
+                      displayMethod = 'Bybit';
+                      recipientDetails = `UID: ${tx.to_address}`;
+                      break;
+                  case 'ON_CHAIN':
+                      displayMethod = 'On-Chain';
+                      recipientDetails = tx.chain ? `${tx.to_address} (${tx.chain})` : tx.to_address;
+                      break;
+              }
+          }
+
+          return {
+              id: tx.id,
+              type: "Withdrawal",
+              amount: tx.amount,
+              method: tx.method,
+              display_method: displayMethod,
+              recipient_details: recipientDetails,
+              status: tx.status,
+              created_at: tx.created_at || tx.timestamp,
+              chain: tx.chain,
+              to_address: tx.to_address
+          };
+      });
+
+      // Combine and sort by date (descending)
+      const allTransactions = [...trades, ...deposits, ...withdrawals].sort(
+          (a, b) => new Date(b.created_at || b.timestamp) - new Date(a.created_at || a.timestamp)
+      );
+    
       setTrades(trades);
       setDeposits(deposits);
       setWithdrawals(withdrawals);
@@ -129,42 +191,40 @@ const Wallet = () => {
       setLoading(false);
     }
   };
-
  
+  // Update the useEffect for account numbers to include bank names
+  useEffect(() => {
+    const accountNumbers = ["8022329289", "2143459556", "5022913315"];
+    const bankNames = ["Palmpay", "UBA", "Moniepoint"];
+    
+    const updateAccountNumber = () => {
+      // Calculate which account number to show based on current time
+      const hours = new Date().getHours();
+      const accountIndex = Math.floor(hours / 6) % 3;
+      setBankAccountNumber(accountNumbers[accountIndex]);
+      setBankName(bankNames[accountIndex]);
+    };
+    
+    // Set initial account number
+    updateAccountNumber();
+    
+    // Update the account number every hour to check if we need to switch
+    const interval = setInterval(updateAccountNumber, 60 * 60 * 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
-// Update the useEffect for account numbers to include bank names
-useEffect(() => {
-  const accountNumbers = ["8022329289", "2143459556", "5022913315"];
-  const bankNames = ["Palmpay", "UBA", "Moniepoint"];
-  
-  const updateAccountNumber = () => {
-    // Calculate which account number to show based on current time
-    const hours = new Date().getHours();
-    const accountIndex = Math.floor(hours / 6) % 3;
-    setBankAccountNumber(accountNumbers[accountIndex]);
-    setBankName(bankNames[accountIndex]);
-  };
-  
-  // Set initial account number
-  updateAccountNumber();
-  
-  // Update the account number every hour to check if we need to switch
-  const interval = setInterval(updateAccountNumber, 60 * 60 * 1000);
-  
-  return () => clearInterval(interval);
-}, []);
-
-useEffect(() => {
-  const fetchRate = async () => {
-    try {
-      const res = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ngn");
-      setUsdToNgn(res.data.tether.ngn); // <-- FIXED HERE
-    } catch (err) {
-      setMessage("Failed to fetch exchange rate. Please try again later.");
-    }
-  };
-  fetchRate();
-}, []);
+  useEffect(() => {
+    const fetchRate = async () => {
+      try {
+        const res = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ngn");
+        setUsdToNgn(res.data.tether.ngn); // <-- FIXED HERE
+      } catch (err) {
+        setMessage("Failed to fetch exchange rate. Please try again later.");
+      }
+    };
+    fetchRate();
+  }, []);
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -203,14 +263,23 @@ useEffect(() => {
   };
 
   const nairaValue =
-  amount && usdToNgn
-    ? (parseFloat(amount) * usdToNgn).toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    : "";
+    amount && usdToNgn
+      ? (parseFloat(amount) * usdToNgn).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : "";
 
   const validateForm = () => {
+    // Check minimum amount first
+    if (amount === "" || parseFloat(amount) < MINIMUM_AMOUNT) {
+      setAmountError(true);
+      setMessage(`Minimum ${tab === "deposit" ? "deposit" : "withdrawal"} amount is $${MINIMUM_AMOUNT}`);
+      return false;
+    } else {
+      setAmountError(false);
+    }
+    
     if (tab === "withdraw" && parseFloat(amount) > userBalance) {
       setMessage("Insufficient balance for this withdrawal");
       return false;
@@ -322,42 +391,54 @@ useEffect(() => {
 
       const response = await axios.post(url, requestData, config);
     
-    if (response.data.status === "success") {
-      setMessage(response.data.message || "Request submitted successfully!");
-    } else {
-      // If the API returns an error message, use that
-      setMessage(response.data.message || response.data.error || "Request could not be processed");
-    }
-  } catch (error) {
-    // Improved error handling
-    let errorMessage = "Something went wrong";
-    
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      const errorData = error.response.data;
-      
-      if (typeof errorData === 'string') {
-        errorMessage = errorData;
-      } else if (errorData?.message) {
-        errorMessage = errorData.message;
-      } else if (errorData?.error) {
-        errorMessage = errorData.error;
-      } else if (errorData?.status) {
-        errorMessage = errorData.status;
+      if (response.data.status === "success") {
+        setMessage(response.data.message || "Request submitted successfully!");
+      } else {
+        // If the API returns an error message, use that
+        setMessage(response.data.message || response.data.error || "Request could not be processed");
       }
-    } else if (error.request) {
-      // The request was made but no response was received
-      errorMessage = "No response from server. Please check your connection.";
-    } else {
-      // Something happened in setting up the request
-      errorMessage = error.message;
+    } catch (error) {
+      // Improved error handling
+      let errorMessage = "Something went wrong";
+      
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        const errorData = error.response.data;
+        
+        if (typeof errorData === 'string') {
+          errorMessage = errorData;
+        } else if (errorData?.message) {
+          errorMessage = errorData.message;
+        } else if (errorData?.error) {
+          errorMessage = errorData.error;
+        } else if (errorData?.status) {
+          errorMessage = errorData.status;
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = "No response from server. Please check your connection.";
+      } else {
+        // Something happened in setting up the request
+        errorMessage = error.message;
+      }
+      
+      setMessage(errorMessage);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleAmountChange = (e) => {
+    const value = e.target.value;
+    setAmount(value);
     
-    setMessage(errorMessage);
-  } finally {
-    setLoading(false);
-  }
-};
+    // Check if amount is less than minimum
+    if (value && parseFloat(value) < MINIMUM_AMOUNT) {
+      setAmountError(true);
+    } else {
+      setAmountError(false);
+    }
+  };
 
   const handleDepositMethodChange = (method) => {
     setDepositMethod(method);
@@ -376,6 +457,7 @@ useEffect(() => {
     setInternalWalletId("");
     setWalletAddress("");
     setChain("");
+    setAmountError(false);
   };
 
   const handleNetworkSelect = (selectedNetwork) => {
@@ -434,7 +516,8 @@ useEffect(() => {
       displayMessage.toLowerCase().includes('error') || 
       displayMessage.toLowerCase().includes('fail') || 
       displayMessage.toLowerCase().includes('already exists') ||
-      displayMessage.toLowerCase().includes('insufficient')
+      displayMessage.toLowerCase().includes('insufficient') ||
+      displayMessage.toLowerCase().includes('minimum')
     );
     
     const statusClass = isError ? 'error' : 'success';
@@ -473,6 +556,7 @@ useEffect(() => {
 
   const renderQRCodeView = () => {
     const currentAddress = networkAddresses[network];
+    const currentQRCode = networkQRCodes[network];
     
     return (
       <div className="qrcode-deposit-view">
@@ -487,16 +571,18 @@ useEffect(() => {
         
         <div className="qrcode-container">
           <div className="qrcode-image">
-            <svg width="200" height="200" viewBox="0 0 200 200">
-              <rect x="0" y="0" width="200" height="200" fill="#fff" />
-              <g transform="scale(4)">
-                <rect x="5" y="5" width="40" height="40" fill="#000" />
-                <rect x="10" y="10" width="30" height="30" fill="#fff" />
-                <rect x="15" y="15" width="20" height="20" fill="#000" />
-                <rect x="20" y="20" width="10" height="10" fill="#fff" />
-                <circle cx="25" cy="25" r="5" fill="#800080" />
-              </g>
-            </svg>
+            <img 
+              src={currentQRCode}
+              alt={`${network} QR Code`}
+              style={{
+                width: '200px',
+                height: '200px',
+                display: 'block',
+                margin: '0 auto',
+                borderRadius: '8px',
+                border: '2px solid #800080'
+              }}
+            />
           </div>
         </div>
         
@@ -521,19 +607,24 @@ useEffect(() => {
               type="number" 
               placeholder="Enter deposit amount" 
               value={amount} 
-              onChange={(e) => setAmount(e.target.value)} 
+              onChange={handleAmountChange} 
             />
+            {amountError && (
+              <div className="amount-error-message">
+                Minimum deposit amount is ${MINIMUM_AMOUNT}
+              </div>
+            )}
           </div>
           <div className="form-group">
-            <label>Narration</label>
+            <label>Transaction ID</label>
             <input 
               type="text" 
-              placeholder="Enter narration" 
+              placeholder="Enter transaction ID" 
               value={transactionId} 
               onChange={(e) => setTransactionId(e.target.value)} 
             />
           </div>
-          <button className="submit-button" onClick={submitTransaction} disabled={loading}>
+          <button className="submit-button" onClick={submitTransaction} disabled={loading || amountError}>
             {loading ? "Processing..." : "Confirm Deposit"}
           </button>
         </div>
@@ -554,7 +645,7 @@ useEffect(() => {
       <div className="deposit-section">       
         <div className="selection-container">
           <h8 className="section-heading">Select deposit method</h8>
-          <div className="deposit-method-buttons"> {/* Changed class name here */}
+          <div className="deposit-method-buttons">
             <button 
               onClick={() => handleDepositMethodChange("naira")} 
               className={depositMethod === "naira" ? "active-button" : ""}
@@ -602,9 +693,14 @@ useEffect(() => {
                 type="number" 
                 placeholder="Enter quantity (USDT)" 
                 value={amount} 
-                onChange={(e) => setAmount(e.target.value)} 
+                onChange={handleAmountChange} 
               />
-              {amount && (
+              {amountError && (
+                <div className="amount-error-message">
+                  Minimum deposit amount is ${MINIMUM_AMOUNT}
+                </div>
+              )}
+              {amount && !amountError && (
                 <div style={{ marginTop: 8, color: "#008000" }}>
                   ≈ ₦{nairaValue} NGN
                 </div>
@@ -619,7 +715,7 @@ useEffect(() => {
                 onChange={(e) => setTransactionId(e.target.value)} 
               />
             </div>
-            <button className="submit-button" onClick={submitTransaction} disabled={loading}>
+            <button className="submit-button" onClick={submitTransaction} disabled={loading || amountError}>
               {loading ? "Processing..." : "Submit"}
             </button>
           </div>
@@ -633,9 +729,14 @@ useEffect(() => {
                 type="number" 
                 placeholder="Enter deposit amount" 
                 value={amount} 
-                onChange={(e) => setAmount(e.target.value)} 
+                onChange={handleAmountChange} 
               />
-              {amount && (
+              {amountError && (
+                <div className="amount-error-message">
+                  Minimum deposit amount is ${MINIMUM_AMOUNT}
+                </div>
+              )}
+              {amount && !amountError && (
                 <div style={{ marginTop: 8, color: "#008000" }}>
                   ≈ ₦{nairaValue} NGN
                 </div>
@@ -679,9 +780,14 @@ useEffect(() => {
                 type="number" 
                 placeholder="Enter deposit amount" 
                 value={amount} 
-                onChange={(e) => setAmount(e.target.value)} 
+                onChange={handleAmountChange} 
               />
-              {amount && (
+              {amountError && (
+                <div className="amount-error-message">
+                  Minimum deposit amount is ${MINIMUM_AMOUNT}
+                </div>
+              )}
+              {amount && !amountError && (
                 <div style={{ marginTop: 8, color: "#008000" }}>
                   ≈ ₦{nairaValue} NGN
                 </div>
@@ -690,7 +796,6 @@ useEffect(() => {
             {/* Transparent purple info box, purple text, centralized account number */}
             <div
               style={{
-
                 background: "rgba(128,0,128,0.10)",
                 borderRadius: "14px",
                 padding: "1.7rem 1.2rem",
@@ -708,7 +813,7 @@ useEffect(() => {
                 3. Please also ensure you use your full name as the bank narration.
               </div>
               <div style={{ marginBottom: "0.7rem", fontWeight: 500 }}>
-                <b>Transfer {amount && nairaValue ? `₦${nairaValue}` : ""} to:</b>
+                <b>Transfer {amount && nairaValue && !amountError ? `₦${nairaValue}` : ""} to:</b>
               </div>
               <div style={{
                 fontSize: "1.7rem",
@@ -750,9 +855,8 @@ useEffect(() => {
                     fontSize: "1rem",
                     marginTop: "10px",
                     transition: "background 0.2s",
-                    // Add responsive width:
                     width: "auto",
-                    minWidth: "100px", // Default width
+                    minWidth: "100px",
                     '@media (max-width: 767px)': {
                       minWidth: "70px",
                       padding: "4px 10px",
@@ -782,7 +886,7 @@ useEffect(() => {
                 onChange={(e) => setTransactionId(e.target.value)} 
               />
             </div>
-            <button className="submit-button" onClick={submitTransaction} disabled={loading}>
+            <button className="submit-button" onClick={submitTransaction} disabled={loading || amountError}>
               {loading ? "Processing..." : "Submit"}
             </button>
           </div>
@@ -791,6 +895,7 @@ useEffect(() => {
       </div>
     );
   };
+
   const renderWithdrawInterface = () => {
     return (
       <div className="withdraw-section">
@@ -826,8 +931,13 @@ useEffect(() => {
                 type="number" 
                 placeholder="Amount" 
                 value={amount} 
-                onChange={(e) => setAmount(e.target.value)} 
+                onChange={handleAmountChange} 
               />
+              {amountError && (
+                <div className="amount-error-message">
+                  Minimum withdrawal amount is ${MINIMUM_AMOUNT}
+                </div>
+              )}
               {parseFloat(amount) > userBalance && (
                 <p className="error-text">Insufficient balance</p>
               )}
@@ -904,41 +1014,65 @@ useEffect(() => {
             )}
   
             {(withdrawMethod === "BANK" || withdrawMethod === "naira") && (
-              <div className="withdraw-field-group" id="bank-fields">
-                <div className="form-group">
-                  <label>Account Number</label>
-                  <input 
-                    type="text" 
-                    placeholder="Account Number" 
-                    value={bankAccount}
-                    onChange={(e) => setBankAccount(e.target.value)} 
-                  />
+            <div className="withdraw-field-group" id="bank-fields">
+              <div className="form-group">
+                <label>Account Number</label>
+                <input 
+                  type="text" 
+                  placeholder="Account Number" 
+                  value={bankAccount}
+                  onChange={(e) => setBankAccount(e.target.value)} 
+                />
+              </div>
+              <div className="form-group">
+                <label>Bank Name</label>
+                <input 
+                  type="text" 
+                  placeholder="Bank Name" 
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)} 
+                />
+              </div>
+              <div className="form-group">
+                <label>Account Name</label>
+                <input 
+                  type="text" 
+                  placeholder="Account Name" 
+                  value={accountName}
+                  onChange={(e) => setAccountName(e.target.value)} 
+                />
+              </div>
+              
+              {/* Add the footnote here, right after the account name input and before the closing div */}
+              <div
+                style={{
+                  background: "rgba(128,0,128,0.10)",
+                  borderRadius: "14px",
+                  padding: "1.7rem 1.2rem",
+                  margin: "1.2rem 0",
+                  border: "2px solid #800080",
+                  color: "white",
+                  boxShadow: "0 4px 16px rgba(128,0,128,0.10)",
+                  fontFamily: "inherit",
+                  textAlign: "center"
+                }}
+              >
+                <div style={{ marginBottom: "1.1rem", fontWeight: 300, fontSize: "0.8rem", lineHeight: 1.7 }}>
+                  1. Please ensure the payment account details you provide match your <span style={{ color: "#800080" }}>SWAPVIEW</span> account name.<br />
+                  2. You'll be matched with a buyer/merchant who will send funds to the provided details above.<br />
+                  3. Incase of discrepancies or If funds isn't received after 24 hours, contact our support immediately.
                 </div>
-                <div className="form-group">
-                  <label>Bank Name</label>
-                  <input 
-                    type="text" 
-                    placeholder="Bank Name" 
-                    value={bankName}
-                    onChange={(e) => setBankName(e.target.value)} 
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Account Name</label>
-                  <input 
-                    type="text" 
-                    placeholder="Account Name" 
-                    value={accountName}
-                    onChange={(e) => setAccountName(e.target.value)} 
-                  />
+                <div>
+                  {renderStarRating()}
                 </div>
               </div>
-            )}
+            </div>
+          )}
             
             <button 
               className="submit-button" 
               onClick={submitTransaction} 
-              disabled={loading || parseFloat(amount) > userBalance}
+              disabled={loading || parseFloat(amount) > userBalance || amountError}
             >
               {loading ? "Processing..." : "Submit Withdrawal"}
             </button>
@@ -988,11 +1122,25 @@ useEffect(() => {
     </div>
   );
 
-
   const renderTransactionHistory = () => {
     const buyTrades = trades.filter((trade) => trade.trade_type === "BUY");
     const sellTrades = trades.filter((trade) => trade.trade_type === "SELL");
-  
+
+    // Format date for mobile
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return window.innerWidth <= 767 ? 
+        `${date.getDate()}/${date.getMonth()+1}` : 
+        date.toLocaleDateString();
+    };
+
+    // Format amount for mobile
+    const formatAmount = (amount) => {
+      return window.innerWidth <= 767 ? 
+        `$${parseFloat(amount).toFixed(0)}` : 
+        `$${parseFloat(amount).toFixed(2)}`;
+    };
+
     return (
       <div className="transaction-history">
         <h3 className="section-heading">Transaction History</h3>
@@ -1002,13 +1150,18 @@ useEffect(() => {
           {renderTradeGroup("Buy", buyTrades, showBuyTrades, setShowBuyTrades)}
           {renderTradeGroup("Sell", sellTrades, showSellTrades, setShowSellTrades)}
         </div>
-  
+
         {/* Deposits Section */}
         <div className="transaction-section">
-          <h3>Deposits</h3>
-          {deposits.length === 0 ? (
+          <button
+            className={`trade-group-toggle ${!showDeposits ? 'collapsed' : ''}`}
+            onClick={() => setShowDeposits(!showDeposits)}
+          >
+            Deposits ({deposits.length})
+          </button>
+          {showDeposits && deposits.length === 0 ? (
             <p className="no-transactions">No deposits found</p>
-          ) : (
+          ) : showDeposits && (
             <div className="transaction-table-container">
               <table className="transaction-table">
                 <thead>
@@ -1020,30 +1173,37 @@ useEffect(() => {
                   </tr>
                 </thead>
                 <tbody>
-                {deposits.map((deposit) => (
-                  <tr key={deposit.id}>
-                    <td data-label="Date">{new Date(deposit.created_at).toLocaleDateString()}</td>
-                    <td data-label="Amount">${parseFloat(deposit.amount).toFixed(2)}</td>
-                    <td data-label="Method">{deposit.method}</td>
-                    <td data-label="Status">
-                      <span className={`status-badge ${deposit.status.toLowerCase()}`}>
-                        {deposit.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                  {deposits.map((deposit) => (
+                    <tr key={deposit.id}>
+                      <td>{formatDate(deposit.created_at)}</td>
+                      <td>{formatAmount(deposit.amount)}</td>
+                      <td>{deposit.method}</td>
+                      <td>
+                        <span className={`status-badge ${deposit.status.toLowerCase()}`}>
+                          {window.innerWidth <= 767 ? 
+                            deposit.status.substring(0, 3) : 
+                            deposit.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           )}
         </div>
-  
+
         {/* Withdrawals Section */}
         <div className="transaction-section">
-          <h3>Withdrawals</h3>
-          {withdrawals.length === 0 ? (
+          <button
+            className={`trade-group-toggle ${!showWithdrawals ? 'collapsed' : ''}`}
+            onClick={() => setShowWithdrawals(!showWithdrawals)}
+          >
+            Withdrawals ({withdrawals.length})
+          </button>
+          {showWithdrawals && withdrawals.length === 0 ? (
             <p className="no-transactions">No withdrawals found</p>
-          ) : (
+          ) : showWithdrawals && (
             <div className="transaction-table-container">
               <table className="transaction-table">
                 <thead>
@@ -1051,22 +1211,34 @@ useEffect(() => {
                     <th>Date</th>
                     <th>Amount</th>
                     <th>Method</th>
+                    {window.innerWidth > 767 && <th>Recipient</th>}
                     <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                {withdrawals.map((withdrawal) => (
-                  <tr key={withdrawal.id}>
-                    <td data-label="Date">{new Date(withdrawal.created_at).toLocaleDateString()}</td>
-                    <td data-label="Amount">${parseFloat(withdrawal.amount).toFixed(2)}</td>
-                    <td data-label="Method">{withdrawal.method}</td>
-                    <td data-label="Status">
-                      <span className={`status-badge ${withdrawal.status.toLowerCase()}`}>
-                        {withdrawal.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                  {withdrawals.map((withdrawal) => (
+                    <tr key={withdrawal.id}>
+                      <td>{formatDate(withdrawal.created_at || withdrawal.timestamp)}</td>
+                      <td>{formatAmount(withdrawal.amount)}</td>
+                      <td>
+                        {window.innerWidth <= 767 ? 
+                          (withdrawal.display_method || withdrawal.method).substring(0, 5) : 
+                          (withdrawal.display_method || withdrawal.method)}
+                      </td>
+                      {window.innerWidth > 767 && (
+                        <td>
+                          {withdrawal.recipient_details || withdrawal.to_address || "N/A"}
+                        </td>
+                      )}
+                      <td>
+                        <span className={`status-badge ${withdrawal.status.toLowerCase()}`}>
+                          {window.innerWidth <= 767 ? 
+                            withdrawal.status.substring(0, 3) : 
+                            withdrawal.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -1081,7 +1253,7 @@ useEffect(() => {
       <div className="referral-section">
         <h8 className="section-heading">Referral System</h8>
         <div className="referral-info">
-          <p>Refer friends and earn 10% of their initial deposit when 3 friends fund their accounts!</p>
+          <p>Refer friends and earn 10% of your initial deposit when 3 friends fund their accounts!</p>
           {referralCode ? (
             <div className="referral-code-box">
               <p>Your Referral Code:</p>
@@ -1098,7 +1270,21 @@ useEffect(() => {
               <p>Total Referrals: {referralStats.total}</p>
               <p>Funded Referrals: {referralStats.funded} / 3</p>
               {referralStats.funded >= 3 ? (
-                <p className="bonus-message">Congratulations! You've earned your referral bonus.</p>
+                referralStats.has_received_bonus ? (
+                  <div className="bonus-received">
+                    <p className="bonus-message">Your referral bonus has been paid!</p>
+                    <p className="bonus-details">
+                      Initial Deposit: ${referralStats.initial_deposit}<br/>
+                      Bonus Amount: ${(referralStats.initial_deposit * 0.10).toFixed(2)}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="bonus-pending">
+                    {referralStats.initial_deposit ? 
+                      "Processing your referral bonus..." :
+                      "Make your first deposit to receive your referral bonus!"}
+                  </p>
+                )
               ) : (
                 <p>Refer {3 - referralStats.funded} more funded users to earn your bonus!</p>
               )}
@@ -1114,7 +1300,7 @@ useEffect(() => {
       <h3>ASSET</h3>
       {/* Top Section: Balance, Star Rating */}
       <div className="wallet-balance-top" style={{ marginBottom: "30px" }}>
-      <div className="balance-info" style={{ fontWeight: "bold", fontSize: "2rem", textAlign: "center" }}>
+        <div className="balance-info" style={{ fontWeight: "bold", fontSize: "2rem", textAlign: "center" }}>
           {parseFloat(userBalance || 0).toFixed(2)} <span style={{ fontSize: "1rem" }}>USD</span>
         </div>
         {renderStarRating()}
