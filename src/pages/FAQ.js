@@ -45,7 +45,7 @@ const FAQ = () => {
       answer: (
         <>
           If you experience any issues, please reach out to our Support Team through{" "}
-          <a href="mailto:swapview@support.com" className="email-link">
+          <a href="mailto:support@swapviewapp.site" className="email-link">
             support@swapview.com
           </a>{" "}
           or use the Help Center inside your dashboard.
