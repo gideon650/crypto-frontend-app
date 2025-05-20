@@ -1181,3 +1181,44 @@
   margin-top: 5px;
   font-size: 0.9rem;
 }
+
+/* Add this to ensure the table doesn't get too wide */
+.transaction-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Adjust column widths as needed */
+.transaction-table th:nth-child(1),
+.transaction-table td:nth-child(1) {
+  width: 15%;
+}
+
+.transaction-table th:nth-child(2),
+.transaction-table td:nth-child(2) {
+  width: 15%;
+}
+
+.transaction-table th:nth-child(3),
+.transaction-table td:nth-child(3) {
+  width: 15%;
+}
+
+.transaction-table th:nth-child(4),
+.transaction-table td:nth-child(4) {
+  width: 25%;
+}
+
+.transaction-table th:nth-child(5),
+.transaction-table td:nth-child(5) {
+  width: 15%;
+}
+
+/* For mobile, make time column more compact */
+@media (max-width: 767px) {
+  .transaction-table th:nth-child(4),
+  .transaction-table td:nth-child(4) {
+    width: 20%;
+    font-size: 0.8rem;
+  }
+}
