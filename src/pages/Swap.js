@@ -15,8 +15,8 @@ const Swap = () => {
     const [timeError, setTimeError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [showDropdown, setShowDropdown] = useState(false);
-    // We're still checking this flag but it won't block new swap creation
     const [hasPendingSwap, setHasPendingSwap] = useState(false);
+    const [currentLagosTime, setCurrentLagosTime] = useState("");
     
     const dropdownRef = useRef(null);
     const usdtAsset = assets.find(asset => asset.symbol === "USDT");
@@ -24,11 +24,23 @@ const Swap = () => {
     useEffect(() => {
         fetchAssets();
         checkPendingSwap();
+        updateCurrentLagosTime();
+        
+        // Update Lagos time every minute
+        const timeInterval = setInterval(updateCurrentLagosTime, 60000);
+        
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            clearInterval(timeInterval);
         };
     }, []);
+
+    // Display current Lagos time to help users understand the timezone
+    const updateCurrentLagosTime = () => {
+        const lagosTime = moment().tz('Africa/Lagos').format('YYYY-MM-DD HH:mm:ss');
+        setCurrentLagosTime(lagosTime);
+    };
 
     const handleClickOutside = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -75,18 +87,22 @@ const Swap = () => {
             return;
         }
 
+        // Get local input datetime and convert to moment
         const localMoment = moment(selectedTime);
-        const lagosMoment = localMoment.clone().tz('Africa/Lagos');
+        
+        // Get current Lagos time
         const now = moment().tz('Africa/Lagos');
-        const diffMinutes = lagosMoment.diff(now, 'minutes');
+        
+        // Calculate duration difference in minutes
+        const diffMinutes = localMoment.diff(now, 'minutes');
         
         let error = "";
         if (diffMinutes <= 0) {
-            error = "Swap back time must be in the future (Africa/Lagos time).";
+            error = "Swap back time must be in the future.";
         } else if (diffMinutes < 5) {
-            error = "Swap duration must be at least 5 minutes (Africa/Lagos time).";
+            error = "Swap duration must be at least 5 minutes.";
         } else if (diffMinutes > 43200) {
-            error = "Swap duration cannot exceed 30 days (Africa/Lagos time).";
+            error = "Swap duration cannot exceed 30 days.";
         }
         
         setTimeError(error);
@@ -121,16 +137,17 @@ const Swap = () => {
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem("token");
-            const localMoment = moment(swapBackTime);
-            const lagosMoment = localMoment.clone().tz('Africa/Lagos');
+            
+            // Convert input datetime to ISO format in user's local timezone
+            // The backend will handle the conversion to Lagos time
+            const swapBackTimeISO = moment(swapBackTime).format('YYYY-MM-DDTHH:mm:ss');
             
             const payload = {
                 from_asset: getAssetId(swapFromAsset),
                 to_asset: getAssetId(swapToAsset),
                 swap_amount: swapAmount,
                 swap_back_asset: getAssetId(swapBackAsset),
-                // Send in ISO format as expected by backend
-                swap_back_time: lagosMoment.format('YYYY-MM-DDTHH:mm:ss')
+                swap_back_time: swapBackTimeISO
             };
 
             const response = await axios.post(
@@ -165,12 +182,22 @@ const Swap = () => {
         setShowDropdown(false);
     };
 
+    // Calculate minimum and maximum dates for the datetime-local input
+    const getMinDateTime = () => {
+        return moment().format("YYYY-MM-DDTHH:mm");
+    };
+    
+    const getMaxDateTime = () => {
+        return moment().add(30, 'days').format("YYYY-MM-DDTHH:mm");
+    };
+
     return (
         <div className="swap-container">
             <h3>SWAP TOKEN</h3>
             
             <div className="info-box">
                 <p>Swap from USDT to a different token and swap back to USDT at a scheduled time automatically.</p>
+                <p className="timezone-note">Current time (Africa/Lagos): {currentLagosTime}</p>
             </div>
             
             <input
@@ -251,11 +278,11 @@ const Swap = () => {
                     value={swapBackTime}
                     onChange={handleSwapBackTimeChange}
                     disabled={isSubmitting}
-                    min={moment().tz('Africa/Lagos').format("YYYY-MM-DDTHH:mm")}
-                    max={moment().tz('Africa/Lagos').add(30, 'days').format("YYYY-MM-DDTHH:mm")}
+                    min={getMinDateTime()}
+                    max={getMaxDateTime()}
                 />
                 {timeError && <p className="error-message">{timeError}</p>}
-                <p className="helper-text">Must be between 5 minutes and 30 days from now</p>
+                <p className="helper-text">Must be between 5 minutes and 30 days from now (Africa/Lagos time)</p>
             </div>
             
             <button
