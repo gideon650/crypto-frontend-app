@@ -9,17 +9,24 @@ const Auth = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // New state
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // For password visibility
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // For confirm password visibility
-  const [showLoginPassword, setShowLoginPassword] = useState(false); // For login password visibility
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
   const navigate = useNavigate();
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
     setError("");
+    // Clear all form fields when toggling
+    setIdentifier("");
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setReferralCode("");
   };
 
   const handleSubmit = async (e) => {
@@ -33,33 +40,45 @@ const Auth = () => {
     }
 
     if (isLogin) {
-      // LOGIN FLOW (unchanged)
+      // LOGIN FLOW
       try {
         const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/login/`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: identifier, password }),
+          headers: { 
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ 
+            username: identifier, 
+            password 
+          }),
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          localStorage.setItem("token", data.token);
-          alert("Login successful!");
-          navigate("/dashboard");
+          // Store token in localStorage
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+            alert("Login successful!");
+            navigate("/dashboard");
+          } else {
+            setError("Login successful but no token received. Please try again.");
+          }
         } else {
-          setError(data.error || "Login failed. Please check your credentials.");
+          setError(data.error || data.message || "Login failed. Please check your credentials.");
         }
       } catch (err) {
         console.error("Error during login:", err);
-        setError("Something went wrong. Please try again.");
+        setError("Network error. Please check your connection and try again.");
       }
     } else {
-      // SIGNUP FLOW (unchanged)
+      // SIGNUP FLOW - Updated to handle backend response properly
       try {
         const registerResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/register/`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             username,
             email,
@@ -71,34 +90,65 @@ const Auth = () => {
         const registerData = await registerResponse.json();
 
         if (registerResponse.ok) {
-          alert("Signup successful! Logging you in...");
+          alert("Registration successful! Please log in with your credentials.");
+          
+          // Since backend doesn't return token on registration, 
+          // automatically attempt login after successful registration
+          try {
+            const loginResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/login/`, {
+              method: "POST",
+              headers: { 
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ 
+                username, 
+                password 
+              }),
+            });
 
-          const loginResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/login/`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
-          });
+            const loginData = await loginResponse.json();
 
-          const loginData = await loginResponse.json();
-
-          if (loginResponse.ok) {
-            localStorage.setItem("token", loginData.token);
-            alert("Logged in successfully!");
-            navigate("/dashboard");
-          } else {
-            setError(loginData.error || "Auto-login failed after registration.");
+            if (loginResponse.ok && loginData.token) {
+              localStorage.setItem("token", loginData.token);
+              alert("Logged in successfully!");
+              navigate("/dashboard");
+            } else {
+              // Registration succeeded but auto-login failed
+              alert("Registration successful! Please log in manually.");
+              setIsLogin(true); // Switch to login form
+              setIdentifier(username); // Pre-fill username
+              setPassword(""); // Clear password for security
+            }
+          } catch (loginErr) {
+            console.error("Error during auto-login:", loginErr);
+            alert("Registration successful! Please log in manually.");
+            setIsLogin(true);
+            setIdentifier(username);
+            setPassword("");
           }
         } else {
-          setError(
-            registerData.message ||
-              (typeof registerData === "object"
-                ? Object.values(registerData).flat().join(" ")
-                : "Signup failed. Please check your details.")
-          );
+          // Handle registration errors
+          if (registerData.error) {
+            setError(registerData.error);
+          } else if (typeof registerData === "object") {
+            // Handle validation errors from serializer
+            const errors = [];
+            // eslint-disable-next-line no-unused-vars
+            for (const [field, messages] of Object.entries(registerData)) {
+              if (Array.isArray(messages)) {
+                errors.push(...messages);
+              } else {
+                errors.push(messages);
+              }
+            }
+            setError(errors.join(" "));
+          } else {
+            setError("Registration failed. Please check your details and try again.");
+          }
         }
       } catch (err) {
         console.error("Error during signup:", err);
-        setError("Something went wrong. Please try again.");
+        setError("Network error. Please check your connection and try again.");
       }
     }
   };
