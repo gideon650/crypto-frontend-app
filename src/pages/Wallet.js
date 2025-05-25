@@ -194,25 +194,27 @@ const Wallet = () => {
  
   // Update the useEffect for account numbers to include bank names
   useEffect(() => {
-    const accountNumbers = ["8022329289", "2143459556", "5022913315"];
-    const bankNames = ["Palmpay", "UBA", "Moniepoint"];
+  const accountNumbers = ["8022329289", "2143459556", "5022913315"];
+  const bankNames = ["Palmpay", "UBA", "Moniepoint"];
+  
+  const updateAccountNumber = () => {
+    // Calculate which account number to show based on current time (30-minute intervals)
+    const now = new Date();
+    const totalMinutes = now.getHours() * 60 + now.getMinutes();
+    const intervalIndex = Math.floor(totalMinutes / 30) % 3;
     
-    const updateAccountNumber = () => {
-      // Calculate which account number to show based on current time
-      const hours = new Date().getHours();
-      const accountIndex = Math.floor(hours / 6) % 3;
-      setBankAccountNumber(accountNumbers[accountIndex]);
-      setBankName(bankNames[accountIndex]);
-    };
-    
-    // Set initial account number
-    updateAccountNumber();
-    
-    // Update the account number every hour to check if we need to switch
-    const interval = setInterval(updateAccountNumber, 60 * 60 * 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
+    setBankAccountNumber(accountNumbers[intervalIndex]);
+    setBankName(bankNames[intervalIndex]);
+  };
+  
+  // Set initial account number
+  updateAccountNumber();
+  
+  // Update the account number every 30 minutes
+  const interval = setInterval(updateAccountNumber, 30 * 60 * 1000); // 30 minutes in milliseconds
+  
+  return () => clearInterval(interval);
+}, []);
 
   useEffect(() => {
     const fetchRate = async () => {
