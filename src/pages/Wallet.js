@@ -1255,7 +1255,8 @@ const Wallet = () => {
       <div className="referral-section">
         <h8 className="section-heading">Referral System</h8>
         <div className="referral-info">
-          <p>Refer friends and earn 10% of your initial deposit when 3 friends fund their accounts!</p>
+          <p>Don't Miss Out - Unlock Your Invite Rewards Now!</p>
+          <p>Invite just 3 friends and start earning 10% of their first deposit straight into your wallet</p>
           {referralCode ? (
             <div className="referral-code-box">
               <p>Your Referral Code:</p>
