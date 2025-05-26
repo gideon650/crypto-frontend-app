@@ -63,7 +63,7 @@ const Wallet = () => {
   };
 
   const networkQRCodes = {
-    BEP20: BEP20QR,
+    BSC: BEP20QR,
     TRC20: TRC20QR,
     SOL: SOLQR,
     ERC20: ERC20QR
