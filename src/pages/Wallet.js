@@ -56,7 +56,7 @@ const Wallet = () => {
 
   // Network-specific wallet addresses
   const networkAddresses = {
-    BEP20: "0xBE64FcDFb202BddFFcfB0d3eFFAbD2E87C6680B9",
+    BSC: "0xBE64FcDFb202BddFFcfB0d3eFFAbD2E87C6680B9",
     TRC20: "TEHiejHxpS6gogLfbcQYy5Bew8qUy3DYt8",
     SOL: "9QNKBSSxKK583F7dW2wezzfA6zWQciuSMDaQctc1pSKY",
     ERC20: "0xBE64FcDFb202BddFFcfB0d3eFFAbD2E87C6680B9"
@@ -760,7 +760,7 @@ const Wallet = () => {
                   <div className="method-buttons">
                     <button onClick={() => handleNetworkSelect("TRC20")}>TRC20</button>
                     <button onClick={() => handleNetworkSelect("ERC20")}>ERC20</button>
-                    <button onClick={() => handleNetworkSelect("BEP20")}>BEP20</button>
+                    <button onClick={() => handleNetworkSelect("BSC")}>BEP20</button>
                     <button onClick={() => handleNetworkSelect("SOL")}>SOL</button>
                   </div>
                 </div>
