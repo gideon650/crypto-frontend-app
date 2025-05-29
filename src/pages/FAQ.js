@@ -5,50 +5,38 @@ import "./FAQ.css";
 const FAQ = () => {
   const faqs = [
     {
-      question: "How does the Referral Program work?",
-      answer: "Simply share your unique referral link with others. When someone signs up through your link and makes a verified investment of at least $5, you'll receive 1 $SWV as a reward."
+      question: "Is SwapViewApp legit or a scam?",
+      answer: "SwapViewApp is a legitimate trading platform backed by a proven, high-performance strategy. With over 72.5% win rate, the company has grown a starting capital of $6 million to $97.6 million, demonstrating consistent profitability. Our transparent operations, secure infrastructure, and clear communication with users underscore our legitimacy."
     },
     {
-      question: "Where can I find my referral link?",
-      answer: "You can find your unique referral link by logging into your dashboard and navigating to the 'Referral Program' section."
+      question: "Who owns SwapViewApp?",
+      answer: "SwapViewApp is owned and operated by a private trading company led by a seasoned team of quantitative traders and developers. The team combines algorithmic strategies, risk management, and automated systems to execute high-yield trades, focusing on Decentralized Exchanges (DEXs)."
     },
     {
-      question: "When will I receive my reward?",
-      answer: "Rewards are typically credited within [24-72 hours] after your referred user's investment is verified."
+      question: "How does SwapViewApp protect my money?",
+      answer: "SwapViewApp prioritizes fund security and transparency. We use the following measures: Non-custodial model: Users maintain full control over their funds. Smart contract integration: Trades are executed on-chain, with verifiable results. End-to-end encryption and secure APIs. Real-time Telegram alerts and audit trails for full visibility into trade history and wallet activity. Integration of P2P allows each user to receive fiat directly to their bank account, enabling automated reconciliation of fiat payments and instant wallet crediting."
     },
     {
-      question: "Is there a limit to how many people I can refer?",
-      answer: "No! There's no limit — the more people you refer who invest, the more coins you earn."
+      question: "How do I withdraw funds from SwapViewApp?",
+      answer: "Withdrawals from SwapViewApp are designed to be fast, secure, and user-friendly: For crypto: Users can withdraw directly to their wallets via our on-chain gateway. For fiat: Users can transfer funds from their in-app wallet to their linked bank accounts via P2P. Withdrawals are processed automatically upon request, with no unnecessary delays."
     },
     {
-      question: "What counts as a successful referral?",
-      answer: "A referral is considered successful when the person you invited: Signs up using your link or code, Completes the minimum investment requirement, Passes all necessary verification checks."
+      question: "Are there any hidden fees on SwapViewApp?",
+      answer: "SwapViewApp maintains a transparent fee structure: No hidden fees — users see exactly what they pay. Trading fees are minimal and clearly disclosed before any operation. Fiat deposits and withdrawals via p2p may incur standard processing fees, which are also visible at the time of transaction. We believe in clarity and honesty, especially when it comes to your money."
     },
     {
-      question: "Can I refer myself using a different account?",
-      answer: "No. Self-referrals are strictly prohibited and will result in disqualification from the program."
+      question: "Is SwapViewApp regulated?",
+      answer: "SwapViewApp operates within jurisdictions that support crypto and decentralized finance (DeFi) trading. While decentralized platforms do not fall under traditional financial regulation, we comply with applicable KYC/AML standards for fiat transactions. We are also actively exploring additional licenses and partnerships to enhance regulatory alignment as the ecosystem evolves."
     },
     {
-      question: "What happens if my referral cancels or withdraws their investment?",
-      answer: "If the initial investment is reversed, canceled, or found to be fraudulent, the referral reward may be revoked."
-    },
-    {
-      question: "How can I track my referrals and earnings?",
-      answer: "You can track all your referrals, their status, and your earned rewards in the 'Referral Dashboard' section of your account."
-    },
-    {
-      question: "Can I earn extra bonuses?",
-      answer: "Yes! Special bonus rewards are available when you reach certain referral milestones (3). Keep an eye on your dashboard for bonus updates!"
-    },
-    {
-      question: "Who can I contact if I have issues with my referral rewards?",
+      question: "How can I contact SwapViewApp support?",
       answer: (
         <>
-          If you experience any issues, please reach out to our Support Team through{" "}
+          Our support team is available through multiple channels: In-app chat: Get instant assistance directly in the app. Telegram support bot: Integrated command handlers like /get_config, /profit, and /wallets allow users to retrieve real-time data and request help. Email: Reach us at{" "}
           <a href="mailto:support@swapviewapp.site" className="email-link">
-            support@swapview.com
+            support@swapviewapp.site
           </a>{" "}
-          or use the Help Center inside your dashboard.
+          Knowledge base & FAQ: Access step-by-step guides and answers to common questions directly in the app or on our website. We're committed to providing responsive and helpful support to all our users.
         </>
       )
     }
@@ -57,8 +45,8 @@ const FAQ = () => {
   return (
     <div className="faq-container">
       <div className="faq-header">
-        <h2>REFERRAL PROGRAM FAQ</h2>
-        <p>Frequently Asked Questions about our referral program</p>
+        <h2>SWAPVIEWAPP FAQ</h2>
+        <p>Frequently Asked Questions about SwapViewApp</p>
       </div>
 
       <div className="faq-list">
