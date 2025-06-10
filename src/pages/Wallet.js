@@ -807,10 +807,9 @@ const Wallet = () => {
                 textAlign: "center"
               }}
             >
-              <div style={{ marginBottom: "1.1rem", fontWeight: 300, fontSize: "0.8rem", lineHeight: 1.7 }}>
-                1. <span style={{ color: "white" }}>Please be advised</span> that the seller's assets shall be frozen upon initiation and successful completion of the transaction.<br />
-                2. Please ensure that the name in your <span style={{ color: "#800080" }}>SWAPVIEW</span> account matches with the payment account name.<br />
-                3. Please also ensure you use your full name as the bank narration.
+              <div style={{ marginBottom: "1.1rem", fontWeight: 300, fontSize: "0.8rem", lineHeight: 1.7 }}>                 
+                2. Please ensure that the name in your <span style={{ color: "#800080" }}>SWAPVIEW</span> account matches with the payment account name.<br />                 
+                3. Please also ensure you use your full name as the bank narration.               
               </div>
               <div style={{ marginBottom: "0.7rem", fontWeight: 500 }}>
                 <b>Transfer {amount && nairaValue && !amountError ? `₦${nairaValue}` : ""} to:</b>
