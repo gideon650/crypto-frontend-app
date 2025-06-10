@@ -632,10 +632,8 @@ const Wallet = () => {
         </div>
         
         <div className="deposit-warning">
-          <p>Please be advised that the seller's assets shall be frozen upon initiation and successful completion of transaction,</p>
-          <p>in accordance with applicable terms and condition.</p>
           <p>Please make sure that your transaction id is correct. Otherwise, your deposited funds will not be added to your available balance — nor will it be refunded.</p>
-          <p><strong>Important:</strong> After making your deposit, you MUST submit your narration above for verification.</p>
+          <p><strong>Important:</strong> After making your deposit, you MUST submit your transaction hash above for verification.</p>
         </div>
         
       </div>
