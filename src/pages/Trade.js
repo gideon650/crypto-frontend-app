@@ -21,6 +21,7 @@ const Trade = () => {
   const [loading, setLoading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [tradeError, setTradeError] = useState(null);
   const chartContainerRef = useRef();
   const chartInstanceRef = useRef(null);
   const candleSeriesRef = useRef(null);
@@ -93,6 +94,7 @@ const Trade = () => {
     setSelectedAsset(symbol);
     setIsDropdownOpen(false);
     setSearchTerm("");
+    setTradeError(null); // Clear trade error when asset changes
     if (symbol) {
       await fetchCandlestickData(symbol, interval);
     } else {
@@ -108,15 +110,36 @@ const Trade = () => {
     }
   };
 
+  const handleAmountChange = (e) => {
+    setAmount(e.target.value);
+    // Clear trade error when user changes amount
+    if (tradeError) {
+      setTradeError(null);
+    }
+  };
+
   const handleTrade = async (type) => {
+    // Clear previous trade error
+    setTradeError(null);
+
     if (!selectedAsset || !amount) {
       alert("Please select an asset and enter an amount.");
       return;
     }
-    if (parseFloat(amount) <= 0) {
+
+    const amountValue = parseFloat(amount);
+    
+    if (isNaN(amountValue) || amountValue <= 0) {
       alert("Amount must be greater than zero.");
       return;
     }
+
+    // Check minimum amount for buy trades
+    if (type === "buy" && amountValue < 3) {
+      setTradeError("Minimum amount is 3");
+      return;
+    }
+
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
@@ -125,7 +148,7 @@ const Trade = () => {
         `${process.env.REACT_APP_API_BASE_URL}/trade/`,
         { 
           symbol: selectedAsset, 
-          amount: parseFloat(amount), 
+          amount: amountValue, 
           trade_type: type.toUpperCase() 
         },
         config
@@ -600,9 +623,14 @@ const Trade = () => {
                       type="number"
                       placeholder="Enter amount..."
                       value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
+                      onChange={handleAmountChange}
                       disabled={loading || !selectedAsset}
                     />
+                    {tradeError && (
+                      <div className="trade-error-message" style={{color: 'red', fontSize: '14px', marginTop: '5px'}}>
+                        {tradeError}
+                      </div>
+                    )}
                   </div>
                   <div className="button-group">
                     <button 
