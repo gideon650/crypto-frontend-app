@@ -135,8 +135,8 @@ const Trade = () => {
     }
 
     // Check minimum amount for buy trades
-    if (type === "buy" && amountValue < 3) {
-      setTradeError("Minimum amount is 3");
+    if (type === "buy" && amountValue < 100) {
+      setTradeError("Minimum amount is 100");
       return;
     }
 
