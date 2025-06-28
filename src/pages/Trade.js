@@ -140,8 +140,8 @@ const Trade = () => {
         setTradeError("Minimum amount is 100");
         return;
       }
-      if (amountValue > 1000) {
-        setTradeError("Maximum amount is 1000");
+      if (amountValue > 1000000) {
+        setTradeError("Maximum amount is 1000000");
         return;
       }
     }
