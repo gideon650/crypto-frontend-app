@@ -14,6 +14,11 @@ const Dashboard = () => {
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
 
+  // Filter function to exclude USDT
+  const filterOutUSDT = (tokens) => {
+    return tokens.filter(token => token.symbol !== 'USDT');
+  };
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -31,7 +36,8 @@ const Dashboard = () => {
         );
 
         setPortfolio(portfolioRes.data);
-        setPrices(pricesRes.data.cryptocurrencies);
+        // Filter out USDT from the prices/cryptocurrencies list
+        setPrices(filterOutUSDT(pricesRes.data.cryptocurrencies || []));
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -43,11 +49,24 @@ const Dashboard = () => {
   }, []);
 
   const getStarRating = (balance) => {
-    if (balance >= 5000) return "★★★★★";
-    if (balance >= 1000) return "★★★★";
-    if (balance >= 301) return "★★★";
-    if (balance >= 101) return "★★";
-    return "★";
+    let filledStars = 0;
+    if (balance >= 5000) filledStars = 5;
+    else if (balance >= 1000) filledStars = 4;
+    else if (balance >= 301) filledStars = 3;
+    else if (balance >= 101) filledStars = 2;
+    else filledStars = 1;
+    
+    const emptyStars = 5 - filledStars;
+    
+    return "★".repeat(filledStars) + "☆".repeat(emptyStars);
+  };
+
+  // Add this function to calculate amount needed for 3 stars
+  const getAmountToThreeStars = (currentBalance) => {
+    if (currentBalance >= 301) return 0; // Already has 3+ stars
+    
+    // Calculate how much is needed to reach the 3-star threshold ($301)
+    return (301 - currentBalance).toFixed(2);
   };
 
   const getPriceChangeColor = (token) => {
@@ -104,9 +123,9 @@ const Dashboard = () => {
       token.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Sort user tokens by balance (highest to lowest)
+  // Sort user tokens by balance (highest to lowest) and filter out USDT
   const sortedUserTokens = portfolio?.tokens
-    ? [...portfolio.tokens].sort((a, b) => {
+    ? filterOutUSDT([...portfolio.tokens]).sort((a, b) => {
         const priceA = prices.find((p) => p.symbol === a.symbol)?.price_usd || 0;
         const priceB = prices.find((p) => p.symbol === b.symbol)?.price_usd || 0;
         const valueA = parseFloat(a.balance) * priceA;
@@ -128,6 +147,15 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
+      {/* Add premium message for users with less than 3 stars */}
+      {portfolio && Number(portfolio.balance_usd) < 301 && (
+        <div className="premium-message">
+          <span>
+            Add ${getAmountToThreeStars(Number(portfolio.balance_usd))} to enjoy premium features
+          </span>
+        </div>
+      )}
+      
       <header className="dashboard-header">
         <h1>SWAPVIEW</h1>
       </header>

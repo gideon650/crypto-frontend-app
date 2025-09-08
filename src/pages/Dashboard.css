@@ -630,3 +630,56 @@
 .price-arrow {
   font-size: 9px;
 }
+
+/* Premium Message Styles with Marquee Animation */
+.premium-message {
+  color: #800080;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(90deg, transparent, rgba(128, 0, 128, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shine 3s infinite;
+}
+
+.premium-message span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee 15s linear infinite;
+  white-space: nowrap;
+}
+
+/* Shiny effect */
+@keyframes shine {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Marquee scrolling animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-200%);
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .premium-message {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .premium-message span {
+    animation: marquee 12s linear infinite;
+  }
+}

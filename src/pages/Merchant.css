@@ -1,0 +1,230 @@
+/* Merchant.css */
+.merchant-container {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 20px;
+  background: linear-gradient(145deg, #1a1a1a, #121212);
+  color: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.merchant-container h2, .merchant-container h3 {
+  text-align: center;
+  color: #800080;
+  margin-bottom: 10px;
+}
+
+.merchant-container p {
+  text-align: center;
+  color: #b3b3b3;
+  margin-bottom: 20px;
+}
+
+.merchant-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #b3b3b3;
+}
+
+.form-group input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #222;
+  color: white;
+  font-size: 16px;
+}
+
+.submit-button {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #800080;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.submit-button:hover {
+  background: #a020a0;
+}
+
+.submit-button:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.merchant-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 300px;
+  width: 100%;
+  text-align: center;
+}
+
+.popup-content p {
+  margin-bottom: 20px;
+  color: white;
+}
+
+.popup-content button {
+  padding: 8px 16px;
+  background: #800080;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.merchant-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.approve-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.decline-button {
+  background-color: #f44336;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Eligibility card styles */
+.eligibility-container {
+  margin: 20px 0;
+}
+
+.error-card {
+  background: #222;
+  border: 1px solid #800080;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.error-icon {
+  color: #800080;
+  margin-right: 10px;
+}
+
+.error-message {
+  color: #ff6b6b;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.requirements {
+  margin-top: 20px;
+  text-align: left;
+  color: #b3b3b3;
+}
+
+.requirements h3 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #b3b3b3;
+}
+
+.requirements ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.requirements li {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.requirement-badge {
+  background: #800080;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-right: 10px;
+}
+
+/* Star rating styles */
+.star-rating {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+  justify-content: center;
+}
+
+.star {
+  color: #333;
+  font-size: 20px;
+}
+
+.star.filled {
+  color: #FFD700;
+}
+
+.rating-info {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .merchant-container {
+    margin: 20px 10px;
+    padding: 15px;
+  }
+}
+
+.read-only-input {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  border: 1px solid #ddd;
+  color: #555;
+}

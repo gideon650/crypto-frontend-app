@@ -3,173 +3,236 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #0d0d0d; /* Dark background */
+  min-height: 100vh;
+  background-color: #000000; /* Pure black background */
   padding: 20px;
   box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  /* Removed overflow-y: auto to use system default */
 }
 
-/* Auth box styling with purple border */
+/* Auth box styling - removed border and shadow for cleaner look */
 .auth-box {
-  background-color: #1a1a1a; /* Darker box */
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(128, 0, 128, 0.8); /* Purple glow */
-  border: 2px solid #800080; /* Updated Purple border */
+  background-color: transparent; /* Transparent background to match image */
+  padding: 20px 30px;
   width: 400px;
-  max-width: 100%; /* Mobile responsive */
+  max-width: 100%;
   box-sizing: border-box;
+  /* Removed max-height and overflow-y to prevent custom scrollbars */
 }
 
-/* Form headings */
+/* Form headings - larger and centered */
 .auth-box h2 {
   text-align: center;
-  margin-bottom: 20px;
-  color: #fff;
-  font-size: 24px;
+  margin-bottom: 24px;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
-/* Input fields (Black) */
+/* Input fields - rounded design like in the image */
 .auth-box input {
   width: 100%;
-  padding: 14px;
-  margin: 12px 0;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background-color: #000; /* Black input fields */
-  color: #fff;
-  font-size: 16px;
+  padding: 14px 20px;
+  margin: 10px 0;
+  border-radius: 50px; /* Fully rounded like in the image */
+  border: none;
+  background-color: #2a2a2a; /* Dark gray background */
+  color: #ffffff;
+  font-size: 15px;
   box-sizing: border-box;
+  outline: none;
+  transition: background-color 0.3s ease;
 }
 
-/* White placeholder */
+/* Input focus state */
+.auth-box input:focus {
+  background-color: #3a3a3a;
+}
+
+/* Placeholder styling */
 .auth-box input::placeholder {
-  color: #aaa;
+  color: #888888;
+  font-weight: 400;
 }
 
-/* Label styling */
+/* Remove label styling since we're using placeholders only */
 .auth-box label {
-  color: #ddd;
-  font-size: 14px;
-  margin-bottom: 5px;
-  display: block;
+  display: none;
 }
 
-/* Button styling (Exact Purple) */
+/* Button styling - rounded purple button */
 .auth-box button {
   width: 100%;
   padding: 14px;
-  margin-top: 10px;
+  margin-top: 16px;
   border: none;
-  border-radius: 8px;
-  background-color: #800080; /* Updated Purple */
+  border-radius: 50px; /* Fully rounded like in the image */
+  background: linear-gradient(135deg, #800080, #800080); /* Exact purple #800080 */
   color: white;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-/* Button hover effect (slightly darker purple) */
+/* Button hover effect */
 .auth-box button:hover {
-  background-color: #6e006e; /* Updated darker shade of purple */
-  transform: scale(1.02); /* Subtle zoom on hover */
+  background: linear-gradient(135deg, #6e006e, #9900aa);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(128, 0, 128, 0.3);
+}
+
+/* Button active state */
+.auth-box button:active {
+  transform: translateY(0);
 }
 
 /* Error text */
 .error-text {
-  color: #ff4d4f;
+  color: #ff4757;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   font-size: 14px;
+  background-color: rgba(255, 71, 87, 0.1);
+  padding: 12px;
+  border-radius: 25px;
+  border: 1px solid rgba(255, 71, 87, 0.3);
 }
 
-/* Toggle link */
+/* Toggle link - positioned below button */
 .auth-box p {
   text-align: center;
-  margin-top: 15px;
-  color: #aaa;
+  margin-top: 16px;
+  color: #888888;
   cursor: pointer;
   font-size: 14px;
+  transition: color 0.3s ease;
 }
 
 .auth-box p:hover {
-  text-decoration: underline;
+  color: #ffffff;
+  text-decoration: none;
 }
-
-  
-  /* Mobile responsiveness */
-  @media (max-width: 480px) {
-    .auth-box {
-      padding: 20px;
-    }
-  
-    .auth-box h2 {
-      font-size: 20px;
-    }
-  
-    .auth-box input,
-    .auth-box button {
-      padding: 12px;
-      font-size: 14px;
-    }
-  }
-
-  /* Add these new styles to your Auth.css file */
 
 /* Password input container */
 .password-input-container {
   position: relative;
   width: 100%;
-  margin: 12px 0;
+  margin: 10px 0;
 }
 
 /* Password toggle eye icon */
 .password-toggle {
   position: absolute;
-  right: 10px;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
   user-select: none;
-  color: #aaa;
-  font-size: 18px;
+  color: #888888;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: #ffffff;
 }
 
 /* Adjust the password input padding to make space for the eye icon */
 .password-input-container input {
-  padding-right: 40px !important; /* Make space for the eye icon */
+  padding-right: 50px !important;
   width: 100%;
-  padding: 14px;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background-color: #000;
-  color: #fff;
-  font-size: 16px;
+  padding: 14px 20px;
+  border-radius: 50px;
+  border: none;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  font-size: 15px;
   box-sizing: border-box;
+  outline: none;
+  transition: background-color 0.3s ease;
 }
 
-/* Telegram link styling */
+.password-input-container input:focus {
+  background-color: #3a3a3a;
+}
+
+/* Telegram link styling - positioned at bottom */
 .telegram-link {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 20px;
-  color: #800080; /* Exact purple color */
+  color: #800080;
   text-decoration: none;
   font-size: 14px;
+  font-weight: 500;
   transition: all 0.3s ease;
+  padding: 10px;
+  border-radius: 25px;
+  border: 1px solid rgba(128, 0, 128, 0.3);
+  background-color: rgba(128, 0, 128, 0.05);
 }
 
 .telegram-link:hover {
-  color: #a000a0; /* Slightly lighter purple on hover */
-  text-decoration: underline;
+  color: #9900aa;
+  background-color: rgba(128, 0, 128, 0.1);
+  border-color: rgba(128, 0, 128, 0.5);
+  transform: translateY(-1px);
 }
 
 .telegram-icon {
   margin-right: 8px;
   font-size: 18px;
-  color: #800080; /* Icon color to match */
+  color: inherit;
 }
 
-/* Rest of your existing CSS remains the same */
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 16px;
+  }
   
+  .auth-box {
+    padding: 32px 24px;
+    width: 100%;
+  }
+
+  .auth-box h2 {
+    font-size: 28px;
+    margin-bottom: 32px;
+  }
+
+  .auth-box input,
+  .password-input-container input {
+    padding: 16px 20px;
+    font-size: 15px;
+    margin: 12px 0;
+  }
+  
+  .password-input-container input {
+    padding-right: 55px !important;
+  }
+  
+  .password-toggle {
+    right: 20px;
+    font-size: 16px;
+  }
+
+  .auth-box button {
+    padding: 16px;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  
+  .telegram-link {
+    margin-top: 28px;
+    font-size: 14px;
+    padding: 10px;
+  }
+}

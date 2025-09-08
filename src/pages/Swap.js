@@ -217,6 +217,7 @@ const Swap = () => {
     const handleAssetSelect = (symbol) => {
         setSwapToAsset(symbol);
         setShowDropdown(false);
+        setSearchQuery("");
     };
 
     // Calculate minimum and maximum dates for the datetime-local input
@@ -232,42 +233,41 @@ const Swap = () => {
         <div className="swap-container">
             <h3>SWAP TOKEN</h3>
             
-            <div className="info-box">
-                <p>Swap from USDT to a different token and swap back to USDT at a scheduled time automatically.</p>
-                <p className="timezone-note">Current time (Africa/Lagos): {currentLagosTime}</p>
+            <div className="form-group">
+                <label>Quantity</label>
+                <input
+                    type="number"
+                    placeholder="Enter Amount"
+                    value={swapAmount}
+                    onChange={handleSwapAmountChange}
+                    disabled={isSubmitting}
+                    min={MINIMUM_SWAP_AMOUNT}
+                    step="0.01"
+                />
+                {amountError && swapAmount && (
+                    <p className="error-message">
+                        {getAmountErrorMessage()}
+                    </p>
+                )}
             </div>
             
-            <input
-                type="number"
-                placeholder="Enter Amount"
-                value={swapAmount}
-                onChange={handleSwapAmountChange}
-                disabled={isSubmitting}
-                min={MINIMUM_SWAP_AMOUNT}
-                step="0.01"
-            />
-            {amountError && swapAmount && (
-                <p className="error-message" style={{ color: 'red', marginTop: '5px' }}>
-                    {getAmountErrorMessage()}
-                </p>
-            )}
-            
-            <div className="input-group">
-                <label>Swap from:</label>
+            <div className="form-group">
+                <label>Swap From</label>
                 <input 
                     type="text" 
-                    value={usdtAsset ? `${usdtAsset.name} (USDT)` : "USDT"} 
+                    placeholder="Enter Token USDT"
+                    value="Enter Token USDT"
                     disabled={true}
                     className="disabled-input"
                 />
             </div>
             
-            <div className="input-group token-search-container">
-                <label>Swap to:</label>
+            <div className="form-group token-search-container">
+                <label>Swap To</label>
                 <div className="search-dropdown-container" ref={dropdownRef}>
                     <input
                         type="text"
-                        placeholder="Search for token..."
+                        placeholder={swapToAsset || "Enter Token"}
                         value={searchQuery}
                         onChange={(e) => {
                             setSearchQuery(e.target.value);
@@ -276,12 +276,6 @@ const Swap = () => {
                         onFocus={() => setShowDropdown(true)}
                         disabled={isSubmitting}
                     />
-                    
-                    {swapToAsset && (
-                        <div className="selected-token">
-                            Selected: {assets.find(a => a.symbol === swapToAsset)?.name} ({swapToAsset})
-                        </div>
-                    )}
                     
                     {showDropdown && filteredAssets.length > 0 && (
                         <div className="token-dropdown">
@@ -304,48 +298,56 @@ const Swap = () => {
                 </div>
             </div>
             
-            <div className="input-group">
-                <label>Swap Back:</label>
+            <div className="form-group">
+                <label>Swap Back</label>
                 <input 
                     type="text" 
-                    value={usdtAsset ? `${usdtAsset.name} (USDT)` : "USDT"} 
+                    placeholder="Enter Token"
+                    value="Enter Token"
                     disabled={true}
                     className="disabled-input"
                 />
             </div>
             
-            <div className="input-group">
-                <label>Duration:</label>
+            <div className="form-group">
+                <label>Duration</label>
                 <input
                     type="datetime-local"
-                    placeholder="Swap back time"
+                    placeholder="14:30 16 05"
                     value={swapBackTime}
                     onChange={handleSwapBackTimeChange}
                     disabled={isSubmitting}
                     min={getMinDateTime()}
                     max={getMaxDateTime()}
                 />
-                {timeError && <p className="error-message" style={{ color: 'red' }}>{timeError}</p>}
-                <p className="helper-text">Must be between 5 minutes and 30 days from now (Africa/Lagos time)</p>
+                {timeError && <p className="error-message">{timeError}</p>}
             </div>
             
-            <button
-                className="circle-swap-btn"
-                onClick={handleSwap}
-                disabled={
-                    isSubmitting || 
-                    timeError || 
-                    !swapToAsset || 
-                    (amountError && swapAmount) || // Only disable if there's an error AND user has entered something
-                    !swapAmount // Also disable if no amount is entered
-                }
-            >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 16L3 12M3 12L7 8M3 12H21" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M17 8L21 12M21 12L17 16M21 12H3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+            <div className="swap-button-container">
+                <img 
+                    src="/images/swap-logo.png" 
+                    alt="Swap Logo" 
+                    className="swap-logo-image"
+                    onClick={handleSwap}
+                    style={{
+                        opacity: (
+                            isSubmitting || 
+                            timeError || 
+                            !swapToAsset || 
+                            (amountError && swapAmount) || 
+                            !swapAmount
+                        ) ? 0.5 : 1,
+                        cursor: (
+                            isSubmitting || 
+                            timeError || 
+                            !swapToAsset || 
+                            (amountError && swapAmount) || 
+                            !swapAmount
+                        ) ? 'not-allowed' : 'pointer'
+                    }}
+                />
                 {isSubmitting && <span className="loading-text">...</span>}
-            </button>
+            </div>
             
             {message && (
                 <p 
@@ -354,13 +356,12 @@ const Swap = () => {
                         "success-message" : 
                         "error-message"
                     }
-                    style={{ color: message.includes("successfully") ? '' : 'red' }}
                 >
                     {message}
                 </p>
             )}
             {hasPendingSwap && (
-                <p className="status-info">
+                <p className="status-message">
                     You have pending swap requests. New requests will be processed as long as you have sufficient balance.
                 </p>
             )}

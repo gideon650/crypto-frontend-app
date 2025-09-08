@@ -22,10 +22,18 @@ const Trade = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [error, setError] = useState(null);
   const [tradeError, setTradeError] = useState(null);
+  const [inputType, setInputType] = useState("amount"); // "quantity" or "amount"
+  const [showGridlines, setShowGridlines] = useState(true); // New state for gridlines toggle
   const chartContainerRef = useRef();
   const chartInstanceRef = useRef(null);
   const candleSeriesRef = useRef(null);
   const [searchParams] = useSearchParams();
+
+  // Filter function to exclude USDT
+  const filterOutUSDT = (tokens) => {
+    return tokens.filter(asset => asset.symbol !== 'USDT');
+  };
+  
 
   const filteredAssets = assets.filter(asset => {
     if (!searchTerm) return true;
@@ -39,8 +47,9 @@ const Trade = () => {
   useEffect(() => {
     const tokenFromUrl = searchParams.get('token');
     if (tokenFromUrl && assets.length > 0) {
+      // Only allow selection if the token exists and is not USDT
       const assetExists = assets.some(asset => asset.symbol === tokenFromUrl);
-      if (assetExists) {
+      if (assetExists && tokenFromUrl !== 'USDT') {
         setSelectedAsset(tokenFromUrl);
         fetchCandlestickData(tokenFromUrl, interval);
       }
@@ -54,11 +63,14 @@ const Trade = () => {
       const config = { headers: { Authorization: `Token ${token}` } };
       const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/crypto-prices/`, config);
       const assetList = response.data.cryptocurrencies || [];
-      setAssets(assetList);
+      
+      // Filter out USDT from the assets list
+      const filteredAssetList = filterOutUSDT(assetList);
+      setAssets(filteredAssetList);
 
-      if (assetList.length > 0 && !searchParams.get('token')) {
-        setSelectedAsset(assetList[0].symbol);
-        fetchCandlestickData(assetList[0].symbol, interval);
+      if (filteredAssetList.length > 0 && !searchParams.get('token')) {
+        setSelectedAsset(filteredAssetList[0].symbol);
+        fetchCandlestickData(filteredAssetList[0].symbol, interval);
       }
       setLoading(false);
     } catch (error) {
@@ -111,15 +123,47 @@ const Trade = () => {
   };
 
   const handleAmountChange = (e) => {
-    setAmount(e.target.value);
+    const value = e.target.value;
+    setAmount(value);
+    
     // Clear trade error when user changes amount
     if (tradeError) {
       setTradeError(null);
     }
+
+    // Check for minimum amounts and set error if below threshold
+    if (value && !isNaN(parseFloat(value))) {
+      const numValue = parseFloat(value);
+      if (inputType === "amount" && numValue > 0 && numValue < 3) {
+        setTradeError("Minimum amount is $3");
+      } else if (inputType === "quantity" && numValue > 0 && numValue < 100) {
+        setTradeError("Minimum quantity is 100");
+      }
+    }
+  };
+
+  // New function to toggle gridlines
+  const toggleGridlines = () => {
+    setShowGridlines(!showGridlines);
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.applyOptions({
+        grid: {
+          vertLines: { 
+            color: showGridlines ? 'transparent' : 'rgba(42, 46, 57, 0.6)',
+            style: 0,
+            visible: !showGridlines
+          },
+          horzLines: { 
+            color: showGridlines ? 'transparent' : 'rgba(42, 46, 57, 0.6)',
+            style: 0,
+            visible: !showGridlines
+          }
+        }
+      });
+    }
   };
 
   const handleTrade = async (type) => {
-    // Clear previous trade error
     setTradeError(null);
 
     if (!selectedAsset || !amount) {
@@ -134,31 +178,48 @@ const Trade = () => {
       return;
     }
 
-    // Check minimum and maximum amounts for buy trades
+    // Check minimum amounts for buy trades
     if (type === "buy") {
-      if (amountValue < 100) {
-        setTradeError("Minimum amount is 100");
+      if (inputType === "amount" && amountValue < 3) {
+        setTradeError("Minimum amount is $3");
         return;
       }
-      if (amountValue > 1000000) {
-        setTradeError("Maximum amount is 1000000");
+      if (inputType === "quantity" && amountValue < 100) {
+        setTradeError("Minimum quantity is 100");
         return;
       }
+    }
+
+    // Check maximum amount for buy trades (only when using dollar amount)
+    if (type === "buy" && inputType === "amount" && amountValue > 1000) {
+      setTradeError("Maximum amount is $1000");
+      return;
     }
 
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
       const config = { headers: { Authorization: `Token ${token}` } };
+      
+      const payload = {
+        symbol: selectedAsset,
+        trade_type: type.toUpperCase(),
+        input_type: inputType
+      };
+
+      // Add the appropriate field based on input type
+      if (inputType === "amount") {
+        payload.amount = amountValue;
+      } else {
+        payload.quantity = amountValue;
+      }
+
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/trade/`,
-        { 
-          symbol: selectedAsset, 
-          amount: amountValue, 
-          trade_type: type.toUpperCase() 
-        },
+        payload,
         config
       );
+
       if (response.data.status === "success") {
         alert(`${type.toUpperCase()} order successful: ${response.data.message}`);
         setAmount("");
@@ -195,23 +256,26 @@ const Trade = () => {
   };
 
   const getTickSize = (price) => {
+    if (price < 0.00001) return 0.000001;
     if (price < 0.0001) return 0.00001;
     if (price < 0.001) return 0.0001;
     if (price < 0.01) return 0.001;
     if (price < 0.1) return 0.01;
     if (price < 1) return 0.1;
-    if (price < 10) return 0.5;
+    if (price < 10) return 0.01;
+    if (price < 100) return 0.1;
     return 1;
   };
 
   const getPrecision = (price) => {
-    if (price < 0.0001) return 8;
+    if (price < 0.00001) return 8;
+    if (price < 0.0001) return 7;
     if (price < 0.001) return 6;
     if (price < 0.01) return 5;
     if (price < 0.1) return 4;
     if (price < 1) return 3;
     if (price < 10) return 2;
-    return 1;
+    return 2;
   };
 
   useEffect(() => {
@@ -235,7 +299,10 @@ const Trade = () => {
 
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
-    const padding = (maxPrice - minPrice) * 0.1;
+    
+    // Improved price range calculation
+    const priceRange = maxPrice - minPrice;
+    const padding = Math.max(priceRange * 0.05, maxPrice * 0.001); // 5% of range or 0.1% of max price
 
     const priceFormatter = new Intl.NumberFormat('en-US', {
       minimumFractionDigits: getPrecision(maxPrice),
@@ -250,14 +317,17 @@ const Trade = () => {
         textColor: "#D9D9D9",
         fontSize: 12
       },
+      // Enhanced gridlines configuration
       grid: {
         vertLines: { 
-          color: 'rgba(42, 46, 57, 0.2)',
-          style: 1
+          color: showGridlines ? 'rgba(42, 46, 57, 0.6)' : 'transparent',
+          style: 0, // Solid line
+          visible: showGridlines
         },
         horzLines: { 
-          color: 'rgba(42, 46, 57, 0.2)',
-          style: 1 
+          color: showGridlines ? 'rgba(42, 46, 57, 0.6)' : 'transparent',
+          style: 0, // Solid line
+          visible: showGridlines
         }
       },
       crosshair: {
@@ -282,9 +352,9 @@ const Trade = () => {
         barSpacing: 12,
         minBarSpacing: 8,
         rightOffset: 12,
-        fixLeftEdge: true,
-        fixRightEdge: true,
-        lockVisibleTimeRangeOnResize: true,
+        fixLeftEdge: false,
+        fixRightEdge: false,
+        lockVisibleTimeRangeOnResize: false,
         tickMarkFormatter: (time) => {
           const date = new Date(time * 1000);
           return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -293,15 +363,18 @@ const Trade = () => {
       rightPriceScale: {
         borderColor: "rgba(42, 46, 57, 0.8)",
         scaleMargins: {
-          top: 0.1,
-          bottom: 0.1
+          top: 0.05,
+          bottom: 0.05
         },
         autoScale: true,
-        mode: 1,
+        mode: 0, // Normal mode instead of percentage
         alignLabels: true,
         borderVisible: true,
         ticksVisible: true,
-        entireTextOnly: true
+        entireTextOnly: false,
+        visible: true,
+        // Force minimum and maximum visible range
+        minimumWidth: 80,
       },
       handleScroll: {
         mouseWheel: true,
@@ -326,8 +399,8 @@ const Trade = () => {
       wickUpColor: '#4CAF50',
       wickDownColor: '#FF5252',
       priceFormat: {
-        type: 'custom',
-        formatter: price => priceFormatter.format(price),
+        type: 'price',
+        precision: getPrecision(maxPrice),
         minMove: getTickSize(maxPrice)
       },
       lastValueVisible: true,
@@ -339,39 +412,99 @@ const Trade = () => {
 
     candleSeriesRef.current = candleSeries;
 
-    const formattedData = candlestickData.map(item => ({
-      time: typeof item.time === 'number' ? item.time : parseInt(item.time),
-      open: parseFloat(item.open),
-      high: parseFloat(item.high),
-      low: parseFloat(item.low),
-      close: parseFloat(item.close)
-    }));
+    // Ensure proper data formatting and sorting
+    const formattedData = candlestickData
+      .map(item => ({
+        time: typeof item.time === 'number' ? item.time : parseInt(item.time),
+        open: parseFloat(item.open),
+        high: parseFloat(item.high),
+        low: parseFloat(item.low),
+        close: parseFloat(item.close)
+      }))
+      .filter(item => 
+        !isNaN(item.time) && 
+        !isNaN(item.open) && 
+        !isNaN(item.high) && 
+        !isNaN(item.low) && 
+        !isNaN(item.close)
+      )
+      .sort((a, b) => a.time - b.time); // Ensure chronological order
 
-    const validData = formattedData.filter(item => 
-      !isNaN(item.time) && 
-      !isNaN(item.open) && 
-      !isNaN(item.high) && 
-      !isNaN(item.low) && 
-      !isNaN(item.close)
-    );
+    candleSeries.setData(formattedData);
 
-    candleSeries.setData(validData);
-
-    if (validData.length > 0) {
+    // Set visible range to show recent data
+    if (formattedData.length > 0) {
+      const startIndex = Math.max(0, formattedData.length - 50); // Show last 50 candles
       const timeRange = {
-        from: validData[0].time,
-        to: validData[validData.length - 1].time
+        from: formattedData[startIndex].time,
+        to: formattedData[formattedData.length - 1].time
       };
-      chart.timeScale().setVisibleRange(timeRange);
+      
+      // Small delay to ensure chart is rendered
+      setTimeout(() => {
+        chart.timeScale().setVisibleRange(timeRange);
+        
+        // Set price range with padding
+        chart.priceScale('right').applyOptions({
+          scaleMargins: {
+            top: 0.1,
+            bottom: 0.1
+          }
+        });
+      }, 100);
     }
 
+    // Custom autoscale to ensure proper Y-axis scaling
     candleSeries.applyOptions({
-      autoscaleInfoProvider: () => ({
-        priceRange: {
-          minValue: minPrice - padding,
-          maxValue: maxPrice + padding
+      autoscaleInfoProvider: () => {
+        // Get visible data range
+        const timeScale = chart.timeScale();
+        const visibleRange = timeScale.getVisibleRange();
+        
+        if (!visibleRange) {
+          return {
+            priceRange: {
+              minValue: minPrice - padding,
+              maxValue: maxPrice + padding
+            },
+            margins: {
+              above: 10,
+              below: 10
+            }
+          };
         }
-      })
+        
+        // Filter data for visible range
+        const visibleData = formattedData.filter(item => 
+          item.time >= visibleRange.from && item.time <= visibleRange.to
+        );
+        
+        if (visibleData.length === 0) {
+          return {
+            priceRange: {
+              minValue: minPrice - padding,
+              maxValue: maxPrice + padding
+            }
+          };
+        }
+        
+        const visiblePrices = visibleData.flatMap(item => [item.high, item.low]);
+        const visibleMin = Math.min(...visiblePrices);
+        const visibleMax = Math.max(...visiblePrices);
+        const visibleRange_price = visibleMax - visibleMin;
+        const visiblePadding = Math.max(visibleRange_price * 0.05, visibleMax * 0.001);
+        
+        return {
+          priceRange: {
+            minValue: visibleMin - visiblePadding,
+            maxValue: visibleMax + visiblePadding
+          },
+          margins: {
+            above: 5,
+            below: 5
+          }
+        };
+      }
     });
 
     window.addEventListener('resize', handleChartResize);
@@ -380,7 +513,7 @@ const Trade = () => {
       window.removeEventListener('resize', handleChartResize);
       cleanupChart();
     };
-  }, [candlestickData]);
+  }, [candlestickData, showGridlines]); // Added showGridlines to dependencies
 
   useEffect(() => {
     if (!selectedAsset) return;
@@ -458,7 +591,7 @@ const Trade = () => {
       
       {error && (
         <div className="error-message">
-          <span className="error-icon">⚠</span>
+          <span className="error-icon">⚠️</span>
           <span>{error}</span>
         </div>
       )}
@@ -543,6 +676,18 @@ const Trade = () => {
                 </select>
               </div>
 
+              {/* New gridlines toggle button */}
+              <div className="chart-controls">
+                <button
+                  className={`grid-toggle-btn ${showGridlines ? 'active' : ''}`}
+                  onClick={toggleGridlines}
+                  title="Toggle gridlines"
+                >
+                  <span className="grid-icon">⊞</span>
+                  <span>Grid</span>
+                </button>
+              </div>
+
               {selectedAssetObj && (
                 <div className="current-price">
                   <span className="price-label">Current Price:</span>
@@ -622,15 +767,43 @@ const Trade = () => {
               <div className="trade-form">
                 <h3>Trade {selectedAssetObj ? selectedAssetObj.symbol : ''}</h3>
                 <div className="trade-actions">
+                  {/* Input type selector */}
+                  <div className="input-type-selector">
+                    <div className="radio-group">
+                      <label className="radio-label">
+                        <input
+                          type="radio"
+                          value="amount"
+                          checked={inputType === "amount"}
+                          onChange={(e) => setInputType(e.target.value)}
+                        />
+                        <span>Dollar Amount ($)</span>
+                      </label>
+                      <label className="radio-label">
+                        <input
+                          type="radio"
+                          value="quantity"
+                          checked={inputType === "quantity"}
+                          onChange={(e) => setInputType(e.target.value)}
+                        />
+                        <span>Quantity</span>
+                      </label>
+                    </div>
+                  </div>
+
                   <div className="input-group">
-                    <label htmlFor="trade-amount">Amount</label>
+                    <label htmlFor="trade-amount">
+                      {inputType === "amount" ? "Amount ($)" : "Quantity"}
+                    </label>
                     <input
                       id="trade-amount"
                       type="number"
-                      placeholder="Enter amount..."
+                      placeholder={inputType === "amount" ? "Enter dollar amount..." : "Enter quantity..."}
                       value={amount}
                       onChange={handleAmountChange}
                       disabled={loading || !selectedAsset}
+                      step={inputType === "amount" ? "0.01" : "0.000001"}
+                      min="0"
                     />
                     {tradeError && (
                       <div className="trade-error-message" style={{color: 'red', fontSize: '14px', marginTop: '5px'}}>
@@ -638,6 +811,17 @@ const Trade = () => {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Display conversion info */}
+                  {amount && selectedAssetObj && (
+                    <div className="conversion-info">
+                      {inputType === "amount" ? (
+                        <span>≈ {(parseFloat(amount) / parseFloat(selectedAssetObj.price_usd)).toFixed(6)} {selectedAssetObj.symbol}</span>
+                      ) : (
+                        <span>≈ ${(parseFloat(amount) * parseFloat(selectedAssetObj.price_usd)).toFixed(2)}</span>
+                      )}
+                    </div>
+                  )}
                   <div className="button-group">
                     <button 
                       className="buy-btn" 
@@ -651,7 +835,7 @@ const Trade = () => {
                         </>
                       ) : (
                         <>
-                          <span className="trade-icon">↑</span>
+                          <span className="trade-icon">↗</span>
                           <span>Buy</span>
                         </>
                       )}
@@ -668,7 +852,7 @@ const Trade = () => {
                         </>
                       ) : (
                         <>
-                          <span className="trade-icon">↓</span>
+                          <span className="trade-icon">↙</span>
                           <span>Sell</span>
                         </>
                       )}

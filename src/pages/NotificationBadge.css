@@ -1,0 +1,53 @@
+/* Notification Badge - Integrated with Settings Icon */
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4757;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  animation: pulse 2s infinite;
+  z-index: 1001;
+  cursor: pointer;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+  .notification-badge {
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+    top: -4px;
+    right: -4px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .notification-badge {
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+    top: -3px;
+    right: -3px;
+  }
+}

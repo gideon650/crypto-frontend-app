@@ -903,3 +903,120 @@ body {
   background-position: right 16px center;
   background-size: 16px;
 }
+
+.input-type-selector {
+  margin-bottom: 15px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #D9D9D9;
+}
+
+.radio-label input[type="radio"] {
+  margin: 0;
+}
+
+.conversion-info {
+  text-align: center;
+  color: #758696;
+  font-size: 14px;
+  margin-bottom: 15px;
+  padding: 8px;
+  background: rgba(42, 46, 57, 0.3);
+  border-radius: 4px;
+}
+
+/* Add these styles to your existing Trade.css file */
+
+/* Chart controls container */
+.chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Grid toggle button styling */
+.grid-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #D9D9D9;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.grid-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.grid-toggle-btn.active {
+  background: rgba(74, 175, 80, 0.2);
+  border-color: #4CAF50;
+  color: #4CAF50;
+}
+
+.grid-toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.grid-icon {
+  font-size: 14px;
+}
+
+/* Enhanced asset selector container to accommodate new controls */
+.asset-selector-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .asset-selector-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .chart-controls {
+    justify-content: center;
+  }
+  
+  .grid-toggle-btn {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-toggle-btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 60px;
+  }
+}
+

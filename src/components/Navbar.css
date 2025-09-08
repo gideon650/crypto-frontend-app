@@ -97,3 +97,31 @@
         min-width: 60px;
     }
 }
+
+/* Add to existing Navbar.css */
+.settings-with-bell {
+  position: relative;
+  display: inline-block;
+}
+
+/* Notification badge positioning */
+.settings-with-bell .notification-badge-container {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+  .settings-with-bell .notification-badge-container {
+    top: -3px;
+    right: -3px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .settings-with-bell .notification-badge-container {
+    top: -2px;
+    right: -2px;
+  }
+}

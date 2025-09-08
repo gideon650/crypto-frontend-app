@@ -1,129 +1,153 @@
-/* Swap.css */
-/* Swap.css - Dark Theme with Purple Accents */
+/* Swap.css - Updated to match the design */
 .swap-container {
-  background-color: #121212;
+  background-color: #000000;
   color: white;
-  padding: 20px;
+  padding: 40px 30px;
   border-radius: 12px;
   max-width: 400px;
   margin: 30px auto;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-  border: 2px solid #800080; /* Purple border */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  border: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .swap-container h3 {
   text-align: center;
-  margin-bottom: 20px;
-  color: #c084fc; /* Light purple */
+  margin-bottom: 40px;
+  color: white;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
-/* Form elements styling */
+/* Form groups styling */
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: white;
+  font-size: 16px;
+}
+
+/* Input styling to match the design */
 .swap-container input,
 .swap-container select {
   width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #800080; /* Purple */
-  border-radius: 8px;
-  background-color: black;
+  padding: 18px 20px;
+  border: none;
+  border-radius: 25px;
+  background-color: #2a2a2a;
   color: white;
   font-size: 16px;
-  box-sizing: border-box; /* Ensures padding doesn't affect width */
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.3s ease;
 }
 
 .swap-container input::placeholder {
-  color: #aaa;
+  color: #888;
+  font-size: 16px;
 }
 
-/* Input groups for labeled inputs */
-.input-group {
-  margin-bottom: 15px;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-  color: #c084fc; /* Light purple */
+.swap-container input:focus {
+  background-color: #333;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 /* Disabled input styling */
 .disabled-input {
-  background-color: #1a1a1a !important;
+  background-color: #2a2a2a !important;
   color: #888 !important;
-  border: 1px solid #444 !important;
+  cursor: not-allowed;
 }
 
-/* Helper text and error styling */
-.helper-text {
-  font-size: 12px;
-  color: #888;
-  margin-top: 5px;
-}
-
+/* Error and success messages */
 .error-message {
   color: #ff6b6b;
   font-size: 13px;
-  margin-top: 5px;
+  margin-top: 8px;
+  margin-bottom: 0;
 }
 
 .success-message {
   color: #4ade80;
   background-color: rgba(74, 222, 128, 0.1);
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
-  margin-top: 15px;
+  margin-top: 20px;
   border-left: 4px solid #4ade80;
+  font-size: 14px;
 }
 
 .status-message {
-  margin-top: 15px;
-  padding: 10px;
+  margin-top: 20px;
+  padding: 12px;
   text-align: center;
   font-size: 14px;
-  color: #c084fc; /* Light purple */
+  color: #c084fc;
   background-color: rgba(192, 132, 252, 0.1);
   border-radius: 8px;
 }
 
-/* Circle Swap Button - Matching the image */
-.circle-swap-btn {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #E600E6; /* Bright magenta color */
-  border: none;
-  color: white;
+/* Swap Button Container - Centralized */
+.swap-button-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 20px auto;
+  margin: 40px auto;
+  position: relative;
+  width: 100%;
+}
+
+/* Updated Logo Swap Button - Centralized */
+.swap-logo-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #8B5CF6;
+  filter: brightness(1.2);
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  display: block;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
-.circle-swap-btn:hover {
-  background-color: #FF00FF; /* Brighter magenta on hover */
+.swap-logo-image:hover {
   transform: scale(1.05);
+  box-shadow: 0 10px 35px rgba(139, 92, 246, 0.6);
+  filter: brightness(1.4);
 }
 
-.circle-swap-btn:disabled {
-  background-color: #666;
-  cursor: not-allowed;
-  opacity: 0.7;
-  transform: none;
+.swap-logo-image:active {
+  transform: scale(0.95);
 }
 
-.circle-swap-btn svg {
-  width: 24px;
-  height: 24px;
-}
-
+/* Loading text styling */
 .loading-text {
   position: absolute;
   color: white;
-  font-size: 10px;
+  font-size: 12px;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Token Search Dropdown Styles */
@@ -142,15 +166,15 @@
   max-height: 200px;
   overflow-y: auto;
   background-color: #1a1a1a;
-  border: 1px solid #800080;
-  border-radius: 8px;
+  border: 1px solid #333;
+  border-radius: 12px;
   z-index: 10;
   margin-top: 5px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .token-option {
-  padding: 10px;
+  padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -169,43 +193,25 @@
 
 .token-name {
   font-weight: 500;
+  color: white;
 }
 
 .token-symbol {
   color: #c084fc;
   font-size: 14px;
   background-color: rgba(192, 132, 252, 0.1);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.selected-token {
-  margin-top: 8px;
-  padding: 6px 10px;
-  background-color: rgba(192, 132, 252, 0.1);
-  border-left: 3px solid #c084fc;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .no-results {
-  padding: 15px;
+  padding: 20px;
   text-align: center;
   color: #888;
   background-color: #1a1a1a;
   border: 1px solid #333;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-top: 5px;
-}
-
-.info-box {
-  background-color: rgba(192, 132, 252, 0.1);
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 15px;
-  font-size: 14px;
-  line-height: 1.4;
-  border-left: 3px solid #c084fc;
 }
 
 /* Mobile responsiveness */
@@ -213,57 +219,85 @@
   .swap-container {
     max-width: 100%;
     margin: 15px;
-    padding: 15px;
+    padding: 25px 20px;
     border-radius: 8px;
   }
   
   .swap-container input,
   .swap-container select {
-    padding: 10px;
+    padding: 15px 18px;
     font-size: 14px;
   }
   
   .swap-container h3 {
     font-size: 18px;
+    margin-bottom: 30px;
   }
   
-  .status-message,
-  .success-message,
-  .info-box {
-    font-size: 13px;
-    padding: 8px;
+  .form-group {
+    margin-bottom: 20px;
   }
   
-  .circle-swap-btn {
-    width: 50px;
-    height: 50px;
+  .form-group label {
+    font-size: 14px;
+  }
+  
+  .swap-button-container {
+    margin: 30px auto;
+  }
+  
+  .swap-logo-image {
+    width: 70px;
+    height: 70px;
   }
   
   .token-dropdown {
     max-height: 180px;
+  }
+  
+  .token-option {
+    padding: 12px;
   }
 }
 
 /* For very small screens */
 @media screen and (max-width: 320px) {
   .swap-container {
-    padding: 10px;
+    padding: 20px 15px;
     margin: 10px;
   }
   
   .swap-container input,
   .swap-container select {
-    padding: 8px;
+    padding: 12px 15px;
     font-size: 13px;
   }
   
-  .circle-swap-btn {
-    width: 45px;
-    height: 45px;
+  .swap-logo-image {
+    width: 60px;
+    height: 60px;
   }
   
   .token-option {
-    padding: 8px;
+    padding: 10px;
     font-size: 13px;
   }
+}
+
+/* Custom scrollbar for dropdown */
+.token-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.token-dropdown::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.token-dropdown::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 3px;
+}
+
+.token-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #888;
 }

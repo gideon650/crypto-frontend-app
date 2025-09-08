@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaTelegram } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Auth.css";
 
-const Auth = () => {
+const Auth = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [identifier, setIdentifier] = useState(""); // Username or Email for login
   const [username, setUsername] = useState("");
@@ -15,7 +15,19 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if user was redirected here due to session expiry
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const expired = urlParams.get('expired');
+    if (expired === 'true') {
+      setError('Your session has expired due to inactivity. Please log in again.');
+    }
+  }, [location]);
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -32,10 +44,12 @@ const Auth = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     // Add password confirmation check for signup
     if (!isLogin && password !== confirmPassword) {
       setError("Passwords do not match");
+      setIsLoading(false);
       return;
     }
 
@@ -56,11 +70,10 @@ const Auth = () => {
         const data = await response.json();
 
         if (response.ok) {
-          // Store token in localStorage
-          if (data.token) {
-            localStorage.setItem("token", data.token);
-            alert("Login successful!");
-            navigate("/dashboard");
+          // Store token in localStorage and call onLogin
+          if (data.token && onLogin) {
+            await onLogin(data);
+            navigate("/dashboard", { replace: true });
           } else {
             setError("Login successful but no token received. Please try again.");
           }
@@ -72,7 +85,7 @@ const Auth = () => {
         setError("Network error. Please check your connection and try again.");
       }
     } else {
-      // SIGNUP FLOW - Updated to handle backend response properly
+      // SIGNUP FLOW
       try {
         const registerResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/register/`, {
           method: "POST",
@@ -90,10 +103,7 @@ const Auth = () => {
         const registerData = await registerResponse.json();
 
         if (registerResponse.ok) {
-          alert("Registration successful! Please log in with your credentials.");
-          
-          // Since backend doesn't return token on registration, 
-          // automatically attempt login after successful registration
+          // Registration successful - now auto-login
           try {
             const loginResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/login/`, {
               method: "POST",
@@ -108,20 +118,19 @@ const Auth = () => {
 
             const loginData = await loginResponse.json();
 
-            if (loginResponse.ok && loginData.token) {
-              localStorage.setItem("token", loginData.token);
-              alert("Logged in successfully!");
-              navigate("/dashboard");
+            if (loginResponse.ok && loginData.token && onLogin) {
+              await onLogin(loginData);
+              navigate("/dashboard", { replace: true });
             } else {
               // Registration succeeded but auto-login failed
-              alert("Registration successful! Please log in manually.");
+              setError("Registration successful! Please log in manually.");
               setIsLogin(true); // Switch to login form
               setIdentifier(username); // Pre-fill username
               setPassword(""); // Clear password for security
             }
           } catch (loginErr) {
             console.error("Error during auto-login:", loginErr);
-            alert("Registration successful! Please log in manually.");
+            setError("Registration successful! Please log in manually.");
             setIsLogin(true);
             setIdentifier(username);
             setPassword("");
@@ -133,8 +142,7 @@ const Auth = () => {
           } else if (typeof registerData === "object") {
             // Handle validation errors from serializer
             const errors = [];
-            // eslint-disable-next-line no-unused-vars
-            for (const [field, messages] of Object.entries(registerData)) {
+            for (const [, messages] of Object.entries(registerData)) {
               if (Array.isArray(messages)) {
                 errors.push(...messages);
               } else {
@@ -151,12 +159,14 @@ const Auth = () => {
         setError("Network error. Please check your connection and try again.");
       }
     }
+    
+    setIsLoading(false);
   };
 
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h2>{isLogin ? "Login" : "Sign Up"}</h2>
+        <h2>{isLogin ? "LOGIN" : "SIGN UP"}</h2>
         {error && <p className="error-text">{error}</p>}
         <form onSubmit={handleSubmit}>
           {!isLogin && (
@@ -167,6 +177,7 @@ const Auth = () => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                disabled={isLoading}
               />
               <input
                 type="email"
@@ -174,12 +185,14 @@ const Auth = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
               <input
                 type="text"
                 placeholder="Referral Code (optional)"
                 value={referralCode}
                 onChange={(e) => setReferralCode(e.target.value)}
+                disabled={isLoading}
               />
             </>
           )}
@@ -190,6 +203,7 @@ const Auth = () => {
               required
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
+              disabled={isLoading}
             />
           )}
           
@@ -201,14 +215,15 @@ const Auth = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
             <span 
               className="password-toggle"
               onClick={() => isLogin ? setShowLoginPassword(!showLoginPassword) : setShowPassword(!showPassword)}
             >
               {isLogin 
-                ? (showLoginPassword ? "👁️" : "👁️‍🗨️") 
-                : (showPassword ? "👁️" : "👁️‍🗨️")
+                ? (showLoginPassword ? "🙈" : "👁️") 
+                : (showPassword ? "🙈" : "👁️")
               }
             </span>
           </div>
@@ -222,23 +237,28 @@ const Auth = () => {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isLoading}
               />
               <span 
                 className="password-toggle"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
+                {showConfirmPassword ? "🙈" : "👁️"}
               </span>
             </div>
           )}
           
-          <button type="submit">{isLogin ? "Login" : "Sign Up"}</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Processing..." : (isLogin ? "Login" : "Sign Up")}
+          </button>
         </form>
-        <p onClick={toggleForm} style={{ cursor: "pointer", marginTop: "10px" }}>
+        
+        <p onClick={toggleForm} style={{ cursor: isLoading ? 'not-allowed' : 'pointer' }}>
           {isLogin
             ? "Don't have an account? Sign Up"
             : "Already have an account? Login"}
         </p>
+        
         <a 
           href="https://t.me/Swapview" 
           target="_blank" 

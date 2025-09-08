@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import BEP20QR from '../assets/images/BEP20.png';  // Adjust path as needed
+import BEP20QR from '../assets/images/BEP20.png';
 import TRC20QR from '../assets/images/TRC20.png';
 import SOLQR from '../assets/images/SOL.png';
 import ERC20QR from '../assets/images/ERC20.png';
 import "./Wallet.css";
 
 const Wallet = () => {
-  const [tab, setTab] = useState("deposit"); // 'deposit', 'withdraw', or 'history'
-  const [depositMethod, setDepositMethod] = useState(""); // 'naira' or 'crypto'
-  const [withdrawMethod, setWithdrawMethod] = useState(""); // 'naira', 'usdt', 'internal', 'onchain'
-  const [cryptoOption, setCryptoOption] = useState(""); // 'alreadyHave' or 'buy'
-  const [depositCryptoType, setDepositCryptoType] = useState(""); // 'alreadyHave' or 'viaBuybit'
-  const [network, setNetwork] = useState(""); // For on-chain deposit
-  const [chain, setChain] = useState(""); // For on-chain withdrawal
+  // State variables
+  const [tab, setTab] = useState("deposit");
+  const [depositMethod, setDepositMethod] = useState("");
+  const [withdrawMethod, setWithdrawMethod] = useState("");
+  const [depositCryptoType, setDepositCryptoType] = useState("");
+  const [network, setNetwork] = useState("");
+  const [chain, setChain] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [trades, setTrades] = useState([]);
   const [deposits, setDeposits] = useState([]);
@@ -22,39 +22,36 @@ const Wallet = () => {
   const [showBuyTrades, setShowBuyTrades] = useState(true);
   const [showSellTrades, setShowSellTrades] = useState(true);
   const [bankAccount, setBankAccount] = useState("");
-  const [bankAccountNumber, setBankAccountNumber] = useState("");
   const [bankName, setBankName] = useState("");
   const [accountName, setAccountName] = useState("");
   const [bybitEmail, setBybitEmail] = useState("");
   const [internalWalletId, setInternalWalletId] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
-  const [message, setMessage] = useState("");
-  const [usdToNgn, setUsdToNgn] = useState(1500); // Default/fallback rate
-  const [userBalance, setUserBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
-  const [referralCode, setReferralCode] = useState("");
-  const [referralStats, setReferralStats] = useState(null);
+  const [message, setMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [usdToNgn, setUsdToNgn] = useState(1500);
+  const [userBalance, setUserBalance] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
   const [showBankNotAvailable, setShowBankNotAvailable] = useState(false);
   const [showDeposits, setShowDeposits] = useState(true);
   const [showWithdrawals, setShowWithdrawals] = useState(true);
   const [amountError, setAmountError] = useState(false);
-  
-  const MINIMUM_AMOUNT = 3; // Minimum allowed amount in dollars
+  const [referralCode, setReferralCode] = useState("");
+  const [referralStats, setReferralStats] = useState(null);
+  const [merchantsLoading, setMerchantsLoading] = useState(false);
+  const [merchantError, setMerchantError] = useState("");
+  const [showMerchantList, setShowMerchantList] = useState(false);
+  const [selectedMerchant, setSelectedMerchant] = useState(null);
 
+  // Initial merchants list
+  const [merchants, setMerchants] = useState([]);
+
+  const MINIMUM_AMOUNT = 3;
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // Star rating logic
-  const getStarRating = (balance) => {
-    if (balance >= 5000) return "⭐⭐⭐⭐⭐";
-    if (balance >= 1000) return "⭐⭐⭐⭐";
-    if (balance >= 301) return "⭐⭐⭐";
-    if (balance >= 101) return "⭐⭐";
-    return "⭐";
-  };
-
-  // Network-specific wallet addresses
+  // Network configurations
   const networkAddresses = {
     BSC: "0xBE64FcDFb202BddFFcfB0d3eFFAbD2E87C6680B9",
     TRC20: "TEHiejHxpS6gogLfbcQYy5Bew8qUy3DYt8",
@@ -69,7 +66,7 @@ const Wallet = () => {
     ERC20: ERC20QR
   };
 
-  const bybitWalletEmail = "395552798"; 
+  const bybitWalletEmail = "395552798";
 
   // Fetch user balance, transactions, and referral info on component mount
   useEffect(() => {
@@ -192,42 +189,168 @@ const Wallet = () => {
     }
   };
  
-  // Update the useEffect for account numbers to include bank names
+
+ // Update the fetchMerchants function in useEffect
   useEffect(() => {
-  const accountNumbers = ["8022329289", "2143459556", "5022913315"];
-  const bankNames = ["Palmpay", "UBA", "Moniepoint"];
-  
-  const updateAccountNumber = () => {
-    // Calculate which account number to show based on current time (30-minute intervals)
-    const now = new Date();
-    const totalMinutes = now.getHours() * 60 + now.getMinutes();
-    const intervalIndex = Math.floor(totalMinutes / 30) % 3;
-    
-    setBankAccountNumber(accountNumbers[intervalIndex]);
-    setBankName(bankNames[intervalIndex]);
+  const fetchMerchants = async () => {
+    try {
+      setMerchantsLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/approved-merchants/`,
+        { 
+          headers: { 
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      // Remove the ID offset (+100) and just use the merchant IDs as they are
+      const approvedMerchants = response.data.map(merchant => ({
+        id: merchant.id, // Use original ID
+        username: merchant.name,
+        bankName: merchant.bank_name,
+        accountNumber: merchant.account_number,
+        starRating: merchant.star_rating || 5,
+        verified: true
+      }));
+      
+      setMerchants(prevMerchants => {
+        // Filter out duplicates by account number
+        const existingAccountNumbers = new Set(prevMerchants.map(m => m.accountNumber));
+        const newMerchants = approvedMerchants.filter(
+          m => !existingAccountNumbers.has(m.accountNumber)
+        );
+        return [...prevMerchants, ...newMerchants];
+      });
+
+    } catch (error) {
+      console.error('Error fetching merchants:', error);
+      setMerchantError(
+        error.response?.data?.error || 
+        'Failed to load additional merchants'
+      );
+    } finally {
+      setMerchantsLoading(false);
+    }
   };
-  
-  // Set initial account number
-  updateAccountNumber();
-  
-  // Update the account number every 30 minutes
-  const interval = setInterval(updateAccountNumber, 30 * 60 * 1000); // 30 minutes in milliseconds
-  
-  return () => clearInterval(interval);
+
+  fetchMerchants();
 }, []);
 
+  // Add a function to fetch merchant balances
+  const fetchMerchantBalances = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/merchant-balances/`,
+        { 
+          headers: { 
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      // Update merchants with their current balances
+      setMerchants(prevMerchants => 
+        prevMerchants.map(merchant => {
+          const balanceInfo = response.data.find(m => m.id === merchant.id);
+          return {
+            ...merchant,
+            currentBalance: balanceInfo ? balanceInfo.balance : 0
+          };
+        })
+      );
+    } catch (error) {
+      console.error('Error fetching merchant balances:', error);
+    }
+  };
+
+  // Call this function after fetching merchants
+  useEffect(() => {
+    const fetchAllMerchantData = async () => {
+      try {
+        setMerchantsLoading(true);
+        const token = localStorage.getItem('token');
+        
+        // Fetch merchants
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/approved-merchants/`,
+          { 
+            headers: { 
+              'Authorization': `Token ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        const approvedMerchants = response.data.map(merchant => ({
+          id: merchant.id,
+          username: merchant.name,
+          bankName: merchant.bank_name,
+          accountNumber: merchant.account_number,
+          starRating: merchant.star_rating || 5,
+          verified: true
+        }));
+        
+        setMerchants(prevMerchants => {
+          const existingAccountNumbers = new Set(prevMerchants.map(m => m.accountNumber));
+          const newMerchants = approvedMerchants.filter(
+            m => !existingAccountNumbers.has(m.accountNumber)
+          );
+          return [...prevMerchants, ...newMerchants];
+        });
+
+        // After setting merchants, fetch their balances
+        if (approvedMerchants.length > 0) {
+          await fetchMerchantBalances();
+        }
+      } catch (error) {
+        console.error('Error fetching merchants:', error);
+        setMerchantError(
+          error.response?.data?.error || 
+          'Failed to load additional merchants'
+        );
+      } finally {
+        setMerchantsLoading(false);
+      }
+    };
+    
+    fetchAllMerchantData();
+  }, []);
+
+  // Add a function to check if merchant is eligible
+  const isMerchantEligible = (merchant, amount) => {
+    if (!merchant.currentBalance) return true; // If we don't have balance data, assume eligible
+    
+    // Check if merchant has less than 4-star rating equivalent balance
+    if (merchant.starRating < 4) return false;
+    
+    const requiredBalance = parseFloat(amount) * 1.1; // 10% buffer
+    return merchant.currentBalance >= requiredBalance;
+  };
+
+  // Add this function to determine if a merchant is eligible (has 4+ stars)
+
+  
   useEffect(() => {
     const fetchRate = async () => {
       try {
         const res = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ngn");
-        setUsdToNgn(res.data.tether.ngn); // <-- FIXED HERE
+        if (res.data && res.data.tether && res.data.tether.ngn) {
+          setUsdToNgn(res.data.tether.ngn);
+        } else {
+          setMessage("Exchange rate data not available");
+        }
       } catch (err) {
         setMessage("Failed to fetch exchange rate. Please try again later.");
+        console.error("Exchange rate fetch error:", err);
       }
     };
     fetchRate();
   }, []);
-
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     setMessage("Copied to clipboard!");
@@ -302,8 +425,8 @@ const Wallet = () => {
       switch (withdrawMethod) {
         case "naira":
         case "BANK":
-          if (bankAccount === "" || bankName === "" || accountName === "") {
-            setMessage("All bank details are required");
+          if (bankAccount === "" || bankName === "" || accountName === "" || !selectedMerchant) {
+            setMessage("All bank details and merchant selection are required");
             return false;
           }
           break;
@@ -359,10 +482,17 @@ const Wallet = () => {
             ...(depositCryptoType === "onchain" && { network }),
           };
         } else {
+          // BANK_TRANSFER (naira) deposit
+          if (!selectedMerchant) {
+            setMessage("Please select a merchant for bank transfer");
+            return;
+          }
+          
           requestData = {
             method: mapMethodToApiFormat(depositMethod),
             transaction_id: transactionId,
-            amount: parseFloat(amount) 
+            amount: parseFloat(amount),
+            merchant_id: selectedMerchant.id // Include merchant_id for BANK_TRANSFER
           };
         }
       } else {
@@ -372,11 +502,17 @@ const Wallet = () => {
           method: apiWithdrawMethod,
           amount: parseFloat(amount)
         };
+        
         switch (apiWithdrawMethod) {
           case "BANK":
+            if (!selectedMerchant) {
+              setMessage("Please select a merchant for bank withdrawal");
+              return;
+            }
             requestData.account_name = accountName;
             requestData.account_number = bankAccount;
             requestData.bank_name = bankName;
+            requestData.merchant_id = selectedMerchant.id; // Use the original merchant ID
             break;
           case "BYBIT":
             requestData.email = bybitEmail;
@@ -396,15 +532,12 @@ const Wallet = () => {
       if (response.data.status === "success") {
         setMessage(response.data.message || "Request submitted successfully!");
       } else {
-        // If the API returns an error message, use that
         setMessage(response.data.message || response.data.error || "Request could not be processed");
       }
     } catch (error) {
-      // Improved error handling
       let errorMessage = "Something went wrong";
       
       if (error.response) {
-        // The request was made and the server responded with a status code
         const errorData = error.response.data;
         
         if (typeof errorData === 'string') {
@@ -417,10 +550,8 @@ const Wallet = () => {
           errorMessage = errorData.status;
         }
       } else if (error.request) {
-        // The request was made but no response was received
         errorMessage = "No response from server. Please check your connection.";
       } else {
-        // Something happened in setting up the request
         errorMessage = error.message;
       }
       
@@ -475,6 +606,23 @@ const Wallet = () => {
     setMessage("QR Code image saved!");
     setTimeout(() => setMessage(""), 2000);
   };
+
+  const getStarRating = (balance) => {
+  let filledStars = 0;
+  if (balance >= 5000) filledStars = 5;
+  else if (balance >= 1001) filledStars = 4;
+  else if (balance >= 501) filledStars = 3;
+  else if (balance >= 101) filledStars = 2;
+  else filledStars = 1;
+  
+  const emptyStars = 5 - filledStars;
+  
+  return (
+    <span style={{ color: 'gold' }}>
+      {"★".repeat(filledStars) + "☆".repeat(emptyStars)}
+    </span>
+  );
+};
 
   // Star rating UI
   const renderStarRating = () => (
@@ -640,162 +788,655 @@ const Wallet = () => {
     );
   };
 
-  const renderDepositInterface = () => {
+  // Wallet.js - Updated renderDepositInterface function
+const renderDepositInterface = () => {
+  // Calculate total amount with 3.5% fee
+  const calculateTotalWithFee = (amount) => {
+    if (!amount || amount === "" || parseFloat(amount) <= 0) return "0";
+    const baseAmount = parseFloat(amount);
+    const fee = baseAmount * 0.035; // 3.5% fee
+    return (baseAmount + fee).toFixed(2);
+  };
+
+  const totalWithFee = amount ? calculateTotalWithFee(amount) : "0";
+
+  // Filter merchants based on search term
+  const filteredMerchants = merchants.filter(merchant => {
+    const searchLower = searchTerm.toLowerCase();
     return (
-      <div className="deposit-section">       
-        <div className="selection-container">
-          <h8 className="section-heading">Select deposit method</h8>
-          <div className="deposit-method-buttons">
+      merchant.username.toLowerCase().includes(searchLower) ||
+      merchant.bankName.toLowerCase().includes(searchLower)
+    );
+  });
+
+  return (
+    <div className="deposit-section">       
+      <div className="selection-container">
+        <div className="deposit-method-buttons">
+          <button 
+            onClick={() => handleDepositMethodChange("naira")} 
+            className={depositMethod === "naira" ? "active-button" : ""}
+          >
+            Deposit p2p
+          </button>
+          <button 
+            onClick={() => handleDepositMethodChange("crypto")} 
+            className={depositMethod === "crypto" ? "active-button" : ""}
+          >
+            Deposit Crypto
+          </button>
+        </div>
+      </div>
+
+      {depositMethod === "crypto" && (
+        <div className="crypto-deposit-options">
+          <h8>Deposit crypto</h8>
+          <div className="method-buttons">
             <button 
-              onClick={() => handleDepositMethodChange("naira")} 
-              className={depositMethod === "naira" ? "active-button" : ""}
-            >
-              Deposit p2p
+              onClick={() => setDepositCryptoType("viaBuybit")}
+              className={depositCryptoType === "viaBuybit" ? "active-button" : ""}>
+              Via Bybit
             </button>
             <button 
-              onClick={() => handleDepositMethodChange("crypto")} 
-              className={depositMethod === "crypto" ? "active-button" : ""}
-            >
-              Deposit Crypto
+              onClick={() => setDepositCryptoType("onchain")}
+              className={depositCryptoType === "onchain" ? "active-button" : ""}>
+              On-chain Deposit
             </button>
           </div>
         </div>
-  
-        {depositMethod === "crypto" && (
-          <div className="crypto-deposit-options">
-            <h8>Deposit crypto</h8>
-            <div className="method-buttons">
-              <button 
-                onClick={() => setDepositCryptoType("viaBuybit")}
-                className={depositCryptoType === "viaBuybit" ? "active-button" : ""}>
-                Via Bybit
-              </button>
-              <button 
-                onClick={() => setDepositCryptoType("onchain")}
-                className={depositCryptoType === "onchain" ? "active-button" : ""}>
-                On-chain Deposit
-              </button>
+      )}
+
+      {depositMethod === "crypto" && depositCryptoType === "viaBuybit" && (
+        <div className="deposit-form">
+          <div className="form-group">
+            <p>USDT</p>
+            <div className="copy-box">
+              {bybitWalletEmail} <button onClick={() => copyToClipboard(bybitWalletEmail)}>Copy</button>
             </div>
           </div>
-        )}
-  
-        {depositMethod === "crypto" && depositCryptoType === "viaBuybit" && (
-          <div className="deposit-form">
-            <div className="form-group">
-              <p>USDT</p>
-              <div className="copy-box">
-                {bybitWalletEmail} <button onClick={() => copyToClipboard(bybitWalletEmail)}>Copy</button>
+          <div className="form-group">
+            <label>Amount</label>
+            <input 
+              type="number" 
+              placeholder="Enter quantity (USDT)" 
+              value={amount} 
+              onChange={handleAmountChange} 
+            />
+            {amountError && (
+              <div className="amount-error-message">
+                Minimum deposit amount is ${MINIMUM_AMOUNT}
               </div>
-            </div>
-            <div className="form-group">
-              <label>Amount</label>
-              <input 
-                type="number" 
-                placeholder="Enter quantity (USDT)" 
-                value={amount} 
-                onChange={handleAmountChange} 
-              />
-              {amountError && (
-                <div className="amount-error-message">
-                  Minimum deposit amount is ${MINIMUM_AMOUNT}
-                </div>
-              )}
-              {amount && !amountError && (
-                <div style={{ marginTop: 8, color: "#008000" }}>
-                  ≈ ₦{nairaValue} NGN
-                </div>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Transaction ID</label>
-              <input 
-                type="text" 
-                placeholder="Enter transaction ID" 
-                value={transactionId} 
-                onChange={(e) => setTransactionId(e.target.value)} 
-              />
-            </div>
-            <button className="submit-button" onClick={submitTransaction} disabled={loading || amountError}>
-              {loading ? "Processing..." : "Submit"}
+            )}
+            {amount && !amountError && (
+              <div style={{ marginTop: 8, color: "#008000" }}>
+                ≈ ₦{nairaValue} NGN
+              </div>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Transaction ID</label>
+            <input 
+              type="text" 
+              placeholder="Enter transaction ID" 
+              value={transactionId} 
+              onChange={(e) => setTransactionId(e.target.value)} 
+            />
+          </div>
+          <button className="submit-button" onClick={submitTransaction} disabled={loading || amountError}>
+            {loading ? "Processing..." : "Submit"}
+          </button>
+        </div>
+      )}
+
+      {depositMethod === "crypto" && depositCryptoType === "onchain" && !showQRCode && (
+        <div className="deposit-form">
+          <div className="form-group">
+            <label>Amount (USDT)</label>
+            <input 
+              type="number" 
+              placeholder="Enter deposit amount" 
+              value={amount} 
+              onChange={handleAmountChange} 
+            />
+            {amountError && (
+              <div className="amount-error-message">
+                Minimum deposit amount is ${MINIMUM_AMOUNT}
+              </div>
+            )}
+            {amount && !amountError && (
+              <div style={{ marginTop: 8, color: "#008000" }}>
+                ≈ ₦{nairaValue} NGN
+              </div>
+            )}
+          </div>
+          <div className="form-group">
+            <label>USDT</label>
+            <button 
+              className="full-width-button" 
+              onClick={() => setNetwork("select")}
+            >
+              Select Network
             </button>
           </div>
-        )}
-  
-        {depositMethod === "crypto" && depositCryptoType === "onchain" && !showQRCode && (
-          <div className="deposit-form">
-            <div className="form-group">
-              <label>Amount (USDT)</label>
-              <input 
-                type="number" 
-                placeholder="Enter deposit amount" 
-                value={amount} 
-                onChange={handleAmountChange} 
-              />
-              {amountError && (
-                <div className="amount-error-message">
-                  Minimum deposit amount is ${MINIMUM_AMOUNT}
+          {network === "select" && (
+            <>
+              <div className="form-group">
+                <label>Network Options</label>
+                <div className="method-buttons">
+                  <button onClick={() => handleNetworkSelect("TRC20")}>TRC20</button>
+                  <button onClick={() => handleNetworkSelect("ERC20")}>ERC20</button>
+                  <button onClick={() => handleNetworkSelect("BSC")}>BEP20</button>
+                  <button onClick={() => handleNetworkSelect("SOL")}>SOL</button>
                 </div>
-              )}
-              {amount && !amountError && (
-                <div style={{ marginTop: 8, color: "#008000" }}>
-                  ≈ ₦{nairaValue} NGN
-                </div>
-              )}
-            </div>
-            <div className="form-group">
-              <label>USDT</label>
-              <button 
-                className="full-width-button" 
-                onClick={() => setNetwork("select")}
-              >
-                Select Network
-              </button>
-            </div>
-            {network === "select" && (
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {depositMethod === "crypto" && depositCryptoType === "onchain" && showQRCode && (
+        renderQRCodeView()
+      )}
+
+      {depositMethod === "naira" && (
+        <div className="deposit-form">
+          <div className="form-group">
+            <label>Amount (USD)</label>
+            <input 
+              type="number" 
+              placeholder="Enter deposit amount" 
+              value={amount} 
+              onChange={handleAmountChange} 
+            />
+            {amountError && (
+              <div className="amount-error-message">
+                Minimum deposit amount is ${MINIMUM_AMOUNT}
+              </div>
+            )}
+            {amount && !amountError && (
+              <div style={{ marginTop: 8, color: "#008000" }}>
+                Total to pay: ${totalWithFee}
+                <br />
+                ≈ ₦{(parseFloat(totalWithFee) * usdToNgn).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })} NGN
+              </div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label>Select Merchant</label>
+            <button 
+              className="merchant-select-button"
+              onClick={() => setShowMerchantList(!showMerchantList)}
+            >
+              {selectedMerchant ? selectedMerchant.username : 'Select a merchant'}
+            </button>
+            
+            {showMerchantList && (
+              <div className="merchant-list-container">
+                {merchantsLoading ? (
+                  <div className="loading-message">
+                    <div className="spinner"></div>
+                    <p>Loading merchants...</p>
+                  </div>
+                ) : merchantError ? (
+                  <div className="error-message">
+                    {merchantError}
+                  </div>
+                ) : (
+                  <>
+                    <div className="merchant-search-container">
+                      <input
+                        type="text"
+                        placeholder="Search by username or bank name"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="merchant-search-input"
+                        style={{
+                          width: '100%',
+                          padding: '10px',
+                          marginBottom: '10px',
+                          backgroundColor: '#000',
+                          color: '#fff',
+                          border: '1px solid #800080',
+                          borderRadius: '4px'
+                        }}
+                      />
+                    </div>
+                    <table className="merchant-table">
+                      <thead>
+                        <tr>
+                          <th>Username</th>
+                          <th>Bank Name</th>
+                          <th>Level</th>
+                          <th>Verified</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredMerchants.map(merchant => (
+                          <tr 
+                            key={merchant.id}
+                            onClick={() => {
+                              if (!amount) {
+                                setMerchantError('Please enter amount first');
+                                return;
+                              }
+                              
+                              if (!isMerchantEligible(merchant, amount)) {
+                                setMerchantError('This merchant is currently unavailable');
+                                return;
+                              }
+                              
+                              setSelectedMerchant(merchant);
+                              setShowMerchantList(false);
+                              setMerchantError('');
+                              setSearchTerm('');
+                            }}
+                            className={`${selectedMerchant?.id === merchant.id ? 'selected' : ''} ${
+                              !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'disabled-merchant' : ''
+                            }`}
+                            style={{
+                              opacity: !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 0.3 : 1,
+                              cursor: !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            <td>{merchant.username}</td>
+                            <td>{merchant.bankName}</td>
+                            <td>{getStarRating(merchant.starRating * 1000)}</td>
+                            <td>
+                              {merchant.verified && (
+                                <span className="verified-icon">✓</span>
+                              )}
+                              {!isMerchantEligible(merchant, amount || 0) && (
+                                <span className="insufficient-balance-icon" title="Insufficient balance">⚠️</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                )}
+              </div>
+            )}
+
+            {selectedMerchant && (
               <>
-                <div className="form-group">
-                  <label>Network Options</label>
-                  <div className="method-buttons">
-                    <button onClick={() => handleNetworkSelect("TRC20")}>TRC20</button>
-                    <button onClick={() => handleNetworkSelect("ERC20")}>ERC20</button>
-                    <button onClick={() => handleNetworkSelect("BSC")}>BEP20</button>
-                    <button onClick={() => handleNetworkSelect("SOL")}>SOL</button>
+                <div className="selected-merchant-details"
+                  style={{
+                    background: "rgba(128,0,128,0.10)",
+                    borderRadius: "14px",
+                    padding: "1.7rem 1.2rem",
+                    margin: "1.2rem 0",
+                    border: "2px solid #800080",
+                    color: "white",
+                    boxShadow: "0 4px 16px rgba(128,0,128,0.10)",
+                    fontFamily: "inherit",
+                    textAlign: "center"
+                  }}
+                >
+                  <div style={{ marginBottom: "1.1rem", fontWeight: 300, fontSize: "0.8rem", lineHeight: 1.7 }}>
+                    1. Please ensure that the name in your <span style={{ color: "#800080" }}>SWAPVIEW</span> account matches with the payment account name.<br />                 
+                    2. Please also ensure you use your full name as the bank narration. 
+                  </div>
+                  <div style={{ marginBottom: "0.7rem", fontWeight: 500 }}>
+                    <b>Transfer {amount && totalWithFee && !amountError ? `₦${(parseFloat(totalWithFee) * usdToNgn).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : ""} to:</b>
+                  </div>
+                  <div style={{
+                    fontSize: "1.7rem",
+                    fontWeight: "bold",
+                    marginBottom: "0.35rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    color: "#800080"
+                  }}>
+                    <span
+                      style={{
+                        cursor: "pointer",
+                        color: "#800080",
+                        letterSpacing: "2px",
+                        userSelect: "all",
+                        fontSize: "2rem",
+                        background: "rgba(128,0,128,0.07)",
+                        borderRadius: "8px",
+                        padding: "8px 24px",
+                        margin: "0 auto"
+                      }}
+                      onClick={() => copyToClipboard(selectedMerchant.accountNumber)}
+                      title="Copy account number"
+                    >
+                      {selectedMerchant.accountNumber}
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(selectedMerchant.accountNumber)}
+                      className="copy-button"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <div style={{ marginBottom: "0.5rem", color: "#800080", fontWeight: 500, fontSize: "1.1rem" }}>
+                    {selectedMerchant.bankName}
+                  </div>
+                  <div>
+                    {getStarRating(selectedMerchant.starRating * 1000)}
                   </div>
                 </div>
+
+                <div className="form-group">
+                  <label>Transaction ID</label>
+                  <input 
+                    type="text" 
+                    placeholder="Enter transaction ID" 
+                    value={transactionId} 
+                    onChange={(e) => setTransactionId(e.target.value)} 
+                  />
+                </div>
+
+                <button 
+                  className="submit-button" 
+                  onClick={submitTransaction} 
+                  disabled={loading || amountError || !transactionId}
+                >
+                  {loading ? "Processing..." : "Submit"}
+                </button>
               </>
             )}
           </div>
-        )}
-  
-        {depositMethod === "crypto" && depositCryptoType === "onchain" && showQRCode && (
-          renderQRCodeView()
-        )}
-  
-        {depositMethod === "naira" && (
-          <div className="deposit-form">
-            {/* Amount input at the top */}
-            <div className="form-group">
-              <label>Amount</label>
-              <input 
-                type="number" 
-                placeholder="Enter deposit amount" 
-                value={amount} 
-                onChange={handleAmountChange} 
-              />
-              {amountError && (
-                <div className="amount-error-message">
-                  Minimum deposit amount is ${MINIMUM_AMOUNT}
-                </div>
-              )}
-              {amount && !amountError && (
-                <div style={{ marginTop: 8, color: "#008000" }}>
-                  ≈ ₦{nairaValue} NGN
-                </div>
-              )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const renderWithdrawInterface = () => {
+  const calculateAmountAfterFee = (amount) => {
+    if (!amount || amount === "" || parseFloat(amount) <= 0) return {netAmount: 0, fee: 0};
+    const baseAmount = parseFloat(amount);
+    const fee = baseAmount * 0.05; 
+    const netAmount = baseAmount - fee;
+    return {netAmount: netAmount.toFixed(2), fee: fee.toFixed(2)};
+  };
+
+  const amountAfterFee = amount ? calculateAmountAfterFee(amount) : {netAmount: 0, fee: 0};
+
+  // Filter merchants based on search term
+  const filteredMerchants = merchants.filter(merchant => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      merchant.username.toLowerCase().includes(searchLower) ||
+      merchant.bankName.toLowerCase().includes(searchLower)
+    );
+  });
+
+  // Dynamic placeholder based on withdrawal method
+  const getAmountPlaceholder = () => {
+    switch(withdrawMethod) {
+      case "INTERNAL":
+      case "BANK":
+      case "naira":
+        return "Enter amount";
+      case "BYBIT":
+      case "usdt":
+      case "ON_CHAIN":
+        return "Enter amount (Transaction fee = $1)";
+      default:
+        return "Enter amount";
+    }
+  };
+
+  return (
+    <div className="withdraw-section">
+      <div className="method-buttons">
+        <button 
+          onClick={() => handleWithdrawMethodChange("INTERNAL")}
+          className={withdrawMethod === "INTERNAL" ? "active-button" : ""}>
+          Internal Transfer
+        </button>
+        <button 
+          onClick={() => handleWithdrawMethodChange("BYBIT")}
+          className={withdrawMethod === "BYBIT" || withdrawMethod === "usdt" ? "active-button" : ""}>
+          Bybit UID
+        </button>
+        <button 
+          onClick={() => handleWithdrawMethodChange("ON_CHAIN")}
+          className={withdrawMethod === "ON_CHAIN" ? "active-button" : ""}>
+          On-Chain Transfer
+        </button>
+        <button 
+          onClick={() => handleWithdrawMethodChange("BANK")}
+          className={withdrawMethod === "BANK" || withdrawMethod === "naira" ? "active-button" : ""}>
+          p2p
+        </button>
+      </div>
+
+      {withdrawMethod && (
+        <div className="withdraw-form">
+          <div className="form-group">
+            <label>Amount</label>
+            <input 
+              type="number" 
+              placeholder={getAmountPlaceholder()}
+              value={amount} 
+              onChange={handleAmountChange} 
+            />
+            {amountError && (
+              <div className="amount-error-message">
+                Minimum withdrawal amount is ${MINIMUM_AMOUNT}
+              </div>
+            )}
+            {parseFloat(amount) > userBalance && (
+              <p className="error-text">Insufficient balance</p>
+            )}
+            {amount && !amountError && withdrawMethod === "BANK" && (
+              <div style={{ marginTop: 8, color: "#800080", fontSize: "0.9rem" }}>
+                <div>You will receive: ${amountAfterFee.netAmount}</div>
+              </div>
+            )}
+          </div>
+          
+          {(withdrawMethod === "INTERNAL") && (
+            <div className="withdraw-field-group" id="internal-fields">
+              <div className="form-group">
+                <label>Address</label>
+                <input 
+                  type="text" 
+                  placeholder="Recipient address" 
+                  value={internalWalletId}
+                  onChange={(e) => setInternalWalletId(e.target.value)} 
+                />
+              </div>
             </div>
-            {/* Transparent purple info box, purple text, centralized account number */}
-            <div
-              style={{
+          )}
+          
+          {(withdrawMethod === "BYBIT" || withdrawMethod === "usdt") && (
+            <div className="withdraw-field-group" id="bybit-fields">
+              <div className="form-group">
+                <label>Bybit UID</label>
+                <input 
+                  type="email" 
+                  placeholder="Bybit UID" 
+                  value={bybitEmail}
+                  onChange={(e) => setBybitEmail(e.target.value)} 
+                />
+              </div>
+            </div>
+          )}
+          
+          {withdrawMethod === "ON_CHAIN" && (
+            <div className="withdraw-field-group" id="onchain-fields">
+              <div className="form-group">
+                <label>Wallet Address</label>
+                <input 
+                  type="text" 
+                  placeholder="Wallet Address" 
+                  value={walletAddress}
+                  onChange={(e) => setWalletAddress(e.target.value)} 
+                />
+              </div>
+              <div className="form-group">
+                <label>Chain</label>
+                <div className="network-selection-container">
+                  {chain ? (
+                    <div className="selected-network">
+                      <span>Selected: {chain}</span>
+                      <button 
+                        className="change-network-btn"
+                        onClick={() => setChain("")}
+                      >
+                        Change
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="network-grid">
+                      {["TRC20", "ERC20", "BEP20", "SOL"].map((network) => (
+                        <button
+                          key={network}
+                          className="network-grid-item"
+                          onClick={() => setChain(network)}
+                        >
+                          {network}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {(withdrawMethod === "BANK" || withdrawMethod === "naira") && (
+            <div className="withdraw-field-group" id="bank-fields">
+              <div className="form-group">
+                <label>Select Merchant</label>
+                <button 
+                  className="merchant-select-button"
+                  onClick={() => setShowMerchantList(!showMerchantList)}
+                >
+                  {selectedMerchant ? selectedMerchant.username : 'Select a merchant'}
+                </button>
+                
+                {showMerchantList && (
+                  <div className="merchant-list-container">
+                    {merchantsLoading ? (
+                      <div className="loading-message">
+                        <div className="spinner"></div>
+                        <p>Loading merchants...</p>
+                      </div>
+                    ) : merchantError ? (
+                      <div className="error-message">
+                        {merchantError}
+                      </div>
+                    ) : (
+                      <>
+                        <div className="merchant-search-container">
+                          <input
+                            type="text"
+                            placeholder="Search by username or bank name"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="merchant-search-input"
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              marginBottom: '10px',
+                              backgroundColor: '#000',
+                              color: '#fff',
+                              border: '1px solid #800080',
+                              borderRadius: '4px'
+                            }}
+                          />
+                        </div>
+                        <table className="merchant-table">
+                          <thead>
+                            <tr>
+                              <th>Username</th>
+                              <th>Bank Name</th>
+                              <th>Level</th>
+                              <th>Verified</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredMerchants.map(merchant => (
+                              <tr 
+                                key={merchant.id}
+                                onClick={() => {
+                                  if (!amount) {
+                                    setMerchantError('Please enter amount first');
+                                    return;
+                                  }
+                                  
+                                  if (!isMerchantEligible(merchant, amount) || merchant.starRating < 4) {
+                                    setMerchantError('This merchant is currently unavailable');
+                                    return;
+                                  }
+                                  
+                                  setSelectedMerchant(merchant);
+                                  setShowMerchantList(false);
+                                  setMerchantError('');
+                                  setSearchTerm('');
+                                }}
+                                className={`${selectedMerchant?.id === merchant.id ? 'selected' : ''} ${
+                                  !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'disabled-merchant' : ''
+                                }`}
+                                style={{
+                                  opacity: !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 0.3 : 1,
+                                  cursor: !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'not-allowed' : 'pointer'
+                                }}
+                              >
+                                <td>{merchant.username}</td>
+                                <td>{merchant.bankName}</td>
+                                <td>{getStarRating(merchant.starRating * 1000)}</td>
+                                <td>
+                                  {merchant.verified && (
+                                    <span className="verified-icon">✓</span>
+                                  )}
+                                  {!isMerchantEligible(merchant, amount || 0) && (
+                                    <span className="insufficient-balance-icon" title="Insufficient balance">⚠️</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label>Your Account Number</label>
+                <input 
+                  type="text" 
+                  placeholder="Account Number" 
+                  value={bankAccount}
+                  onChange={(e) => setBankAccount(e.target.value)} 
+                />
+              </div>
+              <div className="form-group">
+                <label>Your Bank Name</label>
+                <input 
+                  type="text" 
+                  placeholder="Bank Name" 
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)} 
+                />
+              </div>
+              <div className="form-group">
+                <label>Your Account Name</label>
+                <input 
+                  type="text" 
+                  placeholder="Account Name" 
+                  value={accountName}
+                  onChange={(e) => setAccountName(e.target.value)} 
+                />
+              </div>
+              
+              <div style={{
                 background: "rgba(128,0,128,0.10)",
                 borderRadius: "14px",
                 padding: "1.7rem 1.2rem",
@@ -805,282 +1446,41 @@ const Wallet = () => {
                 boxShadow: "0 4px 16px rgba(128,0,128,0.10)",
                 fontFamily: "inherit",
                 textAlign: "center"
-              }}
-            >
-              <div style={{ marginBottom: "1.1rem", fontWeight: 300, fontSize: "0.8rem", lineHeight: 1.7 }}>                 
-                2. Please ensure that the name in your <span style={{ color: "#800080" }}>SWAPVIEW</span> account matches with the payment account name.<br />                 
-                3. Please also ensure you use your full name as the bank narration.               
-              </div>
-              <div style={{ marginBottom: "0.7rem", fontWeight: 500 }}>
-                <b>Transfer {amount && nairaValue && !amountError ? `₦${nairaValue}` : ""} to:</b>
-              </div>
-              <div style={{
-                fontSize: "1.7rem",
-                fontWeight: "bold",
-                marginBottom: "0.35rem",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "0.5rem",
-                color: "#800080"
               }}>
-                <span
-                  style={{
-                    cursor: "pointer",
-                    color: "#800080",
-                    letterSpacing: "2px",
-                    userSelect: "all",
-                    fontSize: "2rem",
-                    background: "rgba(128,0,128,0.07)",
-                    borderRadius: "8px",
-                    padding: "8px 24px",
-                    margin: "0 auto"
-                  }}
-                  onClick={() => copyToClipboard(bankAccountNumber)}
-                  title="Copy account number"
-                >
-                  {bankAccountNumber}
-                </span>
-                <button
-                  onClick={() => copyToClipboard(bankAccountNumber)}
-                  style={{
-                    background: "#800080",
-                    border: "none",
-                    borderRadius: "6px",
-                    color: "#fff",
-                    padding: "6px 20px",
-                    cursor: "pointer",
-                    fontWeight: 500,
-                    fontSize: "1rem",
-                    marginTop: "10px",
-                    transition: "background 0.2s",
-                    width: "auto",
-                    minWidth: "100px",
-                    '@media (max-width: 767px)': {
-                      minWidth: "70px",
-                      padding: "4px 10px",
-                      fontSize: "0.8rem"
-                    }
-                  }}
-                  onMouseOver={e => e.currentTarget.style.background = "#a020a0"}
-                  onMouseOut={e => e.currentTarget.style.background = "#800080"}
-                >
-                  Copy
-                </button>
-              </div>
-              <div style={{ marginBottom: "0.5rem", color: "#800080", fontWeight: 500, fontSize: "1.1rem" }}>
-                {bankName}
-              </div>
-              <div>
-                {renderStarRating()}
-              </div>
-            </div>
-            {/* Transaction ID field under the info box */}
-            <div className="form-group">
-              <label>Transaction ID</label>
-              <input 
-                type="text" 
-                placeholder="Enter transaction ID" 
-                value={transactionId} 
-                onChange={(e) => setTransactionId(e.target.value)} 
-              />
-            </div>
-            <button className="submit-button" onClick={submitTransaction} disabled={loading || amountError}>
-              {loading ? "Processing..." : "Submit"}
-            </button>
-          </div>
-        )}
-        
-      </div>
-    );
-  };
-
-  const renderWithdrawInterface = () => {
-    return (
-      <div className="withdraw-section">
-        <h8 className="section-heading">Select Withdrawal Method</h8>
-        <div className="method-buttons">
-          <button 
-            onClick={() => handleWithdrawMethodChange("INTERNAL")}
-            className={withdrawMethod === "INTERNAL" ? "active-button" : ""}>
-            Internal Transfer
-          </button>
-          <button 
-            onClick={() => handleWithdrawMethodChange("BYBIT")}
-            className={withdrawMethod === "BYBIT" || withdrawMethod === "usdt" ? "active-button" : ""}>
-            Bybit UID
-          </button>
-          <button 
-            onClick={() => handleWithdrawMethodChange("ON_CHAIN")}
-            className={withdrawMethod === "ON_CHAIN" ? "active-button" : ""}>
-            On-Chain Transfer
-          </button>
-          <button 
-            onClick={() => handleWithdrawMethodChange("BANK")}
-            className={withdrawMethod === "BANK" || withdrawMethod === "naira" ? "active-button" : ""}>
-            p2p
-          </button>
-        </div>
-  
-        {withdrawMethod && (
-          <div className="withdraw-form">
-            <div className="form-group">
-              <label>Amount</label>
-              <input 
-                type="number" 
-                placeholder="Amount" 
-                value={amount} 
-                onChange={handleAmountChange} 
-              />
-              {amountError && (
-                <div className="amount-error-message">
-                  Minimum withdrawal amount is ${MINIMUM_AMOUNT}
-                </div>
-              )}
-              {parseFloat(amount) > userBalance && (
-                <p className="error-text">Insufficient balance</p>
-              )}
-            </div>
-            
-            {(withdrawMethod === "INTERNAL") && (
-              <div className="withdraw-field-group" id="internal-fields">
-                <div className="form-group">
-                  <label>Address</label>
-                  <input 
-                    type="text" 
-                    placeholder="Recipient address" 
-                    value={internalWalletId}
-                    onChange={(e) => setInternalWalletId(e.target.value)} 
-                  />
-                </div>
-              </div>
-            )}
-            
-            {(withdrawMethod === "BYBIT" || withdrawMethod === "usdt") && (
-              <div className="withdraw-field-group" id="bybit-fields">
-                <div className="form-group">
-                  <label>Bybit UID</label>
-                  <input 
-                    type="email" 
-                    placeholder="Bybit UID" 
-                    value={bybitEmail}
-                    onChange={(e) => setBybitEmail(e.target.value)} 
-                  />
-                </div>
-              </div>
-            )}
-            
-            {withdrawMethod === "ON_CHAIN" && (
-              <div className="withdraw-field-group" id="onchain-fields">
-                <div className="form-group">
-                  <label>Wallet Address</label>
-                  <input 
-                    type="text" 
-                    placeholder="Wallet Address" 
-                    value={walletAddress}
-                    onChange={(e) => setWalletAddress(e.target.value)} 
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Chain</label>
-                  <div className="network-selection-container">
-                    {chain ? (
-                      <div className="selected-network">
-                        <span>Selected: {chain}</span>
-                        <button 
-                          className="change-network-btn"
-                          onClick={() => setChain("")}
-                        >
-                          Change
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="network-grid">
-                        {["TRC20", "ERC20", "BEP20", "SOL"].map((network) => (
-                          <button
-                            key={network}
-                            className="network-grid-item"
-                            onClick={() => setChain(network)}
-                          >
-                            {network}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-  
-            {(withdrawMethod === "BANK" || withdrawMethod === "naira") && (
-            <div className="withdraw-field-group" id="bank-fields">
-              <div className="form-group">
-                <label>Account Number</label>
-                <input 
-                  type="text" 
-                  placeholder="Account Number" 
-                  value={bankAccount}
-                  onChange={(e) => setBankAccount(e.target.value)} 
-                />
-              </div>
-              <div className="form-group">
-                <label>Bank Name</label>
-                <input 
-                  type="text" 
-                  placeholder="Bank Name" 
-                  value={bankName}
-                  onChange={(e) => setBankName(e.target.value)} 
-                />
-              </div>
-              <div className="form-group">
-                <label>Account Name</label>
-                <input 
-                  type="text" 
-                  placeholder="Account Name" 
-                  value={accountName}
-                  onChange={(e) => setAccountName(e.target.value)} 
-                />
-              </div>
-              
-              {/* Add the footnote here, right after the account name input and before the closing div */}
-              <div
-                style={{
-                  background: "rgba(128,0,128,0.10)",
-                  borderRadius: "14px",
-                  padding: "1.7rem 1.2rem",
-                  margin: "1.2rem 0",
-                  border: "2px solid #800080",
-                  color: "white",
-                  boxShadow: "0 4px 16px rgba(128,0,128,0.10)",
-                  fontFamily: "inherit",
-                  textAlign: "center"
-                }}
-              >
                 <div style={{ marginBottom: "1.1rem", fontWeight: 300, fontSize: "0.8rem", lineHeight: 1.7 }}>
-                  1. Please ensure the payment account details you provide match your <span style={{ color: "#800080" }}>SWAPVIEW</span> account name.<br />
-                  2. You'll be matched with a buyer/merchant who will send funds to the provided details above.<br />
-                  3. Incase of discrepancies or If funds isn't received after 24 hours, contact our support immediately.
+                  1. A 5% fee will be deducted from your withdrawal amount.<br />
+                  2. You'll receive the amount after fee deduction.<br />
+                  3. The merchant will receive the full amount (including fee).<br />
+                  4. Please ensure the payment account details you provide match your <span style={{ color: "#800080" }}>SWAPVIEW</span> account name.<br />
+                  5. You'll be matched with a merchant who will send funds to the provided details above.<br />
+                  6. In case of discrepancies or if funds aren't received after 24 hours, contact our support immediately.
                 </div>
+                {amount && !amountError && (
+                  <div style={{ marginTop: "1rem", fontWeight: "bold", color: "#800080" }}>
+                    <div>Amount entered: ${amount}</div>
+                    <div>Fee (3.5%): ${amountAfterFee.fee}</div>
+                    <div>You will receive: ${amountAfterFee.netAmount}</div>
+                  </div>
+                )}
                 <div>
                   {renderStarRating()}
                 </div>
               </div>
             </div>
           )}
-            
-            <button 
-              className="submit-button" 
-              onClick={submitTransaction} 
-              disabled={loading || parseFloat(amount) > userBalance || amountError}
-            >
-              {loading ? "Processing..." : "Submit Withdrawal"}
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  };
-
+          
+          <button 
+            className="submit-button" 
+            onClick={submitTransaction} 
+            disabled={loading || parseFloat(amount) > userBalance || amountError || (withdrawMethod === "BANK" && !selectedMerchant)}
+          >
+            {loading ? "Processing..." : "Submit Withdrawal"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
   const renderTradeGroup = (type, trades, show, setShow) => (
     <div className="trade-group">
       <button
@@ -1142,7 +1542,6 @@ const Wallet = () => {
 
     return (
       <div className="transaction-history">
-        <h3 className="section-heading">Transaction History</h3>
         
         {/* Buy/Sell Trades Section */}
         <div className="trade-section">
@@ -1250,10 +1649,9 @@ const Wallet = () => {
   const renderReferralSystem = () => {
     return (
       <div className="referral-section">
-        <h8 className="section-heading">Referral System</h8>
         <div className="referral-info">
           <p>Don't Miss Out - Unlock Your Invite Rewards Now!</p>
-          <p>Invite just 3 friends and start earning 10% of their first deposit straight into your wallet</p>
+          <p>Invite just a friend and earn 15% of their first deposit straight into your wallet</p>
           {referralCode ? (
             <div className="referral-code-box">
               <p>Your Referral Code:</p>
@@ -1268,14 +1666,14 @@ const Wallet = () => {
             <div className="referral-stats">
               <h3>Your Referral Stats</h3>
               <p>Total Referrals: {referralStats.total}</p>
-              <p>Funded Referrals: {referralStats.funded} / 3</p>
-              {referralStats.funded >= 3 ? (
+
+              {referralStats.funded >= 1 ? (
                 referralStats.has_received_bonus ? (
                   <div className="bonus-received">
                     <p className="bonus-message">Your referral bonus has been paid!</p>
                     <p className="bonus-details">
                       Initial Deposit: ${referralStats.initial_deposit}<br/>
-                      Bonus Amount: ${(referralStats.initial_deposit * 0.10).toFixed(2)}
+                      Bonus Amount: ${(referralStats.initial_deposit * 0.15).toFixed(2)}
                     </p>
                   </div>
                 ) : (
@@ -1286,7 +1684,7 @@ const Wallet = () => {
                   </p>
                 )
               ) : (
-                <p>Refer {3 - referralStats.funded} more funded users to earn your bonus!</p>
+                <p>Refer more funded users to earn more!</p>
               )}
             </div>
           )}
@@ -1296,15 +1694,19 @@ const Wallet = () => {
   };
 
   return (
-    <div className="wallet-container">
-      <h3>ASSET</h3>
-      {/* Top Section: Balance, Star Rating */}
-      <div className="wallet-balance-top" style={{ marginBottom: "30px" }}>
-        <div className="balance-info" style={{ fontWeight: "bold", fontSize: "2rem", textAlign: "center" }}>
-          {parseFloat(userBalance || 0).toFixed(2)} <span style={{ fontSize: "1rem" }}>USD</span>
-        </div>
-        {renderStarRating()}
+  <div className="wallet-container">
+    <h1>ASSETS</h1>
+    {/* Top Section: Balance, Star Rating */}
+    <div className="wallet-balance-top">
+      <div className="wallet-balance-amount">
+        {parseFloat(userBalance || 0).toFixed(2)} 
+        <span style={{ fontSize: "1rem", marginLeft: "4px" }}>USD</span>
       </div>
+      <div className="balance-label">Available Balance</div>
+    </div>
+    <div className="wallet-star-rating">
+      {getStarRating(userBalance)}
+    </div>
       <div className="wallet-tabs">
         <button
           onClick={() => setTab("deposit")}
