@@ -51,8 +51,8 @@ const Dashboard = () => {
   const getStarRating = (balance) => {
     let filledStars = 0;
     if (balance >= 5000) filledStars = 5;
-    else if (balance >= 1000) filledStars = 4;
-    else if (balance >= 301) filledStars = 3;
+    else if (balance >= 1001) filledStars = 4;
+    else if (balance >= 501) filledStars = 3;
     else if (balance >= 101) filledStars = 2;
     else filledStars = 1;
     
@@ -63,10 +63,10 @@ const Dashboard = () => {
 
   // Add this function to calculate amount needed for 3 stars
   const getAmountToThreeStars = (currentBalance) => {
-    if (currentBalance >= 301) return 0; // Already has 3+ stars
+    if (currentBalance >= 1001) return 0; // Already has 3+ stars
     
     // Calculate how much is needed to reach the 3-star threshold ($301)
-    return (301 - currentBalance).toFixed(2);
+    return (1001 - currentBalance).toFixed(2);
   };
 
   const getPriceChangeColor = (token) => {
@@ -148,7 +148,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       {/* Add premium message for users with less than 3 stars */}
-      {portfolio && Number(portfolio.balance_usd) < 301 && (
+      {portfolio && Number(portfolio.balance_usd) < 1001 && (
         <div className="premium-message">
           <span>
             Add ${getAmountToThreeStars(Number(portfolio.balance_usd))} to enjoy premium features

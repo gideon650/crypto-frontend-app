@@ -28,15 +28,15 @@ const CreateToken = () => {
             const balance = response.data.balance_usd;
             let stars = 1;
             if (balance >= 5000) stars = 5;
-            else if (balance >= 1000) stars = 4;
-            else if (balance >= 301) stars = 3;
+            else if (balance >= 1001) stars = 4;
+            else if (balance >= 501) stars = 3;
             else if (balance >= 101) stars = 2;
             
             setUserStarRating(stars);
 
             // Changed from 5 to 3 stars
-            if (stars < 3) {
-                setError('You need to be at least a 3-star user to create tokens. Current rating: ' + stars + ' stars');
+            if (stars < 4) {
+                setError('You need to be at least a 4-star user to create tokens. Current rating: ' + stars + ' stars');
             }
         } catch (error) {
             setError('Failed to check eligibility');
@@ -45,8 +45,8 @@ const CreateToken = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (userStarRating < 3) {
-            setError('You need to be at least a 3-star user to create tokens');
+        if (userStarRating < 4) {
+            setError('You need to be at least a 4-star user to create tokens');
             return;
         }
 

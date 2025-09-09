@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './NotificationBadge.css';
 
 const NotificationBadge = () => {
   const [unreadCount, setUnreadCount] = useState(0);
-  const navigate = useNavigate();
 
   const fetchUnreadCount = async () => {
     try {

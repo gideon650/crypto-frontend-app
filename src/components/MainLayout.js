@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
 import Trade from "../pages/Trade";
@@ -27,20 +27,8 @@ const MainLayout = () => {
   const hideNavbarRoutes = ["/", "/login", "/signup"];
   const showNavbar = token && !hideNavbarRoutes.includes(location.pathname);
 
-  // Auto-logout handler
-  const handleAutoLogout = async () => {
-    console.log('Auto-logout triggered - user was away too long');
-    setSessionExpired(true);
-    await performLogout();
-  };
-
-  // Initialize auto-logout hook (only when user has token)
-  const { forceLogout, clearSession } = useAutoLogout(
-    token ? handleAutoLogout : null
-  );
-
-  // Perform logout operations
-  const performLogout = async () => {
+  // Perform logout operations - wrapped in useCallback to prevent unnecessary re-renders
+  const performLogout = useCallback(async () => {
     try {
       // Cleanup Firebase before logout
       await cleanupFirebase();
@@ -61,13 +49,9 @@ const MainLayout = () => {
       }
       
       // Clear all session data
-      if (clearSession) {
-        clearSession();
-      } else {
-        localStorage.removeItem('token');
-        localStorage.removeItem('leftAppTime');
-        localStorage.removeItem('user');
-      }
+      localStorage.removeItem('token');
+      localStorage.removeItem('leftAppTime');
+      localStorage.removeItem('user');
       localStorage.removeItem('fcm_token');
       
       setToken(null);
@@ -85,6 +69,29 @@ const MainLayout = () => {
       localStorage.clear();
       setToken(null);
       navigate('/', { replace: true });
+    }
+  }, [token, sessionExpired, navigate]);
+
+  // Auto-logout handler
+  const handleAutoLogout = useCallback(async () => {
+    console.log('Auto-logout triggered - user was away too long');
+    setSessionExpired(true);
+    await performLogout();
+  }, [performLogout]);
+
+  // Initialize auto-logout hook (only when user has token)
+  useAutoLogout(
+    token ? handleAutoLogout : null
+  );
+
+  const cleanupFirebase = async () => {
+    try {
+      console.log('Cleaning up Firebase...');
+      await FirebaseService.cleanup();
+      setFcmInitialized(false);
+      console.log('Firebase cleanup completed');
+    } catch (error) {
+      console.error('Error during Firebase cleanup:', error);
     }
   };
 
@@ -157,17 +164,6 @@ const MainLayout = () => {
       }
     } catch (error) {
       console.error('Error initializing Firebase:', error);
-    }
-  };
-
-  const cleanupFirebase = async () => {
-    try {
-      console.log('Cleaning up Firebase...');
-      await FirebaseService.cleanup();
-      setFcmInitialized(false);
-      console.log('Firebase cleanup completed');
-    } catch (error) {
-      console.error('Error during Firebase cleanup:', error);
     }
   };
 

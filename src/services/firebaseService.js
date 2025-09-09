@@ -30,7 +30,6 @@ class FirebaseService {
       const token = await getToken(messaging, {
         vapidKey: this.vapidKey
       });
-      
       if (token) {
         console.log('FCM Token:', token);
         return token;
@@ -143,7 +142,6 @@ class FirebaseService {
   setupForegroundMessageHandler() {
     onMessage(messaging, (payload) => {
       console.log('Message received in foreground:', payload);
-      
       // Show notification when app is in foreground
       this.showForegroundNotification(payload);
     });
@@ -153,7 +151,6 @@ class FirebaseService {
   showForegroundNotification(payload) {
     const { title, body } = payload.notification || {};
     const data = payload.data || {};
-
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then((registration) => {
         registration.showNotification(title || 'Notification', {
@@ -172,7 +169,6 @@ class FirebaseService {
   // Get notification actions based on type
   getNotificationActions(data) {
     const actions = [];
-    
     if (data.type === 'deposit_approval') {
       actions.push(
         { action: 'approve', title: 'Approve' },
@@ -184,8 +180,9 @@ class FirebaseService {
         { action: 'decline', title: 'Decline' }
       );
     }
-    
+
     actions.push({ action: 'view', title: 'View' });
+
     return actions;
   }
 
@@ -203,4 +200,5 @@ class FirebaseService {
   }
 }
 
-export default new FirebaseService();
+const firebaseServiceInstance = new FirebaseService();
+export default firebaseServiceInstance;

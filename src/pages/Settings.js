@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { 
-  FaQuestionCircle, 
   FaRocketchat, 
   FaUserCircle, 
-  FaInfoCircle, 
   FaBook, 
   FaRegLightbulb, 
   FaEnvelope,
@@ -17,7 +15,6 @@ import "./Settings.css";
 
 const Settings = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [starRating, setStarRating] = useState(1);
 
   useEffect(() => {
     const handleResize = () => {
@@ -33,11 +30,14 @@ const Settings = () => {
         );
         const balance = response.data.balance_usd;
         // Calculate star rating based on balance
-        if (balance >= 5000) setStarRating(5);
-        else if (balance >= 1000) setStarRating(4);
-        else if (balance >= 301) setStarRating(3);
-        else if (balance >= 101) setStarRating(2);
-        else setStarRating(1);
+        let calculatedStarRating = 1;
+        if (balance >= 5000) calculatedStarRating = 5;
+        else if (balance >= 1000) calculatedStarRating = 4;
+        else if (balance >= 301) calculatedStarRating = 3;
+        else if (balance >= 101) calculatedStarRating = 2;
+        
+        // You can use calculatedStarRating here if needed for UI
+        console.log('User star rating:', calculatedStarRating);
       } catch (error) {
         console.error("Error fetching star rating:", error);
       }

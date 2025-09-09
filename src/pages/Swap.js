@@ -16,33 +16,20 @@ const Swap = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [showDropdown, setShowDropdown] = useState(false);
     const [hasPendingSwap, setHasPendingSwap] = useState(false);
-    const [currentLagosTime, setCurrentLagosTime] = useState("");
     const [amountError, setAmountError] = useState(false);
 
     const dropdownRef = useRef(null);
-    const usdtAsset = assets.find(asset => asset.symbol === "USDT");
     const MINIMUM_SWAP_AMOUNT = 3;
 
     useEffect(() => {
         fetchAssets();
         checkPendingSwap();
-        updateCurrentLagosTime();
-        
-        // Update Lagos time every minute
-        const timeInterval = setInterval(updateCurrentLagosTime, 60000);
         
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
-            clearInterval(timeInterval);
         };
     }, []);
-
-    // Display current Lagos time to help users understand the timezone
-    const updateCurrentLagosTime = () => {
-        const lagosTime = moment().tz('Africa/Lagos').format('YYYY-MM-DD HH:mm:ss');
-        setCurrentLagosTime(lagosTime);
-    };
 
     const handleClickOutside = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {

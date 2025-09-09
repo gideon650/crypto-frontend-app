@@ -12,6 +12,7 @@ const Wallet = () => {
   const [depositMethod, setDepositMethod] = useState("");
   const [withdrawMethod, setWithdrawMethod] = useState("");
   const [depositCryptoType, setDepositCryptoType] = useState("");
+  const [message, setMessage] = useState("");
   const [network, setNetwork] = useState("");
   const [chain, setChain] = useState("");
   const [transactionId, setTransactionId] = useState("");
@@ -27,8 +28,6 @@ const Wallet = () => {
   const [bybitEmail, setBybitEmail] = useState("");
   const [internalWalletId, setInternalWalletId] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
-  const [transactions, setTransactions] = useState([]);
-  const [message, setMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [usdToNgn, setUsdToNgn] = useState(1500);
   const [userBalance, setUserBalance] = useState(0);
@@ -153,6 +152,9 @@ const Wallet = () => {
                       displayMethod = 'On-Chain';
                       recipientDetails = tx.chain ? `${tx.to_address} (${tx.chain})` : tx.to_address;
                       break;
+                  default:
+                      // No action needed for default case
+                      break;
               }
           }
 
@@ -169,21 +171,14 @@ const Wallet = () => {
               to_address: tx.to_address
           };
       });
-
-      // Combine and sort by date (descending)
-      const allTransactions = [...trades, ...deposits, ...withdrawals].sort(
-          (a, b) => new Date(b.created_at || b.timestamp) - new Date(a.created_at || a.timestamp)
-      );
     
       setTrades(trades);
       setDeposits(deposits);
       setWithdrawals(withdrawals);
-      setTransactions(allTransactions);
       setMessage("");
     } catch (error) {
       console.error("Transactions fetch error:", error);
       setMessage("Failed to load transactions");
-      setTransactions([]);
     } finally {
       setLoading(false);
     }
@@ -357,22 +352,6 @@ const Wallet = () => {
     setTimeout(() => setMessage(""), 2000);
   };
 
-  // Get CSRF token for non-axios requests
-  const getCookie = (name) => {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  };
-
   // Method mapping for API format
   const mapMethodToApiFormat = (method) => {
     const methodMapping = {
@@ -524,6 +503,9 @@ const Wallet = () => {
             requestData.wallet_address = walletAddress;
             requestData.chain = chain;
             break;
+          default:
+            // No action needed for default case
+            break;
         }
       }
 
@@ -600,11 +582,6 @@ const Wallet = () => {
 
   const handleBackToNetworks = () => {
     setShowQRCode(false);
-  };
-
-  const saveQRCodeImage = () => {
-    setMessage("QR Code image saved!");
-    setTimeout(() => setMessage(""), 2000);
   };
 
   const getStarRating = (balance) => {
@@ -1068,62 +1045,30 @@ const renderDepositInterface = () => {
                   style={{
                     background: "rgba(128,0,128,0.10)",
                     borderRadius: "14px",
-                    padding: "1.7rem 1.2rem",
-                    margin: "1.2rem 0",
-                    border: "2px solid #800080",
-                    color: "white",
-                    boxShadow: "0 4px 16px rgba(128,0,128,0.10)",
-                    fontFamily: "inherit",
-                    textAlign: "center"
+                    padding: "1.7rem 1.5rem",
+                    marginTop: "1rem",
+                    border: "1px solid rgba(128,0,128,0.3)"
                   }}
                 >
-                  <div style={{ marginBottom: "1.1rem", fontWeight: 300, fontSize: "0.8rem", lineHeight: 1.7 }}>
-                    1. Please ensure that the name in your <span style={{ color: "#800080" }}>SWAPVIEW</span> account matches with the payment account name.<br />                 
-                    2. Please also ensure you use your full name as the bank narration. 
+                  <h4 style={{ marginBottom: "1rem", color: "#800080" }}>Merchant Details</h4>
+                  <div style={{ marginBottom: "0.5rem" }}>
+                    <strong>Username:</strong> {selectedMerchant.username}
                   </div>
-                  <div style={{ marginBottom: "0.7rem", fontWeight: 500 }}>
-                    <b>Transfer {amount && totalWithFee && !amountError ? `₦${(parseFloat(totalWithFee) * usdToNgn).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : ""} to:</b>
+                  <div style={{ marginBottom: "0.5rem" }}>
+                    <strong>Bank Name:</strong> {selectedMerchant.bankName}
                   </div>
-                  <div style={{
-                    fontSize: "1.7rem",
-                    fontWeight: "bold",
-                    marginBottom: "0.35rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    color: "#800080"
-                  }}>
-                    <span
-                      style={{
-                        cursor: "pointer",
-                        color: "#800080",
-                        letterSpacing: "2px",
-                        userSelect: "all",
-                        fontSize: "2rem",
-                        background: "rgba(128,0,128,0.07)",
-                        borderRadius: "8px",
-                        padding: "8px 24px",
-                        margin: "0 auto"
-                      }}
-                      onClick={() => copyToClipboard(selectedMerchant.accountNumber)}
-                      title="Copy account number"
-                    >
-                      {selectedMerchant.accountNumber}
-                    </span>
-                    <button
-                      onClick={() => copyToClipboard(selectedMerchant.accountNumber)}
-                      className="copy-button"
-                    >
-                      Copy
-                    </button>
+                  <div style={{ marginBottom: "0.5rem" }}>
+                    <strong>Account Number:</strong> {selectedMerchant.accountNumber}
                   </div>
-                  <div style={{ marginBottom: "0.5rem", color: "#800080", fontWeight: 500, fontSize: "1.1rem" }}>
-                    {selectedMerchant.bankName}
+                  <div style={{ marginBottom: "0.5rem" }}>
+                    <strong>Rating:</strong> {getStarRating(selectedMerchant.starRating * 1000)}
                   </div>
-                  <div>
-                    {getStarRating(selectedMerchant.starRating * 1000)}
-                  </div>
+                  <button 
+                    onClick={() => copyToClipboard(selectedMerchant.accountNumber)}
+                    className="copy-button"
+                  >
+                    Copy Account Number
+                  </button>
                 </div>
 
                 <div className="form-group">

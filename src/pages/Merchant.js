@@ -59,15 +59,15 @@ const Merchant = () => {
       const balance = response.data.balance_usd;
       let stars = 1;
       if (balance >= 5000) stars = 5;
-      else if (balance >= 1000) stars = 4;
-      else if (balance >= 301) stars = 3;
+      else if (balance >= 1001) stars = 4;
+      else if (balance >= 501) stars = 3;
       else if (balance >= 101) stars = 2;
       
       setUserStarRating(stars);
 
       // Changed from 5 to 3 stars
-      if (stars < 3) {
-        setError('You need to be at least a 3-star user to become a merchant. Current rating: ' + stars + ' stars');
+      if (stars < 4) {
+        setError('You need to be at least a 4-star user to become a merchant. Current rating: ' + stars + ' stars');
       }
     } catch (error) {
       setError('Failed to check eligibility');
@@ -134,7 +134,7 @@ const Merchant = () => {
       const token = localStorage.getItem("token");
       const endpoint = action === 'approve' ? 'merchant-approve-deposit' : 'merchant-decline-deposit';
       
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/${endpoint}/${depositId}/`,
         {},
         {
@@ -145,9 +145,7 @@ const Merchant = () => {
         }
       );
       
-      const responseData = response.data;
-      
-      setMessage(responseData.message || `${action === 'approve' ? 'Approved' : 'Declined'} successfully`);
+      setMessage(`${action === 'approve' ? 'Approved' : 'Declined'} successfully`);
       setShowPopup(true);
       
       // Refresh data after action
@@ -162,15 +160,15 @@ const Merchant = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Changed from 5 to 3 stars
-    if (userStarRating < 3) {
-      setMessage("You need to be at least a 3-star user to become a merchant");
+    if (userStarRating < 4) {
+      setMessage("You need to be at least a 4-star user to become a merchant");
       setShowPopup(true);
       return;
     }
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/apply-merchant/`,
         formData,
         {
@@ -180,8 +178,6 @@ const Merchant = () => {
           }
         }
       );
-      
-      const responseData = response.data;
       
       setMessage("Success, awaiting approval");
       setShowPopup(true);
@@ -216,7 +212,7 @@ const Merchant = () => {
             <h2><FaCheckCircle className="error-icon" /> Eligibility Status</h2>
             <p className="error-message">{error}</p>
             <div className="requirements">
-              <h3><FaCoins /> Requirements for 3-star rating:</h3>
+              <h3><FaCoins /> Requirements for 4-star rating:</h3>
               <ul>
                 <li><span className="requirement-badge">$301+</span> Minimum balance</li>
                 <li><span className="requirement-badge">Verified</span> Profile status</li>
@@ -226,6 +222,10 @@ const Merchant = () => {
             <button onClick={() => navigate('/wallet')} className="submit-button">
               <FaWallet /> Deposit Funds
             </button>
+            <div className="current-rating">
+              <h4>Your Current Rating:</h4>
+              {renderStarRating()}
+            </div>
           </div>
         </div>
       ) : (
@@ -317,7 +317,7 @@ const Merchant = () => {
               <button 
                 type="submit" 
                 className="submit-button"
-                disabled={loading || userStarRating < 3}
+                disabled={loading || userStarRating < 4}
               >
                 {loading ? 'Submitting...' : 'Submit Application'}
               </button>

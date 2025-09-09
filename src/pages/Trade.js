@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import axios from "axios";
 import { createChart } from "lightweight-charts";
 import { useSearchParams } from "react-router-dom";
@@ -30,9 +30,9 @@ const Trade = () => {
   const [searchParams] = useSearchParams();
 
   // Filter function to exclude USDT
-  const filterOutUSDT = (tokens) => {
+  const filterOutUSDT = useCallback((tokens) => {
     return tokens.filter(asset => asset.symbol !== 'USDT');
-  };
+  }, []);
   
 
   const filteredAssets = assets.filter(asset => {
@@ -44,6 +44,28 @@ const Trade = () => {
     );
   });
 
+  const fetchCandlestickData = useCallback(async (symbol, intervalParam = interval) => {
+    if (!symbol) return;
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const config = { headers: { Authorization: `Token ${token}` } };
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/candlestick/${symbol}/?interval=${intervalParam}`,
+        config
+      );
+  
+      if (response.data.status === "success" && Array.isArray(response.data.chart)) {
+        setCandlestickData(response.data.chart);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching candlestick data:", error);
+      setError(`Failed to load chart data for ${symbol}.`);
+      setLoading(false);
+    }
+  }, [interval]);
+
   useEffect(() => {
     const tokenFromUrl = searchParams.get('token');
     if (tokenFromUrl && assets.length > 0) {
@@ -54,9 +76,9 @@ const Trade = () => {
         fetchCandlestickData(tokenFromUrl, interval);
       }
     }
-  }, [assets, searchParams, interval]);
+  }, [assets, searchParams, interval, fetchCandlestickData]);
 
-  const fetchAssets = async () => {
+  const fetchAssets = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
@@ -78,29 +100,7 @@ const Trade = () => {
       setError("Failed to load assets. Please try again.");
       setLoading(false);
     }
-  };
-
-  const fetchCandlestickData = async (symbol, intervalParam = interval) => {
-    if (!symbol) return;
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      const config = { headers: { Authorization: `Token ${token}` } };
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/candlestick/${symbol}/?interval=${intervalParam}`,
-        config
-      );
-  
-      if (response.data.status === "success" && Array.isArray(response.data.chart)) {
-        setCandlestickData(response.data.chart);
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching candlestick data:", error);
-      setError(`Failed to load chart data for ${symbol}.`);
-      setLoading(false);
-    }
-  };
+  }, [filterOutUSDT, fetchCandlestickData, interval, searchParams]);
 
   const handleAssetChange = async (symbol) => {
     setSelectedAsset(symbol);
@@ -303,11 +303,6 @@ const Trade = () => {
     // Improved price range calculation
     const priceRange = maxPrice - minPrice;
     const padding = Math.max(priceRange * 0.05, maxPrice * 0.001); // 5% of range or 0.1% of max price
-
-    const priceFormatter = new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: getPrecision(maxPrice),
-      maximumFractionDigits: getPrecision(maxPrice),
-    });
 
     const chart = createChart(container, {
       width: width,
@@ -578,7 +573,7 @@ const Trade = () => {
 
   useEffect(() => {
     fetchAssets();
-  }, []);
+  }, [fetchAssets]);
 
   const selectedAssetObj = assets.find(asset => asset.symbol === selectedAsset);
 
@@ -861,7 +856,7 @@ const Trade = () => {
                 </div>
               </div>
             </div>
-          </div>
+            </div>
         </div>
       </div>
     </div>
