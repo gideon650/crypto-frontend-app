@@ -6,8 +6,8 @@ const useAutoLogout = (onLogout) => {
   const leftAppTimeRef = useRef(null); // When user left the app
   const timeoutRef = useRef(null);
   
-  // Auto logout timeout when away from app (1 minute = 60000ms)
-  const AWAY_TIMEOUT = 60000;
+  // Auto logout timeout when away from app (1 hour = 3600000ms)
+  const AWAY_TIMEOUT = 3600000;
   
   // Don't track activity if no logout callback is provided
   const shouldTrack = !!onLogout;

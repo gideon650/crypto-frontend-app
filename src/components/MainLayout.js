@@ -124,7 +124,7 @@ const MainLayout = () => {
         if (leftAppTime) {
           const now = Date.now();
           const awayDuration = now - parseInt(leftAppTime);
-          const AWAY_TIMEOUT = 60000; // 1 minute
+          const AWAY_TIMEOUT = 3600000; // 1 hour
           
           if (awayDuration > AWAY_TIMEOUT) {
             console.log('Session expired - user was away too long');

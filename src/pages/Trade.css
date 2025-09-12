@@ -1020,3 +1020,27 @@ body {
   }
 }
 
+.clickable-text-group {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.clickable-text {
+  color: #D9D9D9;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  user-select: none; /* Prevents text selection */
+}
+
+.clickable-text:hover {
+  color: #ffffff;
+}
+
+.clickable-text.active {
+  color: #4CAF50;
+  font-weight: 600;
+}
+

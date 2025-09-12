@@ -762,27 +762,21 @@ const Trade = () => {
               <div className="trade-form">
                 <h3>Trade {selectedAssetObj ? selectedAssetObj.symbol : ''}</h3>
                 <div className="trade-actions">
-                  {/* Input type selector */}
+                  {/* Input type selector - Updated to clickable text only */}
                   <div className="input-type-selector">
-                    <div className="radio-group">
-                      <label className="radio-label">
-                        <input
-                          type="radio"
-                          value="amount"
-                          checked={inputType === "amount"}
-                          onChange={(e) => setInputType(e.target.value)}
-                        />
-                        <span>Dollar Amount ($)</span>
-                      </label>
-                      <label className="radio-label">
-                        <input
-                          type="radio"
-                          value="quantity"
-                          checked={inputType === "quantity"}
-                          onChange={(e) => setInputType(e.target.value)}
-                        />
-                        <span>Quantity</span>
-                      </label>
+                    <div className="clickable-text-group">
+                      <span
+                        className={`clickable-text ${inputType === "amount" ? "active" : ""}`}
+                        onClick={() => setInputType("amount")}
+                      >
+                        Amount
+                      </span>
+                      <span
+                        className={`clickable-text ${inputType === "quantity" ? "active" : ""}`}
+                        onClick={() => setInputType("quantity")}
+                      >
+                        Quantity
+                      </span>
                     </div>
                   </div>
 

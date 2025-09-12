@@ -932,8 +932,7 @@ const renderDepositInterface = () => {
             )}
             {amount && !amountError && (
               <div style={{ marginTop: 8, color: "#008000" }}>
-                Total to pay: ${totalWithFee}
-                <br />
+                Total to pay
                 ≈ ₦{(parseFloat(totalWithFee) * usdToNgn).toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -1066,8 +1065,14 @@ const renderDepositInterface = () => {
                   <button 
                     onClick={() => copyToClipboard(selectedMerchant.accountNumber)}
                     className="copy-button"
+                    style={{
+                      padding: "0.5rem 1rem", // Smaller padding
+                      fontSize: "0.8rem", // Smaller font
+                      margin: "0 auto", // Center the button
+                      display: "block" // Make it a block element for centering
+                    }}
                   >
-                    Copy Account Number
+                    Copy
                   </button>
                 </div>
 
@@ -1075,7 +1080,7 @@ const renderDepositInterface = () => {
                   <label>Transaction ID</label>
                   <input 
                     type="text" 
-                    placeholder="Enter transaction ID" 
+                    placeholder="Bank narration" 
                     value={transactionId} 
                     onChange={(e) => setTransactionId(e.target.value)} 
                   />

@@ -243,7 +243,7 @@ const Swap = () => {
                 <input 
                     type="text" 
                     placeholder="Enter Token USDT"
-                    value="Enter Token USDT"
+                    value="USDT"
                     disabled={true}
                     className="disabled-input"
                 />
@@ -290,7 +290,7 @@ const Swap = () => {
                 <input 
                     type="text" 
                     placeholder="Enter Token"
-                    value="Enter Token"
+                    value="USDT"
                     disabled={true}
                     className="disabled-input"
                 />
