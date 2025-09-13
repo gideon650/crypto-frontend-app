@@ -178,8 +178,6 @@
   margin-bottom: 1.5rem;
 }
 
-
-
 .trending-grid-container {
   position: relative;
 }
@@ -360,6 +358,72 @@
   display: none;
 }
 
+/* Sliding Messages Section */
+.sliding-messages-section {
+  margin: 2rem 0;
+  position: relative;
+  height: 60px;
+  overflow: hidden;
+}
+
+.sliding-messages-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.sliding-message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(128, 0, 128, 0.15), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(128, 0, 128, 0.3);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+  opacity: 0;
+  transform: translateX(100%);
+  box-shadow: 0 4px 15px rgba(128, 0, 128, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.sliding-message.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sliding-message:hover {
+  background: linear-gradient(135deg, rgba(128, 0, 128, 0.25), rgba(255, 255, 255, 0.08));
+  box-shadow: 0 6px 20px rgba(128, 0, 128, 0.2);
+  transform: translateX(0) translateY(-2px);
+}
+
+.message-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(128, 0, 128, 0.2);
+  border-radius: 50%;
+}
+
+.message-text {
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  flex: 1;
+}
+
 /* Responsive Adjustments */
 @media (min-width: 768px) {
   .dashboard-content {
@@ -374,8 +438,6 @@
     min-width: 180px;
   }
 }
-
-/* Add these rules to the end of your existing Dashboard.css file */
 
 /* Enhanced Mobile-specific adjustments */
 @media (max-width: 480px) {
@@ -460,6 +522,27 @@
   .dashboard-content {
     padding: 0.25rem 1rem 1rem;
   }
+
+  /* Mobile adjustments for sliding messages */
+  .sliding-messages-section {
+    margin: 1.5rem 0;
+    height: 50px;
+  }
+  
+  .sliding-message {
+    padding: 0.8rem 1rem;
+    gap: 0.8rem;
+  }
+  
+  .message-icon {
+    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+  }
+  
+  .message-text {
+    font-size: 0.85rem;
+  }
 }
 
 .username {
@@ -467,8 +550,7 @@
   margin-bottom: 0.1rem;
 }
 
-/* Add these styles to your Dashboard.css */
-
+/* Search Bar Styles */
 .trending-header-container {
   display: flex;
   align-items: center;
@@ -602,7 +684,6 @@
   }
 }
 
-
 .user-token-card {
   position: relative; /* Add this if not already present */
 }
@@ -629,57 +710,4 @@
 
 .price-arrow {
   font-size: 9px;
-}
-
-/* Premium Message Styles with Marquee Animation */
-.premium-message {
-  color: #800080;
-  text-align: center;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  overflow: hidden;
-  position: relative;
-  background: linear-gradient(90deg, transparent, rgba(128, 0, 128, 0.1), transparent);
-  background-size: 200% 100%;
-  animation: shine 3s infinite;
-}
-
-.premium-message span {
-  display: inline-block;
-  padding-left: 100%;
-  animation: marquee 15s linear infinite;
-  white-space: nowrap;
-}
-
-/* Shiny effect */
-@keyframes shine {
-  0% {
-    background-position: -100% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-/* Marquee scrolling animation */
-@keyframes marquee {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-200%);
-  }
-}
-
-/* Mobile adjustments */
-@media (max-width: 480px) {
-  .premium-message {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
-  }
-  
-  .premium-message span {
-    animation: marquee 12s linear infinite;
-  }
 }

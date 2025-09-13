@@ -119,16 +119,6 @@
   background: #a020f0;
 }
 
-@media (max-width: 768px) {
-  .notifications-container {
-    padding: 10px;
-  }
-
-  .notification-item {
-    padding: 12px;
-  }
-}
-
 .notification-actions {
   display: flex;
   gap: 10px;
@@ -153,8 +143,54 @@
   cursor: pointer;
 }
 
-.notification-item.unread {
-  background-color: #000000;
-  border-left: 4px solid #800080;
-}
+/* Mobile view adjustments */
+@media (max-width: 768px) {
+  .notifications-container {
+    padding: 10px;
+  }
 
+  .notifications-container h2 {
+    font-size: 1.2rem; /* Smaller heading */
+  }
+
+  .notification-item {
+    padding: 12px;
+  }
+
+  .notification-content p {
+    font-size: 0.85rem; /* Smaller notification message text */
+    line-height: 1.4;
+  }
+
+  .notification-content small {
+    font-size: 0.7rem; /* Smaller timestamp text */
+  }
+
+  .mark-read-button {
+    font-size: 0.7rem; /* Smaller button text */
+    padding: 4px 8px;
+  }
+
+  .approve-button,
+  .decline-button {
+    font-size: 0.7rem; /* Smaller action button text */
+    padding: 4px 8px;
+  }
+
+  .loading-spinner {
+    font-size: 0.85rem;
+  }
+
+  .error-message {
+    font-size: 0.85rem;
+  }
+
+  .no-notifications p {
+    font-size: 0.85rem;
+  }
+
+  .retry-button {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+}

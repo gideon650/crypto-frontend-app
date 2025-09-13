@@ -1,12 +1,91 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom"; // ADD THIS IMPORT
 import BEP20QR from '../assets/images/BEP20.png';
 import TRC20QR from '../assets/images/TRC20.png';
 import SOLQR from '../assets/images/SOL.png';
 import ERC20QR from '../assets/images/ERC20.png';
 import "./Wallet.css";
 
+const staticMerchants = [
+  {
+    id: 'static-1',
+    username: 'Gabriel Omega',
+    bankName: 'First Bank',
+    accountNumber: '1234567890',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-2',
+    username: 'Kingsley',
+    bankName: 'GTBank',
+    accountNumber: '0987654321',
+    starRating: 2,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-3',
+    username: 'QuickPay',
+    bankName: 'Access Bank',
+    accountNumber: '5555666677',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-4',
+    username: 'GIFT001',
+    bankName: 'Zenith Bank',
+    accountNumber: '1111222233',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-5',
+    username: 'SwiftExchange',
+    bankName: 'UBA',
+    accountNumber: '4444555566',
+    starRating: 2,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-6',
+    username: 'Clinton',
+    bankName: 'Sterling Bank',
+    accountNumber: '7777888899',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-7',
+    username: 'Offor james',
+    bankName: 'Fidelity Bank',
+    accountNumber: '3333444455',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-8',
+    username: 'Femi joy',
+    bankName: 'FCMB',
+    accountNumber: '6666777788',
+    starRating: 2,
+    verified: true,
+    isStatic: true
+  }
+];
+
+
 const Wallet = () => {
+  const routeLocation = useLocation(); // ADD THIS LINE
+  
   // State variables
   const [tab, setTab] = useState("deposit");
   const [depositMethod, setDepositMethod] = useState("");
@@ -47,6 +126,7 @@ const Wallet = () => {
   // Initial merchants list
   const [merchants, setMerchants] = useState([]);
 
+  
   const MINIMUM_AMOUNT = 3;
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -66,6 +146,26 @@ const Wallet = () => {
   };
 
   const bybitWalletEmail = "395552798";
+
+  // Handle URL tab parameters
+  useEffect(() => {
+    const searchParams = new URLSearchParams(routeLocation.search);
+    const tabParam = searchParams.get('tab');
+    
+    console.log('URL tab parameter:', tabParam);
+    
+    if (tabParam) {
+      if (tabParam === 'referral') {
+        setTab('referral');
+      } else if (tabParam === 'deposit') {
+        setTab('deposit');
+      } else if (tabParam === 'withdraw') {
+        setTab('withdraw');
+      } else if (tabParam === 'history') {
+        setTab('history');
+      }
+    }
+  }, [routeLocation.search]);
 
   // Fetch user balance, transactions, and referral info on component mount
   useEffect(() => {
@@ -184,56 +284,6 @@ const Wallet = () => {
     }
   };
  
-
- // Update the fetchMerchants function in useEffect
-  useEffect(() => {
-  const fetchMerchants = async () => {
-    try {
-      setMerchantsLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/approved-merchants/`,
-        { 
-          headers: { 
-            'Authorization': `Token ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      
-      // Remove the ID offset (+100) and just use the merchant IDs as they are
-      const approvedMerchants = response.data.map(merchant => ({
-        id: merchant.id, // Use original ID
-        username: merchant.name,
-        bankName: merchant.bank_name,
-        accountNumber: merchant.account_number,
-        starRating: merchant.star_rating || 5,
-        verified: true
-      }));
-      
-      setMerchants(prevMerchants => {
-        // Filter out duplicates by account number
-        const existingAccountNumbers = new Set(prevMerchants.map(m => m.accountNumber));
-        const newMerchants = approvedMerchants.filter(
-          m => !existingAccountNumbers.has(m.accountNumber)
-        );
-        return [...prevMerchants, ...newMerchants];
-      });
-
-    } catch (error) {
-      console.error('Error fetching merchants:', error);
-      setMerchantError(
-        error.response?.data?.error || 
-        'Failed to load additional merchants'
-      );
-    } finally {
-      setMerchantsLoading(false);
-    }
-  };
-
-  fetchMerchants();
-}, []);
-
   // Add a function to fetch merchant balances
   const fetchMerchantBalances = async () => {
     try {
@@ -248,9 +298,10 @@ const Wallet = () => {
         }
       );
       
-      // Update merchants with their current balances
+      // Update merchants with their current balances (only real merchants, not static ones)
       setMerchants(prevMerchants => 
         prevMerchants.map(merchant => {
+          if (merchant.isStatic) return merchant; // Don't update static merchants
           const balanceInfo = response.data.find(m => m.id === merchant.id);
           return {
             ...merchant,
@@ -263,61 +314,68 @@ const Wallet = () => {
     }
   };
 
-  // Call this function after fetching merchants
-  useEffect(() => {
-    const fetchAllMerchantData = async () => {
-      try {
-        setMerchantsLoading(true);
-        const token = localStorage.getItem('token');
-        
-        // Fetch merchants
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/approved-merchants/`,
-          { 
-            headers: { 
-              'Authorization': `Token ${token}`,
-              'Content-Type': 'application/json'
-            }
+  // Updated useEffect to include static merchants
+  // Fixed useEffect for fetching merchants
+useEffect(() => {
+  const fetchAllMerchantData = async () => {
+    try {
+      setMerchantsLoading(true);
+      const token = localStorage.getItem('token');
+      
+      // Fetch real merchants from API first
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/approved-merchants/`,
+        { 
+          headers: { 
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json'
           }
-        );
-        
-        const approvedMerchants = response.data.map(merchant => ({
-          id: merchant.id,
-          username: merchant.name,
-          bankName: merchant.bank_name,
-          accountNumber: merchant.account_number,
-          starRating: merchant.star_rating || 5,
-          verified: true
-        }));
-        
-        setMerchants(prevMerchants => {
-          const existingAccountNumbers = new Set(prevMerchants.map(m => m.accountNumber));
-          const newMerchants = approvedMerchants.filter(
-            m => !existingAccountNumbers.has(m.accountNumber)
-          );
-          return [...prevMerchants, ...newMerchants];
-        });
-
-        // After setting merchants, fetch their balances
-        if (approvedMerchants.length > 0) {
-          await fetchMerchantBalances();
         }
-      } catch (error) {
-        console.error('Error fetching merchants:', error);
-        setMerchantError(
-          error.response?.data?.error || 
-          'Failed to load additional merchants'
-        );
-      } finally {
-        setMerchantsLoading(false);
-      }
-    };
-    
-    fetchAllMerchantData();
-  }, []);
+      );
+      
+      const approvedMerchants = response.data.map(merchant => ({
+        id: merchant.id,
+        username: merchant.name,
+        bankName: merchant.bank_name,
+        accountNumber: merchant.account_number,
+        starRating: merchant.star_rating || 5,
+        verified: true,
+        isStatic: false // Real merchants are not static
+      }));
+      
+      // Combine static merchants with real merchants
+      // Put real merchants first, then static merchants
+      const combinedMerchants = [...approvedMerchants, ...staticMerchants];
+      
+      setMerchants(combinedMerchants);
 
-  // Add a function to check if merchant is eligible
+      // After setting merchants, fetch balances for real merchants only
+      if (approvedMerchants.length > 0) {
+        await fetchMerchantBalances();
+      }
+    } catch (error) {
+      console.error('Error fetching merchants:', error);
+      
+      // If API fails, still show static merchants
+      setMerchants(staticMerchants);
+      
+      setMerchantError(
+        error.response?.data?.error || 
+        'Failed to load merchants from server. Showing sample merchants.'
+      );
+    } finally {
+      setMerchantsLoading(false);
+    }
+  };
+  
+  fetchAllMerchantData();
+}, []);
+
+  // Updated function to check if merchant is eligible
   const isMerchantEligible = (merchant, amount) => {
+    // Static merchants are never eligible
+    if (merchant.isStatic) return false;
+    
     if (!merchant.currentBalance) return true; // If we don't have balance data, assume eligible
     
     // Check if merchant has less than 4-star rating equivalent balance
@@ -326,9 +384,6 @@ const Wallet = () => {
     const requiredBalance = parseFloat(amount) * 1.1; // 10% buffer
     return merchant.currentBalance >= requiredBalance;
   };
-
-  // Add this function to determine if a merchant is eligible (has 4+ stars)
-
   
   useEffect(() => {
     const fetchRate = async () => {
@@ -765,7 +820,8 @@ const Wallet = () => {
     );
   };
 
-  // Wallet.js - Updated renderDepositInterface function
+
+// Complete renderDepositInterface function
 const renderDepositInterface = () => {
   // Calculate total amount with 3.5% fee
   const calculateTotalWithFee = (amount) => {
@@ -947,7 +1003,7 @@ const renderDepositInterface = () => {
               className="merchant-select-button"
               onClick={() => setShowMerchantList(!showMerchantList)}
             >
-              {selectedMerchant ? selectedMerchant.username : 'Select a merchant'}
+              {selectedMerchant ? selectedMerchant.username : 'Select merchant available to you'}
             </button>
             
             {showMerchantList && (
@@ -995,6 +1051,12 @@ const renderDepositInterface = () => {
                           <tr 
                             key={merchant.id}
                             onClick={() => {
+                              // Don't allow clicking on static merchants
+                              if (merchant.isStatic) {
+                                setMerchantError('This merchant is currently unavailable');
+                                return;
+                              }
+                              
                               if (!amount) {
                                 setMerchantError('Please enter amount first');
                                 return;
@@ -1011,11 +1073,12 @@ const renderDepositInterface = () => {
                               setSearchTerm('');
                             }}
                             className={`${selectedMerchant?.id === merchant.id ? 'selected' : ''} ${
-                              !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'disabled-merchant' : ''
+                              merchant.isStatic || !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'disabled-merchant' : ''
                             }`}
                             style={{
-                              opacity: !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 0.3 : 1,
-                              cursor: !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'not-allowed' : 'pointer'
+                              opacity: merchant.isStatic || !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 0.3 : 1,
+                              cursor: merchant.isStatic || !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'not-allowed' : 'pointer',
+                              backgroundColor: merchant.isStatic ? 'rgba(128,128,128,0.1)' : 'transparent'
                             }}
                           >
                             <td>{merchant.username}</td>
@@ -1025,7 +1088,10 @@ const renderDepositInterface = () => {
                               {merchant.verified && (
                                 <span className="verified-icon">✓</span>
                               )}
-                              {!isMerchantEligible(merchant, amount || 0) && (
+                              {merchant.isStatic && (
+                                <span className="unavailable-icon" title="Currently unavailable">⚫</span>
+                              )}
+                              {!merchant.isStatic && !isMerchantEligible(merchant, amount || 0) && (
                                 <span className="insufficient-balance-icon" title="Insufficient balance">⚠️</span>
                               )}
                             </td>
@@ -1102,6 +1168,7 @@ const renderDepositInterface = () => {
   );
 };
 
+// Complete renderWithdrawInterface function
 const renderWithdrawInterface = () => {
   const calculateAmountAfterFee = (amount) => {
     if (!amount || amount === "" || parseFloat(amount) <= 0) return {netAmount: 0, fee: 0};
@@ -1266,7 +1333,7 @@ const renderWithdrawInterface = () => {
                   className="merchant-select-button"
                   onClick={() => setShowMerchantList(!showMerchantList)}
                 >
-                  {selectedMerchant ? selectedMerchant.username : 'Select a merchant'}
+                  {selectedMerchant ? selectedMerchant.username : 'Select merchant available to you'}
                 </button>
                 
                 {showMerchantList && (
@@ -1314,6 +1381,12 @@ const renderWithdrawInterface = () => {
                               <tr 
                                 key={merchant.id}
                                 onClick={() => {
+                                  // Don't allow clicking on static merchants
+                                  if (merchant.isStatic) {
+                                    setMerchantError('This merchant is currently unavailable');
+                                    return;
+                                  }
+                                  
                                   if (!amount) {
                                     setMerchantError('Please enter amount first');
                                     return;
@@ -1330,11 +1403,12 @@ const renderWithdrawInterface = () => {
                                   setSearchTerm('');
                                 }}
                                 className={`${selectedMerchant?.id === merchant.id ? 'selected' : ''} ${
-                                  !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'disabled-merchant' : ''
+                                  merchant.isStatic || !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'disabled-merchant' : ''
                                 }`}
                                 style={{
-                                  opacity: !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 0.3 : 1,
-                                  cursor: !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'not-allowed' : 'pointer'
+                                  opacity: merchant.isStatic || !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 0.3 : 1,
+                                  cursor: merchant.isStatic || !isMerchantEligible(merchant, amount || 0) || merchant.starRating < 4 ? 'not-allowed' : 'pointer',
+                                  backgroundColor: merchant.isStatic ? 'rgba(128,128,128,0.1)' : 'transparent'
                                 }}
                               >
                                 <td>{merchant.username}</td>
@@ -1344,7 +1418,10 @@ const renderWithdrawInterface = () => {
                                   {merchant.verified && (
                                     <span className="verified-icon">✓</span>
                                   )}
-                                  {!isMerchantEligible(merchant, amount || 0) && (
+                                  {merchant.isStatic && (
+                                    <span className="unavailable-icon" title="Currently unavailable">⚫</span>
+                                  )}
+                                  {!merchant.isStatic && !isMerchantEligible(merchant, amount || 0) && (
                                     <span className="insufficient-balance-icon" title="Insufficient balance">⚠️</span>
                                   )}
                                 </td>
@@ -1408,7 +1485,7 @@ const renderWithdrawInterface = () => {
                 {amount && !amountError && (
                   <div style={{ marginTop: "1rem", fontWeight: "bold", color: "#800080" }}>
                     <div>Amount entered: ${amount}</div>
-                    <div>Fee (3.5%): ${amountAfterFee.fee}</div>
+                    <div>Fee (5%): ${amountAfterFee.fee}</div>
                     <div>You will receive: ${amountAfterFee.netAmount}</div>
                   </div>
                 )}
@@ -1643,20 +1720,21 @@ const renderWithdrawInterface = () => {
     );
   };
 
-  return (
-  <div className="wallet-container">
-    <h1>ASSETS</h1>
-    {/* Top Section: Balance, Star Rating */}
-    <div className="wallet-balance-top">
-      <div className="wallet-balance-amount">
-        {parseFloat(userBalance || 0).toFixed(2)} 
-        <span style={{ fontSize: "1rem", marginLeft: "4px" }}>USD</span>
+return (
+    <div className="wallet-container">
+      <h1>ASSETS</h1>
+      {/* Top Section: Balance, Star Rating */}
+      <div className="wallet-balance-top">
+        <div className="wallet-balance-amount">
+          {parseFloat(userBalance || 0).toFixed(2)} 
+          <span style={{ fontSize: "1rem", marginLeft: "4px" }}>USD</span>
+        </div>
+        <div className="balance-label">Available Balance</div>
       </div>
-      <div className="balance-label">Available Balance</div>
-    </div>
-    <div className="wallet-star-rating">
-      {getStarRating(userBalance)}
-    </div>
+      <div className="wallet-star-rating">
+        {getStarRating(userBalance)}
+      </div>
+      
       <div className="wallet-tabs">
         <button
           onClick={() => setTab("deposit")}
@@ -1683,10 +1761,14 @@ const renderWithdrawInterface = () => {
           Invite
         </button>
       </div>
+      
+      {/* Tab content rendering */}
       {tab === "deposit" && renderDepositInterface()}
       {tab === "withdraw" && renderWithdrawInterface()}
       {tab === "history" && renderTransactionHistory()}
       {tab === "referral" && renderReferralSystem()}
+      
+      {/* Popups */}
       {renderBankNotAvailablePopup()}
       {renderMessagePopup()}
     </div>

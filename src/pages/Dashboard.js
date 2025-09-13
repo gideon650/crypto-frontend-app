@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
   // Filter function to exclude USDT
   const filterOutUSDT = (tokens) => {
@@ -46,6 +47,15 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
+  }, []);
+
+  // Message sliding animation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % 2);
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   const getStarRating = (balance) => {
@@ -98,6 +108,34 @@ const Dashboard = () => {
     navigate(`/trade?token=${symbol}`);
   };
 
+  const handleMessageClick = (messageType) => {
+    if (messageType === 'deposit') {
+      navigate('/wallet?tab=deposit');
+    } else if (messageType === 'referral') {
+      navigate('/wallet?tab=referral');
+    }
+  };
+
+  const getMessages = () => {
+    const messages = [
+      {
+        id: 'deposit',
+        icon: '💰',
+        text: portfolio && Number(portfolio.balance_usd) < 1001 
+          ? `Add $${getAmountToThreeStars(Number(portfolio.balance_usd))} to enjoy premium features`
+          : 'Upgrade your account for premium features',
+        type: 'deposit'
+      },
+      {
+        id: 'referral',
+        icon: '🎁',
+        text: 'Refer a user and receive 15% of their initial deposit',
+        type: 'referral'
+      }
+    ];
+    return messages;
+  };
+
   // Touch event handlers for horizontal scrolling
   const handleTouchStart = (e) => {
     setIsDragging(true);
@@ -147,15 +185,6 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Add premium message for users with less than 3 stars */}
-      {portfolio && Number(portfolio.balance_usd) < 1001 && (
-        <div className="premium-message">
-          <span>
-            Add ${getAmountToThreeStars(Number(portfolio.balance_usd))} to enjoy premium features
-          </span>
-        </div>
-      )}
-      
       <header className="dashboard-header">
         <h1>SWAPVIEW</h1>
       </header>
@@ -271,6 +300,22 @@ const Dashboard = () => {
             >
               &gt;
             </button>
+          </div>
+        </section>
+
+        {/* Sliding Messages Section */}
+        <section className="sliding-messages-section">
+          <div className="sliding-messages-container">
+            {getMessages().map((message, index) => (
+              <div
+                key={message.id}
+                className={`sliding-message ${index === currentMessageIndex ? 'active' : ''}`}
+                onClick={() => handleMessageClick(message.type)}
+              >
+                <div className="message-icon">{message.icon}</div>
+                <div className="message-text">{message.text}</div>
+              </div>
+            ))}
           </div>
         </section>
 
