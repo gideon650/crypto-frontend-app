@@ -56,7 +56,7 @@ const staticMerchants = [
   {
     id: 'static-6',
     username: 'Clinton',
-    bankName: 'Sterling Bank',
+    bankName: 'UBA',
     accountNumber: '7777888899',
     starRating: 3,
     verified: true,

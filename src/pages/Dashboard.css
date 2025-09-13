@@ -358,11 +358,11 @@
   display: none;
 }
 
-/* Sliding Messages Section */
+/* Enhanced Sliding Messages Section - Larger Design */
 .sliding-messages-section {
-  margin: 2rem 0;
+  margin: 2.5rem 0; /* Increased margin */
   position: relative;
-  height: 60px;
+  height: 80px; /* Increased from 60px */
   overflow: hidden;
 }
 
@@ -378,19 +378,20 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(128, 0, 128, 0.15), rgba(255, 255, 255, 0.05));
-  border: 1px solid rgba(128, 0, 128, 0.3);
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, rgba(128, 0, 128, 0.2), rgba(255, 255, 255, 0.08)); /* Softer purple */
+  border: 2px solid rgba(128, 0, 128, 0.4); /* Lighter purple border */
+  border-radius: 16px; /* Slightly larger radius */
+  padding: 1.5rem 2rem; /* Increased padding */
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem; /* Increased gap */
   cursor: pointer;
   transition: all 0.5s ease-in-out;
   opacity: 0;
   transform: translateX(100%);
-  box-shadow: 0 4px 15px rgba(128, 0, 128, 0.1);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(128, 0, 128, 0.4); /* Stronger shadow */
+  backdrop-filter: blur(15px);
+  font-weight: 700;
 }
 
 .sliding-message.active {
@@ -399,29 +400,33 @@
 }
 
 .sliding-message:hover {
-  background: linear-gradient(135deg, rgba(128, 0, 128, 0.25), rgba(255, 255, 255, 0.08));
-  box-shadow: 0 6px 20px rgba(128, 0, 128, 0.2);
+  background: linear-gradient(135deg, rgba(128, 0, 128, 0.4), rgba(255, 255, 255, 0.15));
+  box-shadow: 0 10px 30px rgba(128, 0, 128, 0.5); /* Even stronger hover shadow */
   transform: translateX(0) translateY(-2px);
+  border-color: rgba(128, 0, 128, 0.8);
 }
 
 .message-icon {
-  font-size: 1.5rem;
+  font-size: 2.2rem; /* Larger icon */
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 55px; /* Bigger icon container */
+  height: 55px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(128, 0, 128, 0.2);
+  background: rgba(128, 0, 128, 0.4);
   border-radius: 50%;
+  border: 2px solid rgba(128, 0, 128, 0.6);
+  box-shadow: 0 0 15px rgba(128, 0, 128, 0.4); /* Stronger icon glow */
 }
 
 .message-text {
   color: #fff;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 1.2rem; /* Larger text */
+  font-weight: 700;
   line-height: 1.4;
   flex: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); /* Stronger text shadow */
 }
 
 /* Responsive Adjustments */
@@ -523,25 +528,28 @@
     padding: 0.25rem 1rem 1rem;
   }
 
-  /* Mobile adjustments for sliding messages */
+  /* Mobile adjustments for enhanced sliding messages */
   .sliding-messages-section {
     margin: 1.5rem 0;
-    height: 50px;
+    height: 70px; /* Taller on mobile */
   }
   
   .sliding-message {
-    padding: 0.8rem 1rem;
-    gap: 0.8rem;
+    padding: 1.2rem 1.5rem;
+    gap: 1.2rem;
+    border-width: 2px;
   }
   
   .message-icon {
-    font-size: 1.2rem;
-    width: 32px;
-    height: 32px;
+    font-size: 1.8rem;
+    width: 45px;
+    height: 45px;
+    border-width: 2px;
   }
   
   .message-text {
-    font-size: 0.85rem;
+    font-size: 1rem;
+    font-weight: 700;
   }
 }
 
@@ -666,6 +674,27 @@
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
   }
+  
+  /* Mobile adjustments for sliding messages */
+  .sliding-messages-section {
+    margin: 2rem 0;
+    height: 70px;
+  }
+  
+  .sliding-message {
+    padding: 1.2rem 1.5rem;
+    gap: 1.2rem;
+  }
+  
+  .message-icon {
+    font-size: 1.8rem;
+    width: 45px;
+    height: 45px;
+  }
+  
+  .message-text {
+    font-size: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -681,6 +710,28 @@
   
   .trending-header-container h2 {
     font-size: 1.1rem;
+  }
+  
+  /* Extra small mobile adjustments for sliding messages */
+  .sliding-messages-section {
+    margin: 1.5rem 0;
+    height: 65px;
+  }
+  
+  .sliding-message {
+    padding: 1rem 1.2rem;
+    gap: 1rem;
+    border-radius: 14px;
+  }
+  
+  .message-icon {
+    font-size: 1.6rem;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .message-text {
+    font-size: 0.95rem;
   }
 }
 
