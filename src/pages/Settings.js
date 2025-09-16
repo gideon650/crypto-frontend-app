@@ -9,7 +9,8 @@ import {
   FaEnvelope,
   FaPlusCircle,
   FaStore,
-  FaBell
+  FaBell,
+  FaFileContract
 } from "react-icons/fa";
 import "./Settings.css";
 
@@ -107,6 +108,16 @@ const Settings = () => {
             <span className="settings-item-title">Notifications</span>
             <span className="settings-item-description">
               {getDescription("View your messages and alerts", "Notifications")}
+            </span>
+          </div>
+        </Link>
+
+        <Link to="/condition" className="settings-item">
+          <FaFileContract />
+          <div className="settings-item-text">
+            <span className="settings-item-title">Terms & Conditions</span>
+            <span className="settings-item-description">
+              {getDescription("Review our terms and policies", "Terms & policies")}
             </span>
           </div>
         </Link>

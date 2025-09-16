@@ -16,6 +16,8 @@ import Merchant from "../pages/Merchant";
 import Notifications from "../pages/Notifications";
 import FirebaseService from "../services/firebaseService";
 import useAutoLogout from "../hooks/useAutoLogout";
+import TermsModal from './TermsModal';
+import Condition from '../pages/condition';
 
 const MainLayout = () => {
   const location = useLocation();
@@ -216,6 +218,9 @@ const MainLayout = () => {
         <Route path="/create-token" element={<PrivateRoute><CreateToken /></PrivateRoute>} />
         <Route path="/merchant" element={<PrivateRoute><Merchant /></PrivateRoute>} />
         <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
+        <Route path="/terms" element={<PrivateRoute><TermsModal /></PrivateRoute>} />
+        <Route path="/condition" element={<PrivateRoute><Condition /></PrivateRoute>} />
+        
       </Routes>
     </div>
   );

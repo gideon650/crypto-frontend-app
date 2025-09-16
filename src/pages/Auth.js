@@ -1,11 +1,13 @@
+// Auth.js (fixed)
 import React, { useState, useEffect } from "react";
 import { FaTelegram } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
+import TermsModal from "../components/TermsModal";
 import "./Auth.css";
 
 const Auth = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
-  const [identifier, setIdentifier] = useState(""); // Username or Email for login
+  const [identifier, setIdentifier] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +18,10 @@ const Auth = ({ onLogin }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [formData, setFormData] = useState(null);
+  const [registrationCompleted, setRegistrationCompleted] = useState(false); // Track if registration is done
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -85,7 +91,7 @@ const Auth = ({ onLogin }) => {
         setError("Network error. Please check your connection and try again.");
       }
     } else {
-      // SIGNUP FLOW
+      // SIGNUP FLOW - First register the user
       try {
         const registerResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/register/`, {
           method: "POST",
@@ -103,38 +109,10 @@ const Auth = ({ onLogin }) => {
         const registerData = await registerResponse.json();
 
         if (registerResponse.ok) {
-          // Registration successful - now auto-login
-          try {
-            const loginResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/login/`, {
-              method: "POST",
-              headers: { 
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({ 
-                username, 
-                password 
-              }),
-            });
-
-            const loginData = await loginResponse.json();
-
-            if (loginResponse.ok && loginData.token && onLogin) {
-              await onLogin(loginData);
-              navigate("/dashboard", { replace: true });
-            } else {
-              // Registration succeeded but auto-login failed
-              setError("Registration successful! Please log in manually.");
-              setIsLogin(true); // Switch to login form
-              setIdentifier(username); // Pre-fill username
-              setPassword(""); // Clear password for security
-            }
-          } catch (loginErr) {
-            console.error("Error during auto-login:", loginErr);
-            setError("Registration successful! Please log in manually.");
-            setIsLogin(true);
-            setIdentifier(username);
-            setPassword("");
-          }
+          // Registration successful, now show terms modal
+          setRegistrationCompleted(true);
+          setIsNewUser(true);
+          setShowTerms(true);
         } else {
           // Handle registration errors
           if (registerData.error) {
@@ -161,6 +139,48 @@ const Auth = ({ onLogin }) => {
     }
     
     setIsLoading(false);
+  };
+
+  const handleAcceptTerms = async () => {
+    // After accepting terms, auto-login the user
+    if (isNewUser && registrationCompleted) {
+      setIsLoading(true);
+      
+      try {
+        const loginResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/login/`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ 
+            username, 
+            password 
+          }),
+        });
+
+        const loginData = await loginResponse.json();
+
+        if (loginResponse.ok && loginData.token && onLogin) {
+          await onLogin(loginData);
+          navigate("/dashboard", { replace: true });
+        } else {
+          setError("Registration successful! Please log in manually.");
+          setIsLogin(true);
+          setIdentifier(username);
+          setPassword("");
+        }
+      } catch (loginErr) {
+        console.error("Error during auto-login:", loginErr);
+        setError("Registration successful! Please log in manually.");
+        setIsLogin(true);
+        setIdentifier(username);
+        setPassword("");
+      }
+      
+      setIsLoading(false);
+    }
+    
+    setShowTerms(false);
   };
 
   return (
@@ -269,6 +289,13 @@ const Auth = ({ onLogin }) => {
           Join us on Telegram
         </a>
       </div>
+      
+      {/* Terms Modal */}
+      <TermsModal 
+        show={showTerms} 
+        onAccept={handleAcceptTerms}
+        isLoading={isLoading}
+      />
     </div>
   );
 };
