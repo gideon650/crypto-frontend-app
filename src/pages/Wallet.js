@@ -10,73 +10,631 @@ import "./Wallet.css";
 const staticMerchants = [
   {
     id: 'static-1',
-    username: 'Gabriel Omega',
-    bankName: 'First Bank',
-    accountNumber: '1234567890',
-    starRating: 3,
-    verified: true,
-    isStatic: true
-  },
-  {
-    id: 'static-2',
-    username: 'Kingsley',
-    bankName: 'GTBank',
-    accountNumber: '0987654321',
-    starRating: 2,
-    verified: true,
-    isStatic: true
-  },
-  {
-    id: 'static-3',
-    username: 'QuickPay',
-    bankName: 'Access Bank',
-    accountNumber: '5555666677',
+    username: 'TraderMike',
+    bankName: 'Opay',
+    accountNumber: '7038529174',
     starRating: 4,
     verified: true,
     isStatic: true
   },
   {
-    id: 'static-4',
-    username: 'GIFT001',
+    id: 'static-2',
+    username: 'JayEx',
     bankName: 'Zenith Bank',
-    accountNumber: '1111222233',
+    accountNumber: '2057841963',
     starRating: 5,
     verified: true,
     isStatic: true
   },
   {
+    id: 'static-3',
+    username: 'CryptoTunde',
+    bankName: 'Kuda Bank',
+    accountNumber: '1849372658',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-4',
+    username: 'SwapBola',
+    bankName: 'First Bank',
+    accountNumber: '3647258910',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
     id: 'static-5',
-    username: 'SwiftExchange',
-    bankName: 'UBA',
-    accountNumber: '4444555566',
-    starRating: 2,
+    username: 'CashChuks',
+    bankName: 'PalmPay',
+    accountNumber: '8529741630',
+    starRating: 5,
     verified: true,
     isStatic: true
   },
   {
     id: 'static-6',
-    username: 'Clinton',
-    bankName: 'UBA',
-    accountNumber: '7777888899',
+    username: 'TraderEmeka',
+    bankName: 'GTBank',
+    accountNumber: '0149638527',
     starRating: 3,
     verified: true,
     isStatic: true
   },
   {
     id: 'static-7',
-    username: 'Offor james',
-    bankName: 'Fidelity Bank',
-    accountNumber: '3333444455',
-    starRating: 5,
+    username: 'CoinFemi',
+    bankName: 'Moniepoint',
+    accountNumber: '6071482935',
+    starRating: 4,
     verified: true,
     isStatic: true
   },
   {
     id: 'static-8',
-    username: 'Femi joy',
+    username: 'SwiftKenny',
+    bankName: 'Access Bank',
+    accountNumber: '9528374106',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-9',
+    username: 'ProfitSeyi',
+    bankName: 'UBA',
+    accountNumber: '4736192085',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-10',
+    username: 'DollarIfe',
+    bankName: 'VBank',
+    accountNumber: '2840617359',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-11',
+    username: 'TraderKunle',
+    bankName: 'Sterling Bank',
+    accountNumber: '1593748260',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-12',
+    username: 'PaxChinedu',
+    bankName: 'Fidelity Bank',
+    accountNumber: '7260851493',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-13',
+    username: 'CashGbenga',
+    bankName: 'Union Bank',
+    accountNumber: '8417396205',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-14',
+    username: 'TraderUche',
+    bankName: 'Wema Bank',
+    accountNumber: '5082647391',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-15',
+    username: 'CoinSegun',
+    bankName: 'Opay',
+    accountNumber: '3658471920',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-16',
+    username: 'TraderOba',
     bankName: 'FCMB',
-    accountNumber: '6666777788',
-    starRating: 2,
+    accountNumber: '9174628053',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-17',
+    username: 'CryptoIbrahim',
+    bankName: 'Polaris Bank',
+    accountNumber: '6429375801',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-18',
+    username: 'TraderMusty',
+    bankName: 'Kuda Bank',
+    accountNumber: '2831069547',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-19',
+    username: 'TraderJay',
+    bankName: 'Stanbic IBTC',
+    accountNumber: '7594823016',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-20',
+    username: 'CoinBossK',
+    bankName: 'PalmPay',
+    accountNumber: '1027385649',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-21',
+    username: 'CashPlugSam',
+    bankName: 'Zenith Bank',
+    accountNumber: '4850692713',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-22',
+    username: 'SwapDee',
+    bankName: 'First Bank',
+    accountNumber: '6194738520',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-23',
+    username: 'TraderVic',
+    bankName: 'Moniepoint',
+    accountNumber: '3472805196',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-24',
+    username: 'CoinMax',
+    bankName: 'GTBank',
+    accountNumber: '8096514732',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-25',
+    username: 'DollarTee',
+    bankName: 'Access Bank',
+    accountNumber: '2758439601',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-26',
+    username: 'PaxLeo',
+    bankName: 'VBank',
+    accountNumber: '5631082947',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-27',
+    username: 'TraderDan',
+    bankName: 'UBA',
+    accountNumber: '9417263058',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-28',
+    username: 'CashMo',
+    bankName: 'Sterling Bank',
+    accountNumber: '1205864793',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-29',
+    username: 'TraderRay',
+    bankName: 'Fidelity Bank',
+    accountNumber: '6748291350',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-30',
+    username: 'SwapKelz',
+    bankName: 'Union Bank',
+    accountNumber: '3960517284',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-31',
+    username: 'TraderRichie',
+    bankName: 'Opay',
+    accountNumber: '8273645019',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-32',
+    username: 'CoinDuke',
+    bankName: 'Wema Bank',
+    accountNumber: '5084729163',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-33',
+    username: 'TraderChris',
+    bankName: 'FCMB',
+    accountNumber: '7396158240',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-34',
+    username: 'CryptoBen',
+    bankName: 'Polaris Bank',
+    accountNumber: '1652940387',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-35',
+    username: 'P2PJide',
+    bankName: 'Kuda Bank',
+    accountNumber: '4815327609',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-36',
+    username: 'CoinTobi',
+    bankName: 'Stanbic IBTC',
+    accountNumber: '9027461853',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-37',
+    username: 'TraderLex',
+    bankName: 'PalmPay',
+    accountNumber: '2648051739',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-38',
+    username: 'SwapKay',
+    bankName: 'Zenith Bank',
+    accountNumber: '5179832604',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-39',
+    username: 'DollarObi',
+    bankName: 'First Bank',
+    accountNumber: '8406297153',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-40',
+    username: 'PaxTee',
+    bankName: 'Moniepoint',
+    accountNumber: '3751942068',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-41',
+    username: 'TraderDimeji',
+    bankName: 'GTBank',
+    accountNumber: '6924573801',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-42',
+    username: 'CashRemi',
+    bankName: 'Access Bank',
+    accountNumber: '1487206359',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-43',
+    username: 'TraderVal',
+    bankName: 'VBank',
+    accountNumber: '7063815294',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-44',
+    username: 'SwapJay',
+    bankName: 'UBA',
+    accountNumber: '9530427681',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-45',
+    username: 'TraderKing',
+    bankName: 'Sterling Bank',
+    accountNumber: '2816359047',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-46',
+    username: 'P2PLord',
+    bankName: 'Fidelity Bank',
+    accountNumber: '5249761803',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-47',
+    username: 'CoinDon',
+    bankName: 'Union Bank',
+    accountNumber: '8697320154',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-48',
+    username: 'TraderBoss',
+    bankName: 'Opay',
+    accountNumber: '4026581397',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-49',
+    username: 'DollarChief',
+    bankName: 'Wema Bank',
+    accountNumber: '7153948620',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-50',
+    username: 'QueenSwap',
+    bankName: 'FCMB',
+    accountNumber: '3480652917',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-51',
+    username: 'AdaP2P',
+    bankName: 'Polaris Bank',
+    accountNumber: '9274158063',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-52',
+    username: 'CoinMimi',
+    bankName: 'Kuda Bank',
+    accountNumber: '1865092743',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-53',
+    username: 'TraderAmaka',
+    bankName: 'Stanbic IBTC',
+    accountNumber: '5037814269',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-54',
+    username: 'CryptoLola',
+    bankName: 'PalmPay',
+    accountNumber: '6492037851',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-55',
+    username: 'SwapZainab',
+    bankName: 'Zenith Bank',
+    accountNumber: '8156349720',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-56',
+    username: 'TraderBlessing',
+    bankName: 'First Bank',
+    accountNumber: '2704861395',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-57',
+    username: 'P2PJoy',
+    bankName: 'Moniepoint',
+    accountNumber: '4923578106',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-58',
+    username: 'CashNgozi',
+    bankName: 'GTBank',
+    accountNumber: '7508124639',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-59',
+    username: 'CoinChioma',
+    bankName: 'Access Bank',
+    accountNumber: '3641857902',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-60',
+    username: 'TraderHalima',
+    bankName: 'VBank',
+    accountNumber: '0294637158',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-61',
+    username: 'QueenEx',
+    bankName: 'UBA',
+    accountNumber: '5817029346',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-62',
+    username: 'MariamSwap',
+    bankName: 'Sterling Bank',
+    accountNumber: '9462381507',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-63',
+    username: 'TraderPrecious',
+    bankName: 'Fidelity Bank',
+    accountNumber: '1358726094',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-64',
+    username: 'P2PAisha',
+    bankName: 'Union Bank',
+    accountNumber: '6940572831',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-65',
+    username: 'BellaTrader',
+    bankName: 'Opay',
+    accountNumber: '2075384619',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-66',
+    username: 'SwapGeneral',
+    bankName: 'Wema Bank',
+    accountNumber: '4826193750',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-67',
+    username: 'PaxLegend',
+    bankName: 'FCMB',
+    accountNumber: '7391058426',
+    starRating: 4,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-68',
+    username: 'TraderPrince',
+    bankName: 'Polaris Bank',
+    accountNumber: '8603741952',
+    starRating: 5,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-69',
+    username: 'CashLord',
+    bankName: 'Kuda Bank',
+    accountNumber: '3459208176',
+    starRating: 3,
+    verified: true,
+    isStatic: true
+  },
+  {
+    id: 'static-70',
+    username: 'CoinEmperor',
+    bankName: 'Stanbic IBTC',
+    accountNumber: '5172069384',
+    starRating: 4,
     verified: true,
     isStatic: true
   }
