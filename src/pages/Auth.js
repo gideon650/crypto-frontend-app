@@ -20,7 +20,6 @@ const Auth = ({ onLogin }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
-  const [formData, setFormData] = useState(null);
   const [registrationCompleted, setRegistrationCompleted] = useState(false); // Track if registration is done
   
   const navigate = useNavigate();
