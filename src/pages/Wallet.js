@@ -5,6 +5,8 @@ import BEP20QR from '../assets/images/BEP20.png';
 import TRC20QR from '../assets/images/TRC20.png';
 import SOLQR from '../assets/images/SOL.png';
 import ERC20QR from '../assets/images/ERC20.png';
+import WithdrawalNotificationBadge from './WithdrawalNotificationBadge';
+import DepositNotificationBadge from './DepositNotificationBadge';
 import "./Wallet.css";
 
 const staticMerchants = [
@@ -2297,14 +2299,18 @@ return (
         <button
           onClick={() => setTab("deposit")}
           className={tab === "deposit" ? "active-tab" : ""}
+          style={{ position: 'relative' }} 
         >
           Deposit
+          <DepositNotificationBadge />
         </button>
         <button
           onClick={() => setTab("withdraw")}
           className={tab === "withdraw" ? "active-tab" : ""}
+          style={{ position: 'relative' }} 
         >
           Withdraw
+          <WithdrawalNotificationBadge />
         </button>
         <button
           onClick={() => setTab("history")}

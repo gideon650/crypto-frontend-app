@@ -12,10 +12,12 @@ import {
   FaBell,
   FaFileContract
 } from "react-icons/fa";
+import NotificationBadge from "./NotificationBadge"; // Import the NotificationBadge component
 import "./Settings.css";
 
 const Settings = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [unreadCount, setUnreadCount] = useState(0); // State to track unread count
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,9 +46,37 @@ const Settings = () => {
       }
     };
 
+    const fetchUnreadCount = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/notifications/unread-count/`,
+          {
+            headers: {
+              'Authorization': `Token ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        setUnreadCount(response.data.count);
+      } catch (error) {
+        console.error("Error fetching unread count:", error);
+      }
+    };
+
     fetchStarRating();
+    fetchUnreadCount();
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    
+    // Set up polling to check for new notifications every 30 seconds
+    const pollInterval = setInterval(fetchUnreadCount, 30000);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearInterval(pollInterval);
+    };
   }, []);
 
   // Shorter descriptions for mobile
@@ -102,7 +132,7 @@ const Settings = () => {
           </div>
         </a>
 
-        <Link to="/notifications" className="settings-item">
+        <Link to="/notifications" className="settings-item" style={{position: 'relative'}}>
           <FaBell />
           <div className="settings-item-text">
             <span className="settings-item-title">Notifications</span>
@@ -110,6 +140,7 @@ const Settings = () => {
               {getDescription("View your messages and alerts", "Notifications")}
             </span>
           </div>
+          {unreadCount > 0 && <NotificationBadge />}
         </Link>
 
         <Link to="/condition" className="settings-item">

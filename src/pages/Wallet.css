@@ -1437,3 +1437,44 @@
     transform-origin: center top;
   }
 }
+
+/* Add this to your wallet component's CSS file */
+
+/* Ensure tab buttons can contain positioned badges */
+.wallet-tabs button {
+  position: relative;
+}
+
+/* Adjust badge positioning for tab buttons - smaller and more visible */
+.wallet-tabs button .notification-badge {
+  position: absolute;
+  top: 2px;  /* Bring it down to touch the text */
+  right: -2px;  /* Move it closer to the text */
+  width: 12px;  /* Smaller width */
+  height: 12px;  /* Smaller height */
+  font-size: 8px;  /* Smaller font */
+  background-color: #ff4757;
+  border: 1px solid #fff;  /* White border for better visibility */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);  /* Stronger shadow */
+}
+
+/* Mobile responsiveness for tab badges */
+@media screen and (max-width: 768px) {
+  .wallet-tabs .notification-badge {
+    width: 10px;
+    height: 10px;
+    font-size: 7px;
+    top: 1px;
+    right: -1px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .wallet-tabs .notification-badge {
+    width: 9px;
+    height: 9px;
+    font-size: 6px;
+    top: 0px;
+    right: 0px;
+  }
+}
