@@ -90,7 +90,7 @@ const Terms = () => {
         <div className="terms-section">
           <h3>7. Referral Program</h3>
           <ol>
-            <li>Referral codes (e.g., REF00010) may be issued to users for promotional purposes.</li>
+            <li>Referral codes may be issued to users for promotional purposes.</li>
             <li>Referral benefits are subject to change or termination at SwapView's discretion.</li>
             <li>Fraudulent activities, such as creating fake accounts or circular transfers to exploit referral rewards, will result in account bans and loss of rewards.</li>
           </ol>
