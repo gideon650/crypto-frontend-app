@@ -117,24 +117,24 @@ const Dashboard = () => {
   };
 
   const getMessages = () => {
-    const messages = [
-      {
-        id: 'deposit',
-        icon: '💰',
-        text: portfolio && Number(portfolio.balance_usd) < 1001 
-          ? `Add $${getAmountToThreeStars(Number(portfolio.balance_usd))} to enjoy premium features`
-          : 'Upgrade your account for premium features',
-        type: 'deposit'
-      },
-      {
-        id: 'referral',
-        icon: '🎁',
-        text: 'Refer a user and receive 15% of their initial deposit',
-        type: 'referral'
-      }
-    ];
-    return messages;
-  };
+  const messages = [
+    {
+      id: 'deposit',
+      icon: '💰',
+      text: portfolio && Number(portfolio.balance_usd) < 1001 
+        ? `Add $${getAmountToThreeStars(Number(portfolio.balance_usd))} to your wallet to get upgraded&nbsp;to <span class="gold-star">4&nbsp;star</span> to enjoy our premium features. Deposit&nbsp;now→`
+        : 'Upgrade your account for premium features',
+      type: 'deposit'
+    },
+    {
+      id: 'referral',
+      icon: '🎁',
+      text: 'Refer a user and earn 15% of their initial deposit. Refer a friend now→',
+      type: 'referral'
+    }
+  ];
+  return messages;
+};
 
   // Touch event handlers for horizontal scrolling
   const handleTouchStart = (e) => {
@@ -313,7 +313,10 @@ const Dashboard = () => {
                 onClick={() => handleMessageClick(message.type)}
               >
                 <div className="message-icon">{message.icon}</div>
-                <div className="message-text">{message.text}</div>
+                <div 
+                  className="message-text"
+                  dangerouslySetInnerHTML={{ __html: message.text }}
+                />
               </div>
             ))}
           </div>

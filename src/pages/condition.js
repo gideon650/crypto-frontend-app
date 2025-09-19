@@ -43,21 +43,23 @@ const Terms = () => {
         <div className="terms-section">
           <h3>3. Wallet Funding & Deposits</h3>
           <ol>
-            <li>Wallets may be funded via bank transfer, P2P methods, or other officially approved payment channels.</li>
-            <li>Payments made through third-party accounts (friends, relatives, businesses) may be rejected unless previously verified by support.</li>
-            <li>After completing a transfer, the user must submit a funding request within 30 minutes via the platform for the transaction to be recognized.</li>
+            <li>Wallet may be funded via p2p, bybit or on-chain method.</li>
+            <li>Payments made through third-party accounts may be rejected.</li>
+            <li>After completing an on-chain or bybit deposit, the user must submit a funding request within 30 minutes via the platform for the transaction to be recognized.</li>
             <li>SwapView is not responsible for delays or losses caused by incomplete references, wrong transfer details, or errors made by the user.</li>
             <li>Deposits are considered final and non-reversible once credited.</li>
+            <li>If a deposit made isn't credited within 24 hours, contact support.</li>
           </ol>
         </div>
 
         <div className="terms-section">
           <h3>4. Withdrawals</h3>
           <ol>
-            <li>Withdrawals are strictly limited to the bank account linked to your SwapView profile. Transfers to third-party accounts are prohibited.</li>
+            <li>Withdrawal are strictly paid to the bank account, bybit uid, or wallet address you provided during withdrawal.</li>
             <li>Withdrawal requests may be delayed if additional verification is required.</li>
             <li>SwapView reserves the right to withhold or reverse withdrawals suspected of abuse, fraud, or violation of these Terms.</li>
             <li>Incorrect account numbers provided by the user are their sole responsibility. SwapView shall not be liable for funds lost due to wrong details.</li>
+            <li>Your account will be permanently frozen if you fail to approve a withdrawal made via P2P within 24 hours of receiving the payment, in the event that any merchants file a complaint with our support team.</li>
           </ol>
         </div>
 
@@ -80,7 +82,7 @@ const Terms = () => {
         <div className="terms-section">
           <h3>6. Transactions & P2P Swaps</h3>
           <ol>
-            <li>All P2P transactions must include valid receipts, transaction IDs, and confirmations.</li>
+            <li>All p2p transactions compliant must include a valid receipt, transaction IDs and other information that you may be required to submit.</li>
             <li>SwapView will not honor claims without proper evidence.</li>
             <li>Users acknowledge that errors in entering UIDs, wallet addresses, or account numbers may render funds permanently lost.</li>
             <li>SwapView may act as an arbitrator in disputes but does not guarantee recovery of misplaced funds.</li>

@@ -1358,10 +1358,10 @@ useEffect(() => {
             )}
           </div>
           <div className="form-group">
-            <label>Transaction ID</label>
+            <label>Transaction hash</label>
             <input 
               type="text" 
-              placeholder="Enter transaction ID" 
+              placeholder="Enter transaction hash" 
               value={transactionId} 
               onChange={(e) => setTransactionId(e.target.value)} 
             />
@@ -1467,10 +1467,10 @@ const renderDepositInterface = () => {
             )}
           </div>
           <div className="form-group">
-            <label>Transaction ID</label>
+            <label>Transaction hash</label>
             <input 
               type="text" 
-              placeholder="Enter transaction ID" 
+              placeholder="Enter transaction hash" 
               value={transactionId} 
               onChange={(e) => setTransactionId(e.target.value)} 
             />

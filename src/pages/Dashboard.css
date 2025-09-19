@@ -82,6 +82,19 @@
   margin-top: 0.2rem;
 }
 
+/* Gold Star Styling */
+.gold-star {
+  color: #ffd700;
+  font-weight: 800;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline;
+}
+
+
 /* Tokens Section */
 .user-tokens-section {
   margin-bottom: 2rem;
@@ -531,26 +544,55 @@
   /* Mobile adjustments for enhanced sliding messages */
   .sliding-messages-section {
     margin: 1.5rem 0;
-    height: 70px; /* Taller on mobile */
+    height: 65px; /* Reduced height for smaller text */
   }
   
   .sliding-message {
-    padding: 1.2rem 1.5rem;
-    gap: 1.2rem;
-    border-width: 2px;
+    padding: 0.9rem 1.1rem;
+    gap: 0.8rem;
   }
   
   .message-icon {
-    font-size: 1.8rem;
-    width: 45px;
-    height: 45px;
-    border-width: 2px;
+    font-size: 1.4rem;
+    width: 35px;
+    height: 35px;
   }
   
   .message-text {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.75rem; /* Much smaller text */
+    font-weight: 600;
+    line-height: 1.2;
   }
+}
+
+/* For very small screens (under 350px width) */
+@media (max-width: 350px) {
+  .sliding-messages-section {
+    height: 70px;
+  }
+  
+  .sliding-message {
+    padding: 0.8rem 1rem;
+    gap: 0.7rem;
+  }
+  
+  .message-icon {
+    font-size: 1.3rem;
+    width: 32px;
+    height: 32px;
+  }
+  
+  .message-text {
+    font-size: 0.7rem; /* Even smaller text */
+    line-height: 1.1;
+  }
+}
+
+/* Ensure text doesn't overflow */
+.sliding-message .message-text {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
 }
 
 .username {
