@@ -24,6 +24,7 @@ const Trade = () => {
   const [tradeError, setTradeError] = useState(null);
   const [inputType, setInputType] = useState("amount"); // "quantity" or "amount"
   const [showGridlines, setShowGridlines] = useState(true); // New state for gridlines toggle
+  const [portfolio, setPortfolio] = useState(null); // Add portfolio state
   const chartContainerRef = useRef();
   const chartInstanceRef = useRef(null);
   const candleSeriesRef = useRef(null);
@@ -33,6 +34,29 @@ const Trade = () => {
   const filterOutUSDT = useCallback((tokens) => {
     return tokens.filter(asset => asset.symbol !== 'USDT');
   }, []);
+
+  // Function to get star rating based on balance
+  const getStarRating = useCallback((balance) => {
+    if (balance >= 5000) return 5;
+    else if (balance >= 1001) return 4;
+    else if (balance >= 501) return 3;
+    else if (balance >= 101) return 2;
+    else return 1;
+  }, []);
+
+  // Function to check if user can trade (2 stars or more)
+  const canTrade = useCallback(() => {
+    if (!portfolio) return false;
+    const balance = Number(portfolio.balance_usd || 0);
+    return getStarRating(balance) >= 2;
+  }, [portfolio, getStarRating]);
+
+  // Function to get amount needed for 2 stars
+  const getAmountForTwoStars = useCallback(() => {
+    if (!portfolio) return 101;
+    const balance = Number(portfolio.balance_usd || 0);
+    return Math.max(0, 101 - balance);
+  }, [portfolio]);
   
 
   const filteredAssets = assets.filter(asset => {
@@ -43,6 +67,23 @@ const Trade = () => {
       asset.name.toLowerCase().includes(searchLower)
     );
   });
+
+  // Fetch portfolio data
+  const fetchPortfolio = useCallback(async () => {
+    try {
+      // Remove setPortfolioLoading(true);
+      const token = localStorage.getItem("token");
+      const config = { headers: { Authorization: `Token ${token}` } };
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/portfolio/`,
+        config
+      );
+      setPortfolio(response.data);
+    } catch (error) {
+      console.error("Error fetching portfolio:", error);
+    }
+    // Remove setPortfolioLoading(false);
+  }, []);
 
   const fetchCandlestickData = useCallback(async (symbol, intervalParam = interval) => {
     if (!symbol) return;
@@ -166,6 +207,13 @@ const Trade = () => {
   const handleTrade = async (type) => {
     setTradeError(null);
 
+    // Check if user can trade (star rating restriction)
+    if (!canTrade()) {
+      const amountNeeded = getAmountForTwoStars();
+      setTradeError(`You need at least 2 stars to trade. Add $${amountNeeded.toFixed(2)} to your wallet to unlock trading.`);
+      return;
+    }
+
     if (!selectedAsset || !amount) {
       alert("Please select an asset and enter an amount.");
       return;
@@ -224,6 +272,8 @@ const Trade = () => {
         alert(`${type.toUpperCase()} order successful: ${response.data.message}`);
         setAmount("");
         fetchCandlestickData(selectedAsset, interval);
+        // Refresh portfolio after successful trade
+        fetchPortfolio();
       } else {
         alert(`${type.toUpperCase()} failed: ${response.data.message}`);
       }
@@ -573,7 +623,8 @@ const Trade = () => {
 
   useEffect(() => {
     fetchAssets();
-  }, [fetchAssets]);
+    fetchPortfolio(); // Fetch portfolio on component mount
+  }, [fetchAssets, fetchPortfolio]);
 
   const selectedAssetObj = assets.find(asset => asset.symbol === selectedAsset);
 
@@ -850,7 +901,7 @@ const Trade = () => {
                 </div>
               </div>
             </div>
-            </div>
+          </div>
         </div>
       </div>
     </div>
