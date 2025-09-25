@@ -207,10 +207,10 @@ const Trade = () => {
   const handleTrade = async (type) => {
     setTradeError(null);
 
-    // Check if user can trade (star rating restriction)
-    if (!canTrade()) {
+    // Check if user can trade (star rating restriction) - ONLY for BUY trades
+    if (type === "buy" && !canTrade()) {
       const amountNeeded = getAmountForTwoStars();
-      setTradeError(`You need at least 2 stars to trade. Add $${amountNeeded.toFixed(2)} to your wallet to unlock trading.`);
+      setTradeError(`You need at least 2 stars to buy. Add $${amountNeeded.toFixed(2)} to your wallet to unlock buying.`);
       return;
     }
 
@@ -226,7 +226,7 @@ const Trade = () => {
       return;
     }
 
-    // Check minimum amounts for buy trades
+    // Check minimum amounts for buy trades ONLY
     if (type === "buy") {
       if (inputType === "amount" && amountValue < 3) {
         setTradeError("Minimum amount is $3");
@@ -236,12 +236,12 @@ const Trade = () => {
         setTradeError("Minimum quantity is 100");
         return;
       }
-    }
-
-    // Check maximum amount for buy trades (only when using dollar amount)
-    if (type === "buy" && inputType === "amount" && amountValue > 1000) {
-      setTradeError("Maximum amount is $1000");
-      return;
+      
+      // Check maximum amount for buy trades (only when using dollar amount)
+      if (inputType === "amount" && amountValue > 1000) {
+        setTradeError("Maximum amount is $1000");
+        return;
+      }
     }
 
     try {
