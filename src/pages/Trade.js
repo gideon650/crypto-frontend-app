@@ -237,11 +237,6 @@ const Trade = () => {
         return;
       }
       
-      // Check maximum amount for buy trades (only when using dollar amount)
-      if (inputType === "amount" && amountValue > 1000) {
-        setTradeError("Maximum amount is $1000");
-        return;
-      }
     }
 
     try {

@@ -804,3 +804,96 @@
 .price-arrow {
   font-size: 9px;
 }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  position: relative;
+  max-width: 400px;
+  max-height: 85vh;
+  width: 100%;
+  background-color: transparent;
+  border-radius: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.modal-close-btn {
+  position: sticky;
+  top: 10px;
+  left: calc(100% - 50px);
+  background: rgba(0, 0, 0, 0.8);
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+  margin-bottom: -40px;
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+.modal-close-btn:hover {
+  background: rgba(0, 0, 0, 1);
+  transform: scale(1.1);
+}
+
+.modal-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+
+/* Custom scrollbar */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: rgba(138, 43, 226, 0.8);
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(138, 43, 226, 1);
+}
+
+/* Tablet screens */
+@media (min-width: 768px) {
+  .modal-content {
+    max-width: 450px;
+  }
+}
+
+/* Desktop/Laptop screens */
+@media (min-width: 1024px) {
+  .modal-content {
+    max-width: 500px;
+  }
+}

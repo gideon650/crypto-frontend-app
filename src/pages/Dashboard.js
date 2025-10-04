@@ -8,6 +8,7 @@ const Dashboard = () => {
   const [prices, setPrices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showStarTiersModal, setShowStarTiersModal] = useState(false);
   const trendingRef = useRef(null);
   const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState(false);
@@ -110,10 +111,15 @@ const Dashboard = () => {
 
   const handleMessageClick = (messageType) => {
     if (messageType === 'deposit') {
-      navigate('/wallet?tab=deposit');
+      setShowStarTiersModal(true);
     } else if (messageType === 'referral') {
       navigate('/wallet?tab=referral');
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowStarTiersModal(false);
+    navigate('/wallet?tab=deposit');
   };
 
   const getMessages = () => {
@@ -185,6 +191,22 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
+      {/* Star Tiers Modal */}
+      {showStarTiersModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button className="modal-close-btn" onClick={handleCloseModal}>
+              ✕
+            </button>
+            <img
+              src="https://i.imgur.com/r7djUPq.png"
+              alt="Star Tiers"
+              className="modal-image"
+            />
+          </div>
+        </div>
+      )}
+
       <header className="dashboard-header">
         <h1>SWAPVIEW</h1>
       </header>
