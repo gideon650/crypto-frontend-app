@@ -40,7 +40,7 @@ const Trade = () => {
     if (balance >= 5000) return 5;
     else if (balance >= 1001) return 4;
     else if (balance >= 501) return 3;
-    else if (balance >= 101) return 2;
+    else if (balance >= 201) return 2;
     else return 1;
   }, []);
 
@@ -53,9 +53,9 @@ const Trade = () => {
 
   // Function to get amount needed for 2 stars
   const getAmountForTwoStars = useCallback(() => {
-    if (!portfolio) return 101;
+    if (!portfolio) return 201;
     const balance = Number(portfolio.balance_usd || 0);
-    return Math.max(0, 101 - balance);
+    return Math.max(0, 201 - balance);
   }, [portfolio]);
   
 

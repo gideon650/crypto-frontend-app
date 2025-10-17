@@ -61,7 +61,7 @@ const Merchant = () => {
       if (balance >= 5000) stars = 5;
       else if (balance >= 1001) stars = 4;
       else if (balance >= 501) stars = 3;
-      else if (balance >= 101) stars = 2;
+      else if (balance >= 201) stars = 2;
       
       setUserStarRating(stars);
 

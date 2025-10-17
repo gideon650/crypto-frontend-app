@@ -1204,7 +1204,7 @@ useEffect(() => {
   if (balance >= 5000) filledStars = 5;
   else if (balance >= 1001) filledStars = 4;
   else if (balance >= 501) filledStars = 3;
-  else if (balance >= 101) filledStars = 2;
+  else if (balance >= 201) filledStars = 2;
   else filledStars = 1;
   
   const emptyStars = 5 - filledStars;
