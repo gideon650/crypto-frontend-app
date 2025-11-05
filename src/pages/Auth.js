@@ -1,9 +1,12 @@
-// Auth.js (fixed)
+// Auth.js (with disable flag - easy to re-enable later)
 import React, { useState, useEffect } from "react";
 import { FaTelegram } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import TermsModal from "../components/TermsModal";
 import "./Auth.css";
+
+// FEATURE FLAG: Set to false to re-enable login
+const LOGIN_DISABLED = true;
 
 const Auth = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -20,12 +23,11 @@ const Auth = ({ onLogin }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
-  const [registrationCompleted, setRegistrationCompleted] = useState(false); // Track if registration is done
+  const [registrationCompleted, setRegistrationCompleted] = useState(false);
   
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if user was redirected here due to session expiry
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const expired = urlParams.get('expired');
@@ -35,9 +37,10 @@ const Auth = ({ onLogin }) => {
   }, [location]);
 
   const toggleForm = () => {
+    if (LOGIN_DISABLED) return; // Prevent toggling when disabled
+    
     setIsLogin(!isLogin);
     setError("");
-    // Clear all form fields when toggling
     setIdentifier("");
     setUsername("");
     setEmail("");
@@ -48,10 +51,16 @@ const Auth = ({ onLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Block submission if login is disabled
+    if (LOGIN_DISABLED) {
+      setError("Login is temporarily disabled. Please check our Telegram channel for updates.");
+      return;
+    }
+    
     setError("");
     setIsLoading(true);
 
-    // Add password confirmation check for signup
     if (!isLogin && password !== confirmPassword) {
       setError("Passwords do not match");
       setIsLoading(false);
@@ -59,7 +68,6 @@ const Auth = ({ onLogin }) => {
     }
 
     if (isLogin) {
-      // LOGIN FLOW
       try {
         const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/login/`, {
           method: "POST",
@@ -75,7 +83,6 @@ const Auth = ({ onLogin }) => {
         const data = await response.json();
 
         if (response.ok) {
-          // Store token in localStorage and call onLogin
           if (data.token && onLogin) {
             await onLogin(data);
             navigate("/dashboard", { replace: true });
@@ -90,7 +97,6 @@ const Auth = ({ onLogin }) => {
         setError("Network error. Please check your connection and try again.");
       }
     } else {
-      // SIGNUP FLOW - First register the user
       try {
         const registerResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/register/`, {
           method: "POST",
@@ -108,16 +114,13 @@ const Auth = ({ onLogin }) => {
         const registerData = await registerResponse.json();
 
         if (registerResponse.ok) {
-          // Registration successful, now show terms modal
           setRegistrationCompleted(true);
           setIsNewUser(true);
           setShowTerms(true);
         } else {
-          // Handle registration errors
           if (registerData.error) {
             setError(registerData.error);
           } else if (typeof registerData === "object") {
-            // Handle validation errors from serializer
             const errors = [];
             for (const [, messages] of Object.entries(registerData)) {
               if (Array.isArray(messages)) {
@@ -141,7 +144,6 @@ const Auth = ({ onLogin }) => {
   };
 
   const handleAcceptTerms = async () => {
-    // After accepting terms, auto-login the user
     if (isNewUser && registrationCompleted) {
       setIsLoading(true);
       
@@ -186,7 +188,16 @@ const Auth = ({ onLogin }) => {
     <div className="auth-container">
       <div className="auth-box">
         <h2>{isLogin ? "LOGIN" : "SIGN UP"}</h2>
+        
+        {/* Maintenance Message - Top */}
+        {LOGIN_DISABLED && (
+          <div className="maintenance-message">
+            <p>Having issues logging in? Check out the announcement on our Telegram channel.</p>
+          </div>
+        )}
+        
         {error && <p className="error-text">{error}</p>}
+        
         <form onSubmit={handleSubmit}>
           {!isLogin && (
             <>
@@ -196,7 +207,8 @@ const Auth = ({ onLogin }) => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || LOGIN_DISABLED}
+                style={LOGIN_DISABLED ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
               />
               <input
                 type="email"
@@ -204,14 +216,16 @@ const Auth = ({ onLogin }) => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || LOGIN_DISABLED}
+                style={LOGIN_DISABLED ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
               />
               <input
                 type="text"
                 placeholder="Referral Code (optional)"
                 value={referralCode}
                 onChange={(e) => setReferralCode(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || LOGIN_DISABLED}
+                style={LOGIN_DISABLED ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
               />
             </>
           )}
@@ -222,11 +236,11 @@ const Auth = ({ onLogin }) => {
               required
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              disabled={isLoading}
+              disabled={isLoading || LOGIN_DISABLED}
+              style={LOGIN_DISABLED ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
             />
           )}
           
-          {/* Password field with visibility toggle */}
           <div className="password-input-container">
             <input
               type={isLogin ? (showLoginPassword ? "text" : "password") : (showPassword ? "text" : "password")}
@@ -234,11 +248,13 @@ const Auth = ({ onLogin }) => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
+              disabled={isLoading || LOGIN_DISABLED}
+              style={LOGIN_DISABLED ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
             />
             <span 
               className="password-toggle"
-              onClick={() => isLogin ? setShowLoginPassword(!showLoginPassword) : setShowPassword(!showPassword)}
+              onClick={() => !LOGIN_DISABLED && (isLogin ? setShowLoginPassword(!showLoginPassword) : setShowPassword(!showPassword))}
+              style={LOGIN_DISABLED ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
             >
               {isLogin 
                 ? (showLoginPassword ? "🙈" : "👁️") 
@@ -247,7 +263,6 @@ const Auth = ({ onLogin }) => {
             </span>
           </div>
           
-          {/* Confirm Password field (only for signup) */}
           {!isLogin && (
             <div className="password-input-container">
               <input
@@ -256,27 +271,49 @@ const Auth = ({ onLogin }) => {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || LOGIN_DISABLED}
+                style={LOGIN_DISABLED ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
               />
               <span 
                 className="password-toggle"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={() => !LOGIN_DISABLED && setShowConfirmPassword(!showConfirmPassword)}
+                style={LOGIN_DISABLED ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
               >
                 {showConfirmPassword ? "🙈" : "👁️"}
               </span>
             </div>
           )}
           
-          <button type="submit" disabled={isLoading}>
-            {isLoading ? "Processing..." : (isLogin ? "Login" : "Sign Up")}
+          <button 
+            type="submit" 
+            disabled={isLoading || LOGIN_DISABLED}
+            style={LOGIN_DISABLED ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+          >
+            {LOGIN_DISABLED 
+              ? "Login Temporarily Disabled" 
+              : (isLoading ? "Processing..." : (isLogin ? "Login" : "Sign Up"))
+            }
           </button>
         </form>
         
-        <p onClick={toggleForm} style={{ cursor: isLoading ? 'not-allowed' : 'pointer' }}>
+        <p 
+          onClick={toggleForm} 
+          style={{ 
+            cursor: (isLoading || LOGIN_DISABLED) ? 'not-allowed' : 'pointer',
+            opacity: LOGIN_DISABLED ? 0.5 : 1
+          }}
+        >
           {isLogin
             ? "Don't have an account? Sign Up"
             : "Already have an account? Login"}
         </p>
+        
+        {/* Maintenance Message - Bottom */}
+        {LOGIN_DISABLED && (
+          <div className="maintenance-message" style={{ marginTop: '16px' }}>
+            <p>Having issues logging in? Check out the announcement on our Telegram channel.</p>
+          </div>
+        )}
         
         <a 
           href="https://t.me/Swapview" 
@@ -289,7 +326,6 @@ const Auth = ({ onLogin }) => {
         </a>
       </div>
       
-      {/* Terms Modal */}
       <TermsModal 
         show={showTerms} 
         onAccept={handleAcceptTerms}
