@@ -236,3 +236,35 @@
     padding: 10px;
   }
 }
+/* Add this to the end of your existing Auth.css file */
+
+/* Maintenance message styling */
+.maintenance-message {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 255, 136, 0.05));
+  border: 2px solid #00ff88;
+  border-radius: 25px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  text-align: center;
+}
+
+.maintenance-message p {
+  color: #00ff88;
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
+}
+
+/* Mobile responsive for maintenance message */
+@media (max-width: 480px) {
+  .maintenance-message {
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+  
+  .maintenance-message p {
+    font-size: 14px;
+  }
+}
