@@ -192,6 +192,7 @@ const Auth = ({ onLogin }) => {
         {/* Maintenance Message - Top */}
         {LOGIN_DISABLED && (
           <div className="maintenance-message">
+            <p><a href="https://swapviewapplications.com">swapviewapplications.com</a></p>
             <p>Having issues logging in? Check out the announcement on our Telegram channel.</p>
           </div>
         )}
